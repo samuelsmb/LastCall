@@ -172,7 +172,7 @@ export function Register() {
             />
             <p className="text-sm text-muted">{mode === 'full' ? 'Avbestilte timer legges ut med en gang til vanlig pris.' : 'Avbestilte timer holdes tilbake for kunder som betaler full pris, og frigis så med rabatt før de starter.'} Du kan endre dette når som helst.</p>
             <p className="text-sm text-muted">
-              🎁 Kunden som avbestiller får {kr(DEFAULT_RULE.cancellerBonus)} tilbake hvis timen blir solgt videre, så flere sier ifra i stedet for å bare ikke møte opp. Du velger beløpet, eller slår det av, i oversikten.
+              🎁 Kunden som avbestiller får {DEFAULT_RULE.cancellerBonusPct} % av salgsprisen tilbake hvis timen blir solgt videre, så flere sier ifra i stedet for å bare ikke møte opp. Du velger prosenten, eller slår det av, i oversikten.
             </p>
           </div>
 

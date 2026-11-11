@@ -1,15 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { CATEGORY_META } from '../domain/categories'
-import { calculateFee, FEE_CAP_PCT, FEE_PER_SPOT, INTRO_SPOTS } from '../domain/pricing'
+import { calculateFee, cancellerBonus, FEE_CAP_PCT, FEE_PER_SPOT, INTRO_SPOTS } from '../domain/pricing'
 import { dashboardStats, DEFAULT_RULE, lastCallPrice, releaseTime } from '../domain/selectors'
 import { cancelSlot, releaseSlot, setCurrentBusiness, setRule, useAppState, withdrawSlot } from '../domain/store'
 import type { AutoReleaseRule, Business, ReleaseMode, Slot } from '../domain/types'
 import { clock, countdown, dayLabel, go, kr, useNow } from '../lib'
 import { Button, Modal, Overlay, Segmented } from '../ui'
 import { WAITLIST_LINE } from './Register'
-
-const BONUS_OPTIONS = ['0', '50', '100'] as const
-type BonusOption = (typeof BONUS_OPTIONS)[number]
 
 const STATUS: Record<Slot['status'], { label: string; pill: string }> = {
   booked: { label: 'Bestilt', pill: 'bg-black/5 text-ink-2' },
@@ -50,7 +47,7 @@ export function BusinessHome({ businessId }: { businessId?: string }) {
     const fresh = seenSold.current ? state.slots.filter((s) => s.businessId === biz.id && s.status === 'sold' && !seenSold.current!.has(s.id)) : []
     seenSold.current = new Set(state.slots.filter((s) => s.status === 'sold').map((s) => s.id))
     const sale = fresh[0]
-    if (sale) notify(`Ledig time fylt. ${kr(lastCallPrice(sale))} reddet.`, sale.cancellerBonus ? `SMS til ${sale.customerName}: «Timen du avbestilte ble solgt videre. Takk for at du sa ifra i tide, du får ${kr(sale.cancellerBonus)} tilbake.»` : undefined)
+    if (sale) notify(`Ledig time fylt. ${kr(lastCallPrice(sale))} reddet.`, sale.cancellerBonusPct ? `SMS til ${sale.customerName}: «Timen du avbestilte ble solgt videre. Takk for at du sa ifra i tide, du får ${kr(cancellerBonus(sale))} tilbake.»` : undefined)
   }, [soldIds.join(), biz.id])
 
   return (
@@ -196,16 +193,16 @@ export function BusinessHome({ businessId }: { businessId?: string }) {
                 <span className="grid h-8 w-8 place-items-center rounded-lg bg-green/15 text-base">🎁</span>
                 <h2 className="title">Avbestillingsbonus</h2>
               </div>
-              <Segmented
-                value={String(rule.cancellerBonus) as BonusOption}
-                onChange={(b) => b && setRule(biz.id, { cancellerBonus: Number(b) })}
-                options={BONUS_OPTIONS.map((b) => ({ value: b, label: kr(Number(b)) }))}
-              />
               <p className="text-sm text-muted">
-                {rule.cancellerBonus
-                  ? `Kunden som avbestiller får ${kr(rule.cancellerBonus)} tilbake hvis timen blir solgt videre. Da sier flere ifra i stedet for å bare ikke møte opp.`
-                  : 'Av: kunden som avbestiller får ingenting tilbake.'}
+                {rule.cancellerBonusPct ? (
+                  <>
+                    Kunden som avbestiller får <b className="font-semibold text-ink">{rule.cancellerBonusPct} %</b> av salgsprisen tilbake hvis timen blir solgt videre. Da sier flere ifra i stedet for å bare ikke møte opp.
+                  </>
+                ) : (
+                  'Av: kunden som avbestiller får ingenting tilbake.'
+                )}
               </p>
+              <input type="range" min={0} max={50} step={5} value={rule.cancellerBonusPct} onChange={(e) => setRule(biz.id, { cancellerBonusPct: Number(e.target.value) })} />
             </div>
             <p className="text-sm text-muted">{WAITLIST_LINE}</p>
           </div>
@@ -264,9 +261,9 @@ function SlotRow({ slot, now, heldUntil, onCancel, onRelease, onWithdraw }: { sl
           {slot.guests && slot.guests > 1 ? ` (${kr(slot.fullPrice / slot.guests)} per pers.)` : ''}
           {slot.status === 'sold' && ` · gebyr ${kr(slot.fee ?? 0)}${slot.introSpotsUsed ? ' (introtilbud)' : ''}`}
         </p>
-        {!!slot.cancellerBonus && slot.status !== 'booked' && (
+        {!!slot.cancellerBonusPct && slot.status !== 'booked' && (
           <p className="text-sm text-[#13772a]">
-            🎁 {slot.status === 'sold' ? `${slot.customerName} fikk ${kr(slot.cancellerBonus)} for å avbestille i tide` : `${slot.customerName} får ${kr(slot.cancellerBonus)} hvis timen selges`}
+            🎁 {slot.status === 'sold' ? `${slot.customerName} fikk ${kr(cancellerBonus(slot))} (${slot.cancellerBonusPct} %) for å avbestille i tide` : `${slot.customerName} får ${slot.cancellerBonusPct} % av salgsprisen hvis timen selges`}
           </p>
         )}
       </div>
@@ -303,7 +300,7 @@ function SlotRow({ slot, now, heldUntil, onCancel, onRelease, onWithdraw }: { sl
 
 function FeePreview({ slot, biz }: { slot: Slot; biz: Business }) {
   const f = calculateFee(slot, biz)
-  const bonus = slot.cancellerBonus ?? 0
+  const bonus = cancellerBonus(slot)
   const spots = `${f.spots} fylt${f.spots === 1 ? '' : 'e'} plass${f.spots === 1 ? '' : 'er'}`
   return (
     <div className="rounded-xl border border-hairline p-4 text-sm text-ink-2">
@@ -313,7 +310,7 @@ function FeePreview({ slot, biz }: { slot: Slot; biz: Business }) {
       </div>
       {bonus > 0 && (
         <div className="mt-1 flex justify-between">
-          <span>Avbestillingsbonus til {slot.customerName}</span>
+          <span>Avbestillingsbonus til {slot.customerName} ({slot.cancellerBonusPct} %)</span>
           <b className="font-semibold">{kr(bonus)}</b>
         </div>
       )}

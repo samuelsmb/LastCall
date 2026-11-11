@@ -4,7 +4,7 @@ import { createSeed, generateCalendar, uid } from './seed'
 import { DEFAULT_RULE, matchesWant, releaseTime, ruleDiscount } from './selectors'
 import type { AutoReleaseRule, Category, ReleaseMode, State, WantWindow } from './types'
 
-const KEY = 'lastcall-demo-v8-nb'
+const KEY = 'lastcall-demo-v9-nb'
 const MAX_AGE = 6 * 3_600_000
 
 function load(): State {
@@ -77,9 +77,9 @@ export function cancelSlot(slotId: string) {
   const slot = state.slots.find((s) => s.id === slotId)
   if (!slot || slot.status !== 'booked') return
   const rule = state.rules[slot.businessId]
-  // The Canceller bonus is promised now, at the rule's current amount, and paid only if the slot sells.
-  const cancellerBonus = rule?.cancellerBonus ?? 0
-  const promised = { ...state, slots: state.slots.map((s) => (s.id === slotId ? { ...s, cancellerBonus } : s)) }
+  // The Canceller bonus is promised now, at the rule's current percent, and paid only if the slot sells.
+  const cancellerBonusPct = rule?.cancellerBonusPct ?? 0
+  const promised = { ...state, slots: state.slots.map((s) => (s.id === slotId ? { ...s, cancellerBonusPct } : s)) }
   const at = releaseTime(promised, slot)
   if (rule?.enabled && at !== null && now >= at) {
     commit(releaseInto(promised, slotId, ruleDiscount(rule), now))

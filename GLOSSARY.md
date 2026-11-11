@@ -41,7 +41,7 @@ The person whose cancellation freed up the slot behind a Last Call.
 _Avoid_: Original customer
 
 **Canceller bonus**:
-Kroner a Business promises the Canceller (0, 50 or 100 kr, set next to its Auto-release rule) for cancelling in time. Fixed when the slot is cancelled and paid only if the slot sells on LastCall; it comes out of the Business's net.
+A share of the sold price a Business promises the Canceller (0–50 % in steps of 5, set with a slider next to its Auto-release rule) for cancelling in time. The percent is fixed when the slot is cancelled; it is paid in kroner, worked out from the price the slot sells for, and only if it sells on LastCall. It comes out of the Business's net.
 _Avoid_: Refund, reward, cashback
 
 **Skip the queue**:

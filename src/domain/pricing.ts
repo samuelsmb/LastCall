@@ -10,6 +10,11 @@ export function lastCallPrice(slot: Pick<Slot, 'fullPrice' | 'discountPct'>) {
   return Math.round((slot.fullPrice * (1 - d / 100)) / 5) * 5
 }
 
+/** The Canceller bonus in kroner: the promised percent of what the slot sells for. */
+export function cancellerBonus(slot: Pick<Slot, 'fullPrice' | 'discountPct' | 'cancellerBonusPct'>) {
+  return Math.round((lastCallPrice(slot) * (slot.cancellerBonusPct ?? 0)) / 100)
+}
+
 /** A filled spot is one appointment, or one guest at a restaurant table. */
 export function spotsOf(slot: Pick<Slot, 'guests'>) {
   return slot.guests ?? 1
