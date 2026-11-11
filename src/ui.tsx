@@ -71,8 +71,8 @@ export function Countdown({ start, className = '' }: { start: number; className?
   const ms = start - now
   const urgent = ms < 3_600_000
   return (
-    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-display text-sm font-semibold tabular-nums ${urgent ? 'bg-tomato text-white' : 'bg-ink/8'} ${className}`}>
-      ⏳ {ms > 0 ? `starts in ${countdown(ms)}` : 'started'}
+    <span className={`group/clock inline-flex cursor-default items-center gap-1 rounded-full px-2 py-0.5 font-display text-sm font-semibold tabular-nums ${urgent ? 'bg-tomato text-white' : 'bg-ink/8'} ${className}`}>
+      <span className="inline-block group-hover/clock:animate-hourglass">⏳</span> {ms > 0 ? `starts in ${countdown(ms)}` : 'started'}
     </span>
   )
 }
