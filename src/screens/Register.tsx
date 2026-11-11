@@ -243,7 +243,7 @@ export function Register() {
           {detailsOpen && (
             <Step n={stepOffset + 1} title={found ? 'Sjekk detaljene' : 'Detaljene dine'}>
               <Field label="Bedriftsnavn">
-                <input value={name} onChange={(e) => setName(e.target.value)} placeholder="f.eks. Ted's Garage eller Theatercaféen" className={inputClass} />
+                <input value={name} onChange={(e) => setName(e.target.value)} placeholder="f.eks. Dekkproff Bjerke eller Theatercaféen" className={inputClass} />
               </Field>
               <div className="grid gap-4 sm:grid-cols-2">
                 <Field label="Adresse">

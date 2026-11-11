@@ -18,4 +18,4 @@ export const WINDOW_META: Record<TimeWindow, { label: string; hint: string }> = 
   '48h': { label: 'Neste 48 t', hint: 'innen 48 timer' },
 }
 
-export const NEIGHBOURHOODS = ['Sentrum', 'Grünerløkka', 'Majorstuen', 'Frogner', 'Bjørvika', 'Gamle Oslo', 'Tøyen', 'Sagene', 'St. Hanshaugen']
+export const NEIGHBOURHOODS = ['Sentrum', 'Grünerløkka', 'Majorstuen', 'Frogner', 'Bjørvika', 'Bjerke', 'Storo', 'Gamle Oslo', 'Tøyen', 'Sagene', 'St. Hanshaugen']
