@@ -39,6 +39,8 @@ const businesses: Omit<Business, 'introSpotsLeft'>[] = [
   { id: 'fjordbord', name: 'Maaemo', category: 'food', neighbourhood: 'Bjørvika', address: 'Schweigaards gate 15B', distanceKm: 1.3, tagline: 'Norsk gourmetrestaurant med tre Michelin-stjerner', image: 'img/maaemo.jpg' },
   { id: 'frogner-counter', name: 'Statholdergaarden', category: 'food', neighbourhood: 'Sentrum', address: 'Rådhusgata 11', distanceKm: 0.6, tagline: 'Gourmetrestaurant med Michelin-stjerne siden 1998', image: 'img/statholdergaarden.jpg' },
   { id: 'hanshaugen-hearth', name: 'Statholderens Mat & Vinkjeller', category: 'food', neighbourhood: 'Sentrum', address: 'Rådhusgata 11', distanceKm: 0.6, tagline: 'Moderne bistro med sesongmenyer', image: 'img/statholdergaarden.jpg' },
+  { id: 'hope-posthallen', name: 'Hope Posthallen', category: 'beauty', neighbourhood: 'Sentrum', address: 'Prinsens gate 10', distanceKm: 0.5, tagline: 'Frisør i hjertet av byen' },
+  { id: 'bristol-spa', name: 'Bristol Spa', category: 'beauty', neighbourhood: 'Sentrum', address: 'Kristian IVs gate 7', distanceKm: 0.2, tagline: 'Spa med basseng, sauna og massasje på Hotel Bristol' },
   { id: 'kok-langkaia', name: 'KOK Badstue', category: 'beauty', neighbourhood: 'Bjørvika', address: 'Langkaia', distanceKm: 1.3, tagline: 'Badstue og sjøbad ved fjorden', image: 'https://koknorge.no/wp-content/uploads/2023/12/Fellesskap.jpg' },
   { id: 'passport-office', name: 'Pass- og ID-kontoret', category: 'official', neighbourhood: 'Gamle Oslo', address: 'Grønlandsleiret 44', distanceKm: 1.5, tagline: 'Pass og nasjonale ID-kort' },
   { id: 'cellar-jazz', name: 'Herr Nilsen', category: 'experiences', neighbourhood: 'Sentrum', address: 'C.J. Hambros plass 5', distanceKm: 0.4, tagline: 'Live jazz hver kveld', image: 'img/herr-nilsen.jpg' },
@@ -66,6 +68,9 @@ const lastCalls: LastCallSeed[] = [
   ['wheel-of-fortune', 'Dekkskift, i morgen tidlig', 'Første time i morgen, før jobb.', 1260, 30, 550, 0],
   ['kok-langkaia', 'Privat badstu for 6', 'To timer i badstu ved fjorden, kun for gruppen din, med sjøbad mellom øktene.', 240, 120, 1800, 30],
   ['kok-langkaia', 'Felles badstuøkt for 2', 'To plasser på kveldens felles badstuøkt ved Langkaia.', 1500, 90, 560, 20, 2],
+  ['hope-posthallen', 'Klipp og føn', 'En time hos en frisør, ledig etter en avbestilling i siste liten.', 55, 60, 890, 30],
+  ['hope-posthallen', 'Farge og klipp', 'Farge og klipp i morgen formiddag, frigitt etter en avbestilling.', 1380, 120, 1900, 20],
+  ['bristol-spa', 'Massasje, 60 minutter', 'En time med massasje og tilgang til basseng og sauna, ledig i kveld.', 180, 90, 1300, 25],
   ['passport-office', 'Passtime', 'Passtimer har vanligvis seks ukers ventetid. Denne er i dag.', 230, 20, 0, 0, undefined, 'Hopp over 6 ukers ventetid'],
   ['cellar-jazz', 'To plasser på første rad i kveld', 'Plasser på første rad til kveldens konsert på en liten jazzklubb i kjelleren.', 420, 120, 590, 40],
 ]
