@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { businessOf, savings } from '../domain/selectors'
 import { bookSlot, useAppState } from '../domain/store'
 import { clock, go, kr, useNow, when } from '../lib'
@@ -42,6 +42,16 @@ export function LastCallDetail({ id }: { id: string }) {
               <Info label="Varighet" value={`${slot.durationMin} min${slot.guests ? ` · bord for ${slot.guests}` : ''}`} />
               <Info label="Adresse" value={`${biz.address}, ${biz.neighbourhood}`} />
               <Info label="Avstand" value={`${biz.distanceKm.toLocaleString('nb-NO')} km unna`} />
+              {biz.website && (
+                <Info
+                  label="Nettside"
+                  value={
+                    <a href={`https://${biz.website}`} target="_blank" rel="noreferrer" className="text-primary hover:underline">
+                      {biz.website}
+                    </a>
+                  }
+                />
+              )}
             </dl>
           </div>
         </article>
@@ -92,7 +102,7 @@ export function LastCallDetail({ id }: { id: string }) {
   )
 }
 
-function Info({ label, value }: { label: string; value: string }) {
+function Info({ label, value }: { label: string; value: ReactNode }) {
   return (
     <div className="bg-canvas p-4">
       <dt className="eyebrow text-faint">{label}</dt>

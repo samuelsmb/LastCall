@@ -19,3 +19,27 @@ export const WINDOW_META: Record<TimeWindow, { label: string; hint: string }> = 
 }
 
 export const NEIGHBOURHOODS = ['Sentrum', 'Grünerløkka', 'Majorstuen', 'Frogner', 'Bjørvika', 'Bjerke', 'Storo', 'Gamle Oslo', 'Tøyen', 'Sagene', 'St. Hanshaugen']
+
+/** Rough Oslo postcode ranges for our neighbourhoods; good enough to prefill, the Business can edit it. */
+const OSLO_POSTCODES: [from: number, to: number, neighbourhood: string][] = [
+  [1, 169, 'Sentrum'],
+  [170, 179, 'St. Hanshaugen'],
+  [180, 190, 'Gamle Oslo'],
+  [191, 194, 'Bjørvika'],
+  [195, 199, 'Gamle Oslo'],
+  [250, 287, 'Frogner'],
+  [301, 379, 'Majorstuen'],
+  [440, 469, 'Sagene'],
+  [480, 489, 'Storo'],
+  [550, 559, 'Grünerløkka'],
+  [560, 569, 'Tøyen'],
+  [570, 579, 'Grünerløkka'],
+  [580, 599, 'Bjerke'],
+  [650, 659, 'Gamle Oslo'],
+]
+
+export function neighbourhoodFromPostcode(postcode: string): string | null {
+  const n = Number(postcode)
+  if (!postcode || Number.isNaN(n)) return null
+  return OSLO_POSTCODES.find(([from, to]) => n >= from && n <= to)?.[2] ?? null
+}
