@@ -108,7 +108,10 @@ export function Register() {
 
   return (
     <div className="mx-auto flex max-w-xl flex-col gap-8">
-      <div className="text-center">
+      <a href="#/biz" className="self-start rounded-md px-2 py-1 text-[15px] text-muted hover:bg-black/5 hover:text-ink">
+        ← Back to dashboard
+      </a>
+      <div className="-mt-4 text-center">
         <span className="eyebrow inline-block rounded-full bg-canvas px-2.5 py-1 text-primary shadow-soft">For businesses · Step 1 of 2</span>
         <h1 className="display-2 mt-4">Turn cancellations into revenue</h1>
         <p className="mt-4 text-lg text-muted">Join LastCall in 30 seconds. We'll take it from there.</p>

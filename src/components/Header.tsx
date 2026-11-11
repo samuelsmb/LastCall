@@ -26,11 +26,8 @@ export function Header({ side, route }: { side: 'customer' | 'business'; route: 
             </>
           ) : (
             <>
-              <a href="#/biz" className={link(route === '/biz' || (route.startsWith('/biz/') && route !== '/biz/register'))}>
+              <a href="#/biz" className={link(route.startsWith('/biz'))}>
                 Dashboard
-              </a>
-              <a href="#/biz/register" className={link(route === '/biz/register')}>
-                Add business
               </a>
             </>
           )}
