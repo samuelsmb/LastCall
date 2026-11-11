@@ -4,15 +4,15 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] App runs locally with Vite + React + TypeScript + Tailwind, no backend
-- [ ] Base whimsical theme in place (playful palette, rounded shapes, Category emoji or illustrations)
-- [ ] Seed catalogue of ~10-15 Businesses and ~15-25 Last Calls across all six Categories (Food, Beauty & Spa, Car, Health, Official appointments, Experiences), with Ted's Garage (Car) as the hero Business including a calendar of Slots
-- [ ] Seed times are generated relative to app load so Last Calls are always upcoming
-- [ ] Marketplace cards show original price struck through, Last Call price and a live countdown
-- [ ] Last Calls that have started are hidden
-- [ ] Single state module holds all state and exposes actions; screens only read it and call actions
-- [ ] State persists to localStorage and changes in one tab appear in another tab without reload
-- [ ] Customer/Business toggle in the header switches sides
-- [ ] Layout works in a mobile-sized viewport and on desktop
+- [x] App runs locally with Vite + React + TypeScript + Tailwind, no backend
+- [x] Base whimsical theme in place (playful palette, rounded shapes, Category emoji or illustrations)
+- [x] Seed catalogue of ~10-15 Businesses and ~15-25 Last Calls across all six Categories (Food, Beauty & Spa, Car, Health, Official appointments, Experiences), with Ted's Garage (Car) as the hero Business including a calendar of Slots
+- [x] Seed times are generated relative to app load so Last Calls are always upcoming
+- [x] Marketplace cards show original price struck through, Last Call price and a live countdown
+- [x] Last Calls that have started are hidden
+- [x] Single state module holds all state and exposes actions; screens only read it and call actions
+- [x] State persists to localStorage and changes in one tab appear in another tab without reload
+- [x] Customer/Business toggle in the header switches sides
+- [x] Layout works in a mobile-sized viewport and on desktop

@@ -4,10 +4,10 @@
 
 **Blocked by:** 01 Walking skeleton: Marketplace with the Cooler Copenhagen catalogue
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] Register screen reachable directly by its own route and from the Business side
-- [ ] Fields: name, Category, neighbourhood; no validation beyond required
-- [ ] Submitting shows a celebratory "you're live" moment and goes to the Business side
-- [ ] Registered Business is saved in state (the demo's Business side may keep showing Ted's Garage)
-- [ ] Works on mobile and desktop
+- [x] Register screen reachable directly by its own route and from the Business side
+- [x] Fields: name, Category, neighbourhood; no validation beyond required
+- [x] Submitting shows a celebratory "you're live" moment and goes to the Business side
+- [x] Registered Business is saved in state (the demo's Business side may keep showing Ted's Garage)
+- [x] Works on mobile and desktop

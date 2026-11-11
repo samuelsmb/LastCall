@@ -4,13 +4,13 @@
 
 **Blocked by:** 01 Walking skeleton: Marketplace with the Cooler Copenhagen catalogue
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] Calendar shows booked, cancelled, released and sold Slots with clear visual states
-- [ ] Each booked Slot has an action to mark it cancelled
-- [ ] Release dialog pre-fills a suggested discount (Auto-release rule discount if present, otherwise 30%), editable, showing the resulting Last Call price
-- [ ] Choosing not to Release leaves the Slot cancelled
-- [ ] Released Slot shows as released with its Last Call price
-- [ ] Released Last Call appears on the Marketplace immediately, in this and other tabs, with a "just released" highlight
-- [ ] Withdraw returns an unsold released Slot to cancelled and removes it from the Marketplace
-- [ ] Works on mobile and desktop
+- [x] Calendar shows booked, cancelled, released and sold Slots with clear visual states
+- [x] Each booked Slot has an action to mark it cancelled
+- [x] Release dialog pre-fills a suggested discount (Auto-release rule discount if present, otherwise 30%), editable, showing the resulting Last Call price
+- [x] Choosing not to Release leaves the Slot cancelled
+- [x] Released Slot shows as released with its Last Call price
+- [x] Released Last Call appears on the Marketplace immediately, in this and other tabs, with a "just released" highlight
+- [x] Withdraw returns an unsold released Slot to cancelled and removes it from the Marketplace
+- [x] Works on mobile and desktop

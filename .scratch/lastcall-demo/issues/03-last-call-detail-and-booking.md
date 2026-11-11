@@ -4,11 +4,11 @@
 
 **Blocked by:** 01 Walking skeleton: Marketplace with the Cooler Copenhagen catalogue
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] Detail view shows description, Business, neighbourhood/address, start time, duration, original and Last Call price, countdown
-- [ ] Detail view is reachable directly by its own route
-- [ ] Book asks for a name and a confirm tap only
-- [ ] Confirmation screen shows what, when, where and the amount saved
-- [ ] Booking marks the Slot sold and removes the Last Call from the Marketplace, including in other open tabs
-- [ ] A Last Call already booked in another tab can't be booked again (friendly message)
+- [x] Detail view shows description, Business, neighbourhood/address, start time, duration, original and Last Call price, countdown
+- [x] Detail view is reachable directly by its own route
+- [x] Book asks for a name and a confirm tap only
+- [x] Confirmation screen shows what, when, where and the amount saved
+- [x] Booking marks the Slot sold and removes the Last Call from the Marketplace, including in other open tabs
+- [x] A Last Call already booked in another tab can't be booked again (friendly message)

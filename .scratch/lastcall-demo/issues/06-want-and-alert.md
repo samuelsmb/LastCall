@@ -4,13 +4,13 @@
 
 **Blocked by:** 03 Last Call detail and booking, 04 Business calendar and manual Release
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] Create a Want with Categories + time window (Now / Today / Next 48h) and optional label
-- [ ] List and remove saved Wants
-- [ ] A Last Call matches when its Category is in the Want and its start falls in the Want's window from now
-- [ ] Releasing a matching Last Call (manual or auto) creates an Alert
-- [ ] Alert toast shows on the Customer side in whichever tab is open, including when the Release happened in another tab
-- [ ] Alert copy names the Business, location and the matched Want
-- [ ] Tapping an Alert opens the Last Call detail and marks it seen
-- [ ] Inbox or badge shows unseen Alerts
+- [x] Create a Want with Categories + time window (Now / Today / Next 48h) and optional label
+- [x] List and remove saved Wants
+- [x] A Last Call matches when its Category is in the Want and its start falls in the Want's window from now
+- [x] Releasing a matching Last Call (manual or auto) creates an Alert
+- [x] Alert toast shows on the Customer side in whichever tab is open, including when the Release happened in another tab
+- [x] Alert copy names the Business, location and the matched Want
+- [x] Tapping an Alert opens the Last Call detail and marks it seen
+- [x] Inbox or badge shows unseen Alerts

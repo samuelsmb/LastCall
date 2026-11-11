@@ -1,0 +1,74 @@
+export type Category = 'food' | 'beauty' | 'car' | 'health' | 'official' | 'experiences'
+
+export type TimeWindow = 'now' | 'today' | '48h'
+
+export type SlotStatus = 'booked' | 'cancelled' | 'held' | 'released' | 'sold'
+
+export interface Business {
+  id: string
+  name: string
+  category: Category
+  neighbourhood: string
+  address: string
+  distanceKm: number
+  emoji: string
+  tagline: string
+}
+
+/** A booking in a Business's calendar. A released Slot is a Last Call. */
+export interface Slot {
+  id: string
+  businessId: string
+  title: string
+  description: string
+  start: number
+  durationMin: number
+  fullPrice: number
+  status: SlotStatus
+  customerName?: string
+  discountPct?: number
+  releasedAt?: number
+  soldAt?: number
+  buyerName?: string
+  perk?: string
+}
+
+export interface AutoReleaseRule {
+  enabled: boolean
+  leadMinutes: number
+  discountPct: number
+}
+
+export interface Want {
+  id: string
+  label: string
+  categories: Category[]
+  window: TimeWindow
+  createdAt: number
+}
+
+export interface Alert {
+  id: string
+  wantId: string
+  slotId: string
+  createdAt: number
+  seen: boolean
+}
+
+export interface Baseline {
+  recovered: number
+  released: number
+  sold: number
+}
+
+export interface State {
+  version: 1
+  seededAt: number
+  businesses: Business[]
+  slots: Slot[]
+  rules: Record<string, AutoReleaseRule>
+  baselines: Record<string, Baseline>
+  wants: Want[]
+  alerts: Alert[]
+  currentBusinessId: string
+}

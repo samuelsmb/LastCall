@@ -4,11 +4,11 @@
 
 **Blocked by:** 03 Last Call detail and booking, 05 Auto-release rules
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] Revenue recovered (sum of Last Call prices sold), seeded with a believable month-to-date baseline
-- [ ] Count of Last Calls released and sold
-- [ ] Summary of the active Auto-release rule (or a prompt to set one)
-- [ ] Numbers update live when a Last Call is booked, including from another tab
-- [ ] Sold Slots show as sold in the calendar
-- [ ] Sits alongside the calendar on desktop, stacks on mobile
+- [x] Revenue recovered (sum of Last Call prices sold), seeded with a believable month-to-date baseline
+- [x] Count of Last Calls released and sold
+- [x] Summary of the active Auto-release rule (or a prompt to set one)
+- [x] Numbers update live when a Last Call is booked, including from another tab
+- [x] Sold Slots show as sold in the calendar
+- [x] Sits alongside the calendar on desktop, stacks on mobile
