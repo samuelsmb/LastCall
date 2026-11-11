@@ -6,6 +6,7 @@ import { cancelSlot, releaseSlot, setCurrentBusiness, setRule, useAppState, with
 import type { AutoReleaseRule, Business, ReleaseMode, Slot } from '../domain/types'
 import { clock, countdown, dayLabel, go, kr, useNow } from '../lib'
 import { Button, Modal, Segmented } from '../ui'
+import { WAITLIST_LINE } from './Register'
 
 const STATUS: Record<Slot['status'], { label: string; pill: string }> = {
   booked: { label: 'Booked', pill: 'bg-black/5 text-ink-2' },
@@ -186,6 +187,7 @@ export function BusinessHome({ businessId }: { businessId?: string }) {
             <p className="rounded-lg bg-paper p-3 text-sm text-muted">
               {rule.enabled ? 'On: LastCall handles cancellations for you automatically.' : 'Off: you choose what to release and when.'}
             </p>
+            <p className="text-sm text-muted">{WAITLIST_LINE}</p>
           </div>
         </aside>
       </div>
