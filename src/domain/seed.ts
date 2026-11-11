@@ -33,8 +33,8 @@ export function uid(prefix = 'id') {
 
 const businesses: Omit<Business, 'introSpotsLeft'>[] = [
   { id: HERO_BUSINESS_ID, name: 'Dekkproff Bjerke', category: 'car', neighbourhood: 'Bjerke', address: 'Refstadveien 27', distanceKm: 5.1, tagline: 'Hjulskift uten timebestilling', image: 'img/dekkproff.jpg' },
-  { id: 'dekkdoktoren', name: 'Vianor Storo', category: 'car', neighbourhood: 'Storo', address: 'Storo', distanceKm: 4.3, tagline: 'Dekkverksted og dekkhotell' },
-  { id: 'wheel-of-fortune', name: 'Snap Drive', category: 'car', neighbourhood: 'Oslo', address: 'Oslo', distanceKm: 3.0, tagline: 'Dekkskift og bilservice' },
+  { id: 'dekkdoktoren', name: 'Vianor Storo', category: 'car', neighbourhood: 'Storo', address: 'Storo', distanceKm: 4.3, tagline: 'Dekkverksted og dekkhotell', image: 'https://ntgroup.studio.crasman.cloud/pub/web/Landing%20page%20images/B2C/2026/Vianor_B2C_Website_Carousel_550x350px_tire_change.jpg?c=system_640x' },
+  { id: 'wheel-of-fortune', name: 'Snap Drive', category: 'car', neighbourhood: 'Oslo', address: 'Oslo', distanceKm: 3.0, tagline: 'Dekkskift og bilservice', image: 'https://www.snapdrive.no/getfile.php/132642-1789757416/Bilder/Artikkelbilder/Artikler/H%C3%B8stklar%20bil.jpg%20%28content%29.webp' },
   { id: RESTAURANT_ID, name: 'Theatercaféen', category: 'food', neighbourhood: 'Sentrum', address: 'Stortingsgata 24', distanceKm: 0.2, tagline: 'Klassisk wienerkafé siden 1900', image: 'img/theatercafeen.jpg' },
   { id: 'fjordbord', name: 'Maaemo', category: 'food', neighbourhood: 'Bjørvika', address: 'Schweigaards gate 15B', distanceKm: 1.3, tagline: 'Norsk gourmetrestaurant med tre Michelin-stjerner', image: 'img/maaemo.jpg' },
   { id: 'frogner-counter', name: 'Statholdergaarden', category: 'food', neighbourhood: 'Sentrum', address: 'Rådhusgata 11', distanceKm: 0.6, tagline: 'Gourmetrestaurant med Michelin-stjerne siden 1998', image: 'img/statholdergaarden.jpg' },

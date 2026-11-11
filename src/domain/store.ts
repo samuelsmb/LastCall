@@ -175,6 +175,7 @@ export interface NewBusiness {
   tagline: string
   orgNumber?: string
   calendar?: string
+  image?: string
   mode: ReleaseMode
 }
 

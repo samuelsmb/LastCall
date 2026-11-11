@@ -4,6 +4,7 @@ import { CATEGORIES, CATEGORY_META, NEIGHBOURHOODS } from '../domain/categories'
 import { calculateFee } from '../domain/pricing'
 import { TEMPLATES } from '../domain/seed'
 import { DEFAULT_RULE } from '../domain/selectors'
+import { fetchSiteImage } from '../domain/siteImage'
 import { registerBusiness } from '../domain/store'
 import type { Category, ReleaseMode, Slot } from '../domain/types'
 import { go, kr } from '../lib'
@@ -57,6 +58,22 @@ export function Register() {
   const ready = !!name.trim() && !!place.trim() && !!category && !!calendar && !connecting
   const calendarLabel = CALENDARS.find((c) => c.id === calendar)?.label
 
+  const [site, setSite] = useState('')
+  const [image, setImage] = useState('')
+  const [imageStatus, setImageStatus] = useState<'idle' | 'loading' | 'none' | 'error'>('idle')
+
+  const fetchImage = async () => {
+    if (!site.trim()) return
+    setImageStatus('loading')
+    try {
+      const url = await fetchSiteImage(site)
+      setImage(url ?? '')
+      setImageStatus(url ? 'idle' : 'none')
+    } catch {
+      setImageStatus('error')
+    }
+  }
+
   const runLookup = async () => {
     const orgnr = cleanOrgNumber(orgInput)
     if (!isValidOrgNumber(orgnr)) return setLookup({ status: 'invalid' })
@@ -96,6 +113,7 @@ export function Register() {
       tagline: tagline.trim() || 'Ny på LastCall',
       orgNumber: found?.orgNumber,
       calendar: calendarLabel,
+      image: image || undefined,
       mode,
     })
     setStep('done')
@@ -261,6 +279,17 @@ export function Register() {
                   </datalist>
                 </Field>
               </div>
+              <Field label="Nettside (valgfritt)">
+                <div className="flex gap-2">
+                  <input value={site} onChange={(e) => setSite(e.target.value)} placeholder="f.eks. theatercafeen.no" className={`${inputClass} flex-1`} />
+                  <Button variant="secondary" onClick={fetchImage} disabled={!site.trim() || imageStatus === 'loading'}>
+                    {imageStatus === 'loading' ? 'Henter…' : 'Hent bilde'}
+                  </Button>
+                </div>
+                {imageStatus === 'none' && <span className="text-sm text-muted">Fant ikke noe bilde på nettsiden.</span>}
+                {imageStatus === 'error' && <span className="text-sm text-muted">Kunne ikke hente bilde akkurat nå.</span>}
+                {image && <img src={image} alt="" className="mt-1 h-24 w-full rounded-lg object-cover" />}
+              </Field>
               <div className="flex flex-col gap-2">
                 <span className="eyebrow text-muted">
                   Hva tilbyr du?{found && category && <span className="ml-2 normal-case text-faint">foreslått ut fra næringskoden</span>}
@@ -304,7 +333,7 @@ export function Register() {
         </div>
 
         <aside className="lg:sticky lg:top-24">
-          <PreviewCard name={name} place={place} category={category} mode={mode} />
+          <PreviewCard name={name} place={place} category={category} mode={mode} image={image} />
         </aside>
       </div>
     </div>
@@ -346,7 +375,7 @@ function LookupMessage({ lookup }: { lookup: Lookup }) {
 }
 
 /** How the Business's Last Calls will look to Customers, using its first calendar template. */
-function PreviewCard({ name, place, category, mode }: { name: string; place: string; category: Category | null; mode: ReleaseMode }) {
+function PreviewCard({ name, place, category, mode, image }: { name: string; place: string; category: Category | null; mode: ReleaseMode; image: string }) {
   const cat = category ?? 'experiences'
   const [title, fullPrice, guests] = TEMPLATES[cat][0]
   const slot: Slot = {
@@ -365,7 +394,7 @@ function PreviewCard({ name, place, category, mode }: { name: string; place: str
     <div className="flex flex-col gap-2">
       <span className="eyebrow text-muted">Slik ser kundene deg</span>
       <div className={`flex flex-col overflow-hidden rounded-xl border border-hairline bg-canvas transition ${category ? '' : 'opacity-60 grayscale'}`}>
-        <Band category={cat} className="h-24">
+        <Band category={cat} image={image || undefined} className="h-24">
           <DiscountSticker slot={slot} className="absolute right-3 top-3" />
         </Band>
         <div className="flex flex-col gap-1.5 px-5 pb-5 pt-10">
