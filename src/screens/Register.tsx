@@ -5,6 +5,7 @@ import { CATEGORIES, CATEGORY_META, NEIGHBOURHOODS, neighbourhoodFromPostcode } 
 import { calculateFee } from '../domain/pricing'
 import { TEMPLATES } from '../domain/seed'
 import { DEFAULT_RULE } from '../domain/selectors'
+import { fetchSiteImage } from '../domain/siteImage'
 import { registerBusiness, useAppState } from '../domain/store'
 import type { Category, ReleaseMode, Slot } from '../domain/types'
 import { go, kr } from '../lib'
@@ -59,7 +60,6 @@ export function Register() {
   const [address, setAddress] = useState('')
   const [place, setPlace] = useState('')
   const [tagline, setTagline] = useState('')
-  const [website, setWebsite] = useState<string | null>(null)
   const [category, setCategory] = useState<Category | null>(null)
 
   const [calendar, setCalendar] = useState<CalendarId | null>(null)
@@ -75,6 +75,22 @@ export function Register() {
   const stepOffset = entry === 'manual' ? 0 : 1
   const ready = !!name.trim() && !!place.trim() && !!category && !!calendar && !connecting && !(entry === 'lookup' && (blocked || needsUnit))
   const calendarLabel = CALENDARS.find((c) => c.id === calendar)?.label
+
+  const [site, setSite] = useState('')
+  const [image, setImage] = useState('')
+  const [imageStatus, setImageStatus] = useState<'idle' | 'loading' | 'none' | 'error'>('idle')
+
+  const fetchImage = async (from = site) => {
+    if (!from.trim()) return
+    setImageStatus('loading')
+    try {
+      const url = await fetchSiteImage(from)
+      setImage(url ?? '')
+      setImageStatus(url ? 'idle' : 'none')
+    } catch {
+      setImageStatus('error')
+    }
+  }
 
   const clearLookup = () => {
     lookupCtrl.current?.abort()
@@ -97,7 +113,11 @@ export function Register() {
       setAddress(org.address)
       setPlace(placeOf(org))
       setTagline(org.industry ?? '')
-      setWebsite(org.website)
+      // The register often knows the website; fill it in and fetch its picture straight away.
+      setSite(org.website ?? '')
+      setImage('')
+      setImageStatus('idle')
+      if (org.website) fetchImage(org.website)
       setCategory(categoryFromIndustry(org.industryCode))
       const locations = await listUnits(orgnr, ctrl.signal).catch(() => [])
       setUnits(locations)
@@ -134,7 +154,8 @@ export function Register() {
       tagline: tagline.trim() || 'Ny på LastCall',
       orgNumber: found?.orgNumber,
       calendar: calendarLabel,
-      website: (entry === 'lookup' && website) || undefined,
+      image: image || undefined,
+      website: site.trim().replace(/^https?:\/\//i, '') || undefined,
       mode,
     })
     setStep('done')
@@ -314,6 +335,17 @@ export function Register() {
                   </datalist>
                 </Field>
               </div>
+              <Field label="Nettside (valgfritt)">
+                <div className="flex gap-2">
+                  <input value={site} onChange={(e) => setSite(e.target.value)} placeholder="f.eks. theatercafeen.no" className={`${inputClass} flex-1`} />
+                  <Button variant="secondary" onClick={() => fetchImage()} disabled={!site.trim() || imageStatus === 'loading'}>
+                    {imageStatus === 'loading' ? 'Henter…' : 'Hent bilde'}
+                  </Button>
+                </div>
+                {imageStatus === 'none' && <span className="text-sm text-muted">Fant ikke noe bilde på nettsiden.</span>}
+                {imageStatus === 'error' && <span className="text-sm text-muted">Kunne ikke hente bilde akkurat nå.</span>}
+                {image && <img src={image} alt="" className="mt-1 h-24 w-full rounded-lg object-cover" />}
+              </Field>
               <div className="flex flex-col gap-2">
                 <span className="eyebrow text-muted">
                   Hva tilbyr du?{found && category && <span className="ml-2 normal-case text-faint">foreslått ut fra næringskoden</span>}
@@ -357,7 +389,7 @@ export function Register() {
         </div>
 
         <aside className="lg:sticky lg:top-24">
-          <PreviewCard name={name} place={place} category={category} mode={mode} />
+          <PreviewCard name={name} place={place} category={category} mode={mode} image={image} />
         </aside>
       </div>
     </div>
@@ -512,7 +544,7 @@ function LookupMessage({ lookup }: { lookup: Lookup }) {
 }
 
 /** How the Business's Last Calls will look to Customers, using its first calendar template. */
-function PreviewCard({ name, place, category, mode }: { name: string; place: string; category: Category | null; mode: ReleaseMode }) {
+function PreviewCard({ name, place, category, mode, image }: { name: string; place: string; category: Category | null; mode: ReleaseMode; image: string }) {
   const cat = category ?? 'experiences'
   const [title, fullPrice, guests] = TEMPLATES[cat][0]
   const slot: Slot = {
@@ -531,7 +563,7 @@ function PreviewCard({ name, place, category, mode }: { name: string; place: str
     <div className="flex flex-col gap-2">
       <span className="eyebrow text-muted">Slik ser kundene deg</span>
       <div className={`flex flex-col overflow-hidden rounded-xl border border-hairline bg-canvas transition ${category ? '' : 'opacity-60 grayscale'}`}>
-        <Band category={cat} className="h-24">
+        <Band category={cat} image={image || undefined} className="h-24">
           <DiscountSticker slot={slot} className="absolute right-3 top-3" />
         </Band>
         <div className="flex flex-col gap-1.5 px-5 pb-5 pt-10">
