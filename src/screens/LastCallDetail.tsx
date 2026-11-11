@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { businessOf, savings } from '../domain/selectors'
-import { bookSlot, useAppState } from '../domain/store'
+import { bookSlot, toggleFollow, useAppState } from '../domain/store'
 import { clock, go, kr, useNow, when } from '../lib'
 import { Band, Button, CategoryBadge, Countdown, DiscountSticker, Price } from '../ui'
 
@@ -14,6 +14,7 @@ export function LastCallDetail({ id }: { id: string }) {
   if (!slot) return <Gone title="Denne Last Call finnes ikke lenger" />
   const biz = businessOf(state, slot)
   const available = slot.status === 'released' && slot.start > now
+  const following = state.wants.some((w) => w.businessId === biz.id)
 
   const book = () => {
     if (bookSlot(slot.id, name.trim() || 'Gjest')) go(`/booked/${slot.id}`)
@@ -31,7 +32,13 @@ export function LastCallDetail({ id }: { id: string }) {
             <DiscountSticker slot={slot} className="absolute right-5 top-5" />
           </Band>
           <div className="flex flex-col gap-3 px-6 pb-8 pt-14 sm:px-8">
-            <CategoryBadge category={biz.category} />
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <CategoryBadge category={biz.category} />
+              <Button size="sm" variant={following ? 'utility' : 'secondary'} onClick={() => toggleFollow(biz.id)} aria-pressed={following}>
+                {following ? `✓ Følger ${biz.name}` : `☆ Følg ${biz.name}`}
+              </Button>
+            </div>
+            {following && <p className="-mt-1 text-sm text-muted">Vi varsler deg når {biz.name} frigir en ny Last Call, når som helst.</p>}
             <h1 className="heading-1">{slot.title}</h1>
             <p className="title text-ink-2">
               {biz.name} <span className="font-normal text-muted">· {biz.tagline}</span>

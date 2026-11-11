@@ -165,8 +165,8 @@ export function createSeed(now: number): State {
     businesses: businesses.map((b) => ({ ...b, introSpotsLeft: INTRO_SPOTS })),
     slots,
     rules: {
-      [HERO_BUSINESS_ID]: { enabled: true, mode: 'full', leadMinutes: 60, discountPct: 20 },
-      [RESTAURANT_ID]: { enabled: true, mode: 'discount', leadMinutes: 120, discountPct: 20 },
+      [HERO_BUSINESS_ID]: { enabled: true, mode: 'full', leadMinutes: 60, discountPct: 20, cancellerBonus: 50 },
+      [RESTAURANT_ID]: { enabled: true, mode: 'discount', leadMinutes: 120, discountPct: 20, cancellerBonus: 100 },
     },
     baselines: {},
     wants: [],

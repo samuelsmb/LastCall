@@ -37,7 +37,7 @@ A spec for a mocked, whimsical LastCall web demo (desktop + mobile view) set in 
 
 ## Out of scope
 
-- Canceller incentives, C2C resale, B2B: future growth, mentioned in the pitch only.
+- C2C resale, B2B: future growth, mentioned in the pitch only. (Canceller incentives graduated into the Canceller bonus.)
 - Real AI matching, real notifications, real payments.
 - Demo control panel (time fast-forward, simulate, reset): not needed; Auto-release can be told as an idea in the pitch.
 - The presentation script itself.
