@@ -123,7 +123,7 @@ export function Register() {
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="f.eks. Brendas Frisørstudio"
+            placeholder="f.eks. Ted's Garage eller Theatercaféen"
             className="rounded border border-[#ddd] bg-canvas px-3 py-2.5 outline-none placeholder:text-faint focus:ring-2 focus:ring-primary/30"
           />
         </label>
@@ -174,6 +174,15 @@ function Calculator() {
           <span className="eyebrow text-muted">Gjennomsnittspris (kr)</span>
           <input type="number" min={0} step={50} value={avg} onChange={(e) => setAvg(Math.max(0, Number(e.target.value)))} className={field} />
         </label>
+      </div>
+      <div className="flex flex-wrap items-center gap-2 text-[15px] text-muted">
+        Eksempel:
+        <Chip active={perWeek === 5 && avg === 550} onClick={() => { setPerWeek(5); setAvg(550) }}>
+          🚗 Dekkskift, 550 kr
+        </Chip>
+        <Chip active={perWeek === 3 && avg === 4000} onClick={() => { setPerWeek(3); setAvg(4000) }}>
+          🍽️ Bord for 2, 4 000 kr
+        </Chip>
       </div>
       <p className="text-[15px] text-ink-2">
         Du kan berge opptil <b className="font-semibold text-ink">{kr(recover)}/måned</b>. LastCall koster deg maks <b className="font-semibold text-ink">{kr(cost)}</b>, kun for timer vi fyller.
