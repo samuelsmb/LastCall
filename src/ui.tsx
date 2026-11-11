@@ -85,10 +85,19 @@ export function Countdown({ start, className = '' }: { start: number; className?
 export function Price({ slot, big = false }: { slot: Slot; big?: boolean }) {
   const price = lastCallPrice(slot)
   const discounted = (slot.discountPct ?? 0) > 0
+  const guests = slot.guests ?? 0
   return (
-    <span className="inline-flex items-baseline gap-2">
-      <span className={big ? 'heading-1' : 'title'}>{kr(price)}</span>
-      {discounted && <s className={`text-faint ${big ? 'text-base' : 'text-sm'}`}>{kr(slot.fullPrice)}</s>}
+    <span className="inline-flex flex-col">
+      <span className="inline-flex items-baseline gap-2">
+        <span className={big ? 'heading-1' : 'title'}>{kr(guests > 1 ? price / guests : price)}</span>
+        {guests > 1 && <span className={`text-muted ${big ? 'text-base' : 'text-sm'}`}>per person</span>}
+        {discounted && <s className={`text-faint ${big ? 'text-base' : 'text-sm'}`}>{kr(guests > 1 ? slot.fullPrice / guests : slot.fullPrice)}</s>}
+      </span>
+      {guests > 1 && (
+        <span className="text-sm text-muted">
+          {kr(price)} total for {guests} guests
+        </span>
+      )}
     </span>
   )
 }

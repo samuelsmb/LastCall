@@ -39,7 +39,7 @@ export function LastCallDetail({ id }: { id: string }) {
             <p className="max-w-2xl text-ink-2">{slot.description}</p>
             <dl className="mt-4 grid gap-px overflow-hidden rounded-xl border border-hairline bg-hairline sm:grid-cols-2">
               <Info label="When" value={`${when(slot.start, now)} – ${clock(slot.start + slot.durationMin * 60_000)}`} />
-              <Info label="Duration" value={`${slot.durationMin} min`} />
+              <Info label="Duration" value={`${slot.durationMin} min${slot.guests ? ` · table for ${slot.guests}` : ''}`} />
               <Info label="Address" value={`${biz.address}, ${biz.neighbourhood}`} />
               <Info label="Distance" value={`${biz.distanceKm.toLocaleString('en-GB')} km away`} />
             </dl>
