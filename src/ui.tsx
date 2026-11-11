@@ -78,7 +78,7 @@ export function Countdown({ start, className = '' }: { start: number; className?
         <circle cx="8" cy="8" r="6.5" />
         <path d="M8 4.5V8l2.5 1.5" strokeLinecap="round" />
       </svg>
-      {ms > 0 ? `Starts in ${countdown(ms)}` : 'Started'}
+      {ms > 0 ? `Starter om ${countdown(ms)}` : 'Startet'}
     </span>
   )
 }
@@ -96,7 +96,7 @@ export function Price({ slot, big = false }: { slot: Slot; big?: boolean }) {
       </span>
       {guests > 1 && (
         <span className="text-sm text-muted">
-          {kr(price)} total for {guests} guests
+          {kr(price)} totalt for {guests} gjester
         </span>
       )}
     </span>
@@ -105,7 +105,7 @@ export function Price({ slot, big = false }: { slot: Slot; big?: boolean }) {
 
 export function DiscountSticker({ slot, className = '' }: { slot: Slot; className?: string }) {
   const d = slot.discountPct ?? 0
-  return <span className={`eyebrow rounded-full bg-canvas px-2.5 py-1 text-ink shadow-soft ${className}`}>{d > 0 ? `−${d}%` : slot.perk ?? 'Skip the queue'}</span>
+  return <span className={`eyebrow rounded-full bg-canvas px-2.5 py-1 text-ink shadow-soft ${className}`}>{d > 0 ? `−${d}%` : slot.perk ?? 'Hopp over køen'}</span>
 }
 
 /** Colour-blocked illustration band with a page-icon tile, the Notion way. */

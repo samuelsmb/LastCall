@@ -42,22 +42,23 @@ export function go(path: string) {
 
 /* ---------- formatting ---------- */
 
-/** NOK, the only currency in the app: `550 kr`, `1,500 kr`. */
+/** NOK, the only currency in the app: `550 kr`, `1 500 kr`. */
 export function kr(n: number) {
-  return `${Math.round(n).toLocaleString('en-GB')} kr`
+  return `${Math.round(n).toLocaleString('nb-NO')} kr`.replace(/[\u00a0\u202f]/g, '\u00a0')
 }
 
 export function clock(ts: number) {
-  return new Date(ts).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
+  return new Date(ts).toLocaleTimeString('nb-NO', { hour: '2-digit', minute: '2-digit' })
 }
 
 export function dayLabel(ts: number, ref: number) {
   const d = new Date(ts)
   const r = new Date(ref)
   const days = Math.round((new Date(d.toDateString()).getTime() - new Date(r.toDateString()).getTime()) / 86_400_000)
-  if (days === 0) return 'Today'
-  if (days === 1) return 'Tomorrow'
-  return d.toLocaleDateString('en-GB', { weekday: 'long' })
+  if (days === 0) return 'I dag'
+  if (days === 1) return 'I morgen'
+  const w = d.toLocaleDateString('nb-NO', { weekday: 'long' })
+  return w.charAt(0).toUpperCase() + w.slice(1)
 }
 
 export function when(ts: number, ref: number) {
@@ -65,13 +66,13 @@ export function when(ts: number, ref: number) {
 }
 
 export function countdown(ms: number) {
-  if (ms <= 0) return 'started'
+  if (ms <= 0) return 'startet'
   const s = Math.floor(ms / 1000)
   const d = Math.floor(s / 86400)
   const h = Math.floor((s % 86400) / 3600)
   const m = Math.floor((s % 3600) / 60)
   const sec = s % 60
-  if (d > 0) return `${d}d ${h}h`
-  if (h > 0) return `${h}h ${m}m`
-  return `${m}m ${sec.toString().padStart(2, '0')}s`
+  if (d > 0) return `${d}d ${h}t`
+  if (h > 0) return `${h}t ${m}min`
+  return `${m}min ${sec.toString().padStart(2, '0')}s`
 }

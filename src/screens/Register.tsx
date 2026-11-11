@@ -6,15 +6,15 @@ import type { Category, ReleaseMode } from '../domain/types'
 import { go, kr } from '../lib'
 import { Button, Chip, Segmented } from '../ui'
 
-export const WAITLIST_LINE = 'Already have a waitlist? Great. LastCall kicks in only when your waitlist can’t fill the slot.'
+export const WAITLIST_LINE = 'Har du allerede en venteliste? Flott. LastCall trår først inn når ventelisten din ikke klarer å fylle timen.'
 
 const WEEKS_PER_MONTH = 4.3
 const NO_INTRO = { introSpotsLeft: 0 }
 
 const FAQ: [string, string][] = [
-  ['What if the customer doesn’t show up?', 'You pay nothing. We only charge for filled spots where the customer turns up.'],
-  ['Do I have to give a discount?', 'No. You set the price. Full price works: customers get to skip the queue.'],
-  ['Can I stop?', 'Anytime, for free. No lock-in.'],
+  ['Hva om kunden ikke møter opp?', 'Da betaler du ingenting. Vi tar bare betalt for fylte plasser der kunden faktisk dukker opp.'],
+  ['Må jeg gi rabatt?', 'Nei. Du bestemmer prisen. Full pris fungerer fint: kundene får hoppe over køen.'],
+  ['Kan jeg slutte?', 'Når som helst, gratis. Ingen binding.'],
 ]
 
 export function Register() {
@@ -34,10 +34,10 @@ export function Register() {
     return (
       <div className="mx-auto flex max-w-lg flex-col items-center gap-5 py-14 text-center">
         <span className="grid h-16 w-16 animate-rise place-items-center rounded-full bg-green text-3xl text-white">✓</span>
-        <h1 className="display-2">You're live on LastCall</h1>
-        <p className="text-lg text-muted">We've synced your calendar. Next time someone cancels on {name}, that empty slot can be filled in one click. Your first 10 filled spots are on us.</p>
+        <h1 className="display-2">Du er live på LastCall</h1>
+        <p className="text-lg text-muted">Vi har synkronisert kalenderen din. Neste gang noen avbestiller hos {name}, kan den ledige timen fylles med ett klikk. De første 10 fylte plassene er gratis.</p>
         <Button size="lg" onClick={() => go('/biz')}>
-          Go to your dashboard
+          Gå til oversikten din
         </Button>
       </div>
     )
@@ -47,39 +47,39 @@ export function Register() {
     return (
       <div className="mx-auto flex max-w-xl flex-col gap-8">
         <div className="text-center">
-          <span className="eyebrow inline-block rounded-full bg-canvas px-2.5 py-1 text-primary shadow-soft">Step 2 of 2 · Pricing</span>
-          <h1 className="display-2 mt-4">You only pay when we fill an empty slot.</h1>
+          <span className="eyebrow inline-block rounded-full bg-canvas px-2.5 py-1 text-primary shadow-soft">Steg 2 av 2 · Pris</span>
+          <h1 className="display-2 mt-4">Du betaler bare når vi fyller en ledig time.</h1>
         </div>
 
         <div className="flex flex-col gap-6 rounded-2xl border border-hairline bg-canvas p-6 shadow-soft sm:p-8">
           <ul className="flex flex-col gap-2 text-[17px]">
-            {['0 kr to join, no monthly fee', '49 kr per filled spot, never more than 10%', 'Your first 10 are on us'].map((t) => (
+            {['0 kr for å bli med, ingen månedsavgift', '49 kr per fylte plass, aldri mer enn 10 %', 'De første 10 er gratis'].map((t) => (
               <li key={t} className="flex items-center gap-3">
                 <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-green text-sm text-white">✓</span>
                 {t}
               </li>
             ))}
           </ul>
-          <p className="text-sm text-muted">A spot is one appointment, or one guest at a restaurant. Only charged if the customer shows up. Invoiced monthly.</p>
+          <p className="text-sm text-muted">En plass er én time, eller én gjest på en restaurant. Vi tar kun betalt hvis kunden møter opp. Faktureres månedlig.</p>
 
           <Calculator />
 
           <div className="grid gap-2 sm:grid-cols-2">
-            <Example label="Tyre change, 550 kr" fee={calculateFee({ fullPrice: 550 }, NO_INTRO).fee} />
-            <Example label="Table for 2, 4,000 kr" fee={calculateFee({ fullPrice: 4000, guests: 2 }, NO_INTRO).fee} />
+            <Example label="Dekkskift, 550 kr" fee={calculateFee({ fullPrice: 550 }, NO_INTRO).fee} />
+            <Example label="Bord for 2, 4 000 kr" fee={calculateFee({ fullPrice: 4000, guests: 2 }, NO_INTRO).fee} />
           </div>
 
           <div className="flex flex-col gap-2">
-            <span className="eyebrow text-muted">Default release mode</span>
+            <span className="eyebrow text-muted">Standard frigivelsesmodus</span>
             <Segmented
               value={mode}
               onChange={(m) => m && setMode(m)}
               options={[
-                { value: 'full', label: 'Full price (Skip the queue)' },
-                { value: 'discount', label: 'Discount' },
+                { value: 'full', label: 'Full pris (Hopp over køen)' },
+                { value: 'discount', label: 'Rabatt' },
               ]}
             />
-            <p className="text-sm text-muted">{mode === 'full' ? 'Cancelled slots go live at once at your normal price.' : 'Cancelled slots are held for full-price customers, then released at a discount before they start.'} You can change this anytime.</p>
+            <p className="text-sm text-muted">{mode === 'full' ? 'Avbestilte timer legges ut med en gang til vanlig pris.' : 'Avbestilte timer holdes tilbake for kunder som betaler full pris, og frigis så med rabatt før de starter.'} Du kan endre dette når som helst.</p>
           </div>
 
           <p className="rounded-lg bg-paper p-3 text-[15px] text-ink-2">{WAITLIST_LINE}</p>
@@ -95,10 +95,10 @@ export function Register() {
 
           <div className="flex gap-2">
             <Button variant="utility" onClick={() => setStep('details')}>
-              Back
+              Tilbake
             </Button>
             <Button size="lg" className="flex-1" onClick={goLive}>
-              Go live
+              Gå live
             </Button>
           </div>
         </div>
@@ -109,27 +109,27 @@ export function Register() {
   return (
     <div className="mx-auto flex max-w-xl flex-col gap-8">
       <a href="#/biz" className="self-start rounded-md px-2 py-1 text-[15px] text-muted hover:bg-black/5 hover:text-ink">
-        ← Back to dashboard
+        ← Tilbake til oversikten
       </a>
       <div className="-mt-4 text-center">
-        <span className="eyebrow inline-block rounded-full bg-canvas px-2.5 py-1 text-primary shadow-soft">For businesses · Step 1 of 2</span>
-        <h1 className="display-2 mt-4">Turn cancellations into revenue</h1>
-        <p className="mt-4 text-lg text-muted">Join LastCall in 30 seconds. We'll take it from there.</p>
+        <span className="eyebrow inline-block rounded-full bg-canvas px-2.5 py-1 text-primary shadow-soft">For bedrifter · Steg 1 av 2</span>
+        <h1 className="display-2 mt-4">Gjør avbestillinger om til inntekt</h1>
+        <p className="mt-4 text-lg text-muted">Bli med i LastCall på 30 sekunder. Vi tar det derfra.</p>
       </div>
 
       <div className="flex flex-col gap-6 rounded-2xl border border-hairline bg-canvas p-6 shadow-soft sm:p-8">
         <label className="flex flex-col gap-1.5">
-          <span className="eyebrow text-muted">Business name</span>
+          <span className="eyebrow text-muted">Bedriftsnavn</span>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="e.g. Brenda's Hair Studio"
+            placeholder="f.eks. Brendas Frisørstudio"
             className="rounded border border-[#ddd] bg-canvas px-3 py-2.5 outline-none placeholder:text-faint focus:ring-2 focus:ring-primary/30"
           />
         </label>
 
         <div className="flex flex-col gap-2">
-          <span className="eyebrow text-muted">What do you offer?</span>
+          <span className="eyebrow text-muted">Hva tilbyr du?</span>
           <div className="flex flex-wrap gap-2">
             {CATEGORIES.map((c) => (
               <Chip key={c} active={category === c} onClick={() => setCategory(c)}>
@@ -140,7 +140,7 @@ export function Register() {
         </div>
 
         <label className="flex flex-col gap-1.5">
-          <span className="eyebrow text-muted">Neighbourhood</span>
+          <span className="eyebrow text-muted">Bydel</span>
           <select value={neighbourhood} onChange={(e) => setNeighbourhood(e.target.value)} className="cursor-pointer rounded border border-[#ddd] bg-canvas px-3 py-2.5 outline-none">
             {NEIGHBOURHOODS.map((n) => (
               <option key={n}>{n}</option>
@@ -149,7 +149,7 @@ export function Register() {
         </label>
 
         <Button size="lg" onClick={() => setStep('pricing')} disabled={!name.trim() || !category}>
-          Next: pricing
+          Neste: pris
         </Button>
       </div>
     </div>
@@ -167,16 +167,16 @@ function Calculator() {
     <div className="flex flex-col gap-4 rounded-xl bg-paper p-4">
       <div className="grid gap-3 sm:grid-cols-2">
         <label className="flex flex-col gap-1.5">
-          <span className="eyebrow text-muted">Cancellations per week</span>
+          <span className="eyebrow text-muted">Avbestillinger per uke</span>
           <input type="number" min={0} value={perWeek} onChange={(e) => setPerWeek(Math.max(0, Number(e.target.value)))} className={field} />
         </label>
         <label className="flex flex-col gap-1.5">
-          <span className="eyebrow text-muted">Average price (kr)</span>
+          <span className="eyebrow text-muted">Gjennomsnittspris (kr)</span>
           <input type="number" min={0} step={50} value={avg} onChange={(e) => setAvg(Math.max(0, Number(e.target.value)))} className={field} />
         </label>
       </div>
       <p className="text-[15px] text-ink-2">
-        You could recover up to <b className="font-semibold text-ink">{kr(recover)}/month</b>. LastCall costs you max <b className="font-semibold text-ink">{kr(cost)}</b>, only for slots we fill.
+        Du kan berge opptil <b className="font-semibold text-ink">{kr(recover)}/måned</b>. LastCall koster deg maks <b className="font-semibold text-ink">{kr(cost)}</b>, kun for timer vi fyller.
       </p>
     </div>
   )
@@ -185,7 +185,7 @@ function Calculator() {
 function Example({ label, fee }: { label: string; fee: number }) {
   return (
     <div className="rounded-lg border border-hairline p-3 text-[15px]">
-      {label} → you pay <b className="font-semibold">{kr(fee)}</b>
+      {label} → du betaler <b className="font-semibold">{kr(fee)}</b>
     </div>
   )
 }

@@ -1,4 +1,4 @@
-/** The one place the slogan lives. Swap it here when the team settles on one. */
+/** The one place the slogan lives. Bytt den her når teamet har valgt en. */
 export const TAGLINE = 'TBD'
 
 export const CITY = 'Oslo'

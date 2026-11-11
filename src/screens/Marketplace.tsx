@@ -9,9 +9,9 @@ import { go, useNow } from '../lib'
 import { Button, Chip, Mascot, Segmented } from '../ui'
 
 const SORTS: { value: SortKey; label: string }[] = [
-  { value: 'soonest', label: 'Soonest' },
-  { value: 'discount', label: 'Biggest discount' },
-  { value: 'nearest', label: 'Nearest' },
+  { value: 'soonest', label: 'Snarest' },
+  { value: 'discount', label: 'Størst rabatt' },
+  { value: 'nearest', label: 'Nærmest' },
 ]
 
 const STARS = [
@@ -49,15 +49,15 @@ export function Marketplace() {
         ))}
         <div className="relative flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
           <div className="max-w-xl">
-            <span className="eyebrow inline-block rounded-full bg-canvas px-2.5 py-1 text-primary">New in {CITY} · {TAGLINE}</span>
-            <h1 className="display-2 mt-5 sm:display-1">Someone cancelled. Now it's yours.</h1>
+            <span className="eyebrow inline-block rounded-full bg-canvas px-2.5 py-1 text-primary">Nytt i {CITY} · {TAGLINE}</span>
+            <h1 className="display-2 mt-5 sm:display-1">Noen avbestilte. Nå er den din.</h1>
             <p className="mt-5 text-lg text-white/80">
-              Fully booked tables and garages in {CITY}, freed up the moment someone cancels. Skip the queue, sometimes for less. Fjord-ably last minute.
+              Fullbooka bord og verksteder i {CITY}, ledige i det øyeblikket noen avbestiller. Hopp over køen, noen ganger til lavere pris. Fjord-abelt i siste liten.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Button onClick={surprise}>Surprise me</Button>
+              <Button onClick={surprise}>Overrask meg</Button>
               <Button variant="secondary" onClick={() => go('/wants')}>
-                Set up an alert
+                Opprett et varsel
               </Button>
             </div>
           </div>
@@ -68,10 +68,10 @@ export function Marketplace() {
       </section>
 
       <section className="flex flex-col gap-4">
-        <h2 className="heading-1">Available now</h2>
+        <h2 className="heading-1">Ledig nå</h2>
         <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:px-0">
           <Chip active={categories.length === 0} onClick={() => setCategories([])}>
-            All
+            Alle
           </Chip>
           {CATEGORIES.map((c) => (
             <Chip key={c} active={categories.includes(c)} onClick={() => toggle(c)}>
@@ -83,11 +83,11 @@ export function Marketplace() {
           <div className="flex items-center gap-3">
             <Segmented value={window} onChange={setWindow} options={(['now', 'today', '48h'] as TimeWindow[]).map((w) => ({ value: w, label: WINDOW_META[w].label }))} />
             <span className="hidden text-[15px] text-muted sm:inline">
-              {list.length} Last Call{list.length === 1 ? '' : 's'}
+              {list.length} Last Call
             </span>
           </div>
           <label className="flex items-center gap-2 text-[15px] text-muted">
-            Sort by
+            Sorter etter
             <select value={sort} onChange={(e) => setSort(e.target.value as SortKey)} className="cursor-pointer rounded-lg border border-hairline bg-canvas px-2.5 py-1.5 font-medium text-ink outline-none">
               {SORTS.map((s) => (
                 <option key={s.value} value={s.value}>
@@ -108,8 +108,8 @@ export function Marketplace() {
       ) : (
         <div className="flex flex-col items-center gap-3 rounded-2xl bg-canvas px-6 py-16 text-center">
           <span className="text-5xl">🔍</span>
-          <h3 className="heading-2">Nothing matches right now</h3>
-          <p className="max-w-md text-muted">Try a wider filter, or set up an alert and we'll let you know as soon as something opens up.</p>
+          <h3 className="heading-2">Ingenting passer akkurat nå</h3>
+          <p className="max-w-md text-muted">Prøv et videre filter, eller opprett et varsel så gir vi beskjed så snart noe åpner seg.</p>
           <div className="mt-3 flex flex-wrap justify-center gap-2">
             <Button
               variant="utility"
@@ -118,9 +118,9 @@ export function Marketplace() {
                 setWindow(null)
               }}
             >
-              Clear filters
+              Fjern filtre
             </Button>
-            <Button onClick={() => go('/wants')}>Set up an alert</Button>
+            <Button onClick={() => go('/wants')}>Opprett et varsel</Button>
           </div>
         </div>
       )}

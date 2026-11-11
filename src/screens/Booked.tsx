@@ -9,18 +9,18 @@ export function Booked({ id }: { id: string }) {
   const state = useAppState()
   const now = useNow()
   const slot = state.slots.find((s) => s.id === id)
-  if (!slot || slot.status !== 'sold') return <Gone title="We couldn't find this booking" />
+  if (!slot || slot.status !== 'sold') return <Gone title="Vi fant ikke denne bestillingen" />
   const biz = businessOf(state, slot)
-  const first = slot.buyerName && slot.buyerName !== 'Guest' ? `, ${slot.buyerName.split(' ')[0]}` : ''
+  const first = slot.buyerName && slot.buyerName !== 'Gjest' ? `, ${slot.buyerName.split(' ')[0]}` : ''
   const day = dayLabel(slot.start, now)
-  const seeYou = day === 'Today' ? `today at ${clock(slot.start)}` : `${day === 'Tomorrow' ? 'tomorrow' : day} at ${clock(slot.start)}`
+  const seeYou = day === 'I dag' ? `i dag kl. ${clock(slot.start)}` : `${day === 'I morgen' ? 'i morgen' : day} kl. ${clock(slot.start)}`
 
   return (
     <div className="mx-auto flex max-w-lg flex-col items-center gap-6 py-8 text-center">
       <span className="grid h-16 w-16 animate-rise place-items-center rounded-full bg-green text-3xl text-white">✓</span>
       <div>
-        <h1 className="display-2">It's yours{first}.</h1>
-        <p className="mt-3 text-lg text-muted">See you {seeYou}.</p>
+        <h1 className="display-2">Den er din{first}.</h1>
+        <p className="mt-3 text-lg text-muted">Vi sees {seeYou}.</p>
       </div>
 
       <div className="w-full rounded-2xl border border-hairline bg-canvas p-6 text-left shadow-soft">
@@ -32,20 +32,20 @@ export function Booked({ id }: { id: string }) {
           </div>
         </div>
         <dl className="mt-5 grid grid-cols-2 gap-4 border-t border-hairline pt-5 text-[15px]">
-          <Row label="When" value={when(slot.start, now)} />
-          <Row label="Where" value={`${biz.address}, ${biz.neighbourhood}`} />
-          <Row label="You pay" value={kr(lastCallPrice(slot))} />
-          {savings(slot) > 0 ? <Row label="You saved" value={kr(savings(slot))} accent /> : <Row label="Bonus" value={slot.perk ?? 'You skipped the queue'} accent />}
+          <Row label="Når" value={when(slot.start, now)} />
+          <Row label="Hvor" value={`${biz.address}, ${biz.neighbourhood}`} />
+          <Row label="Du betaler" value={kr(lastCallPrice(slot))} />
+          {savings(slot) > 0 ? <Row label="Du sparte" value={kr(savings(slot))} accent /> : <Row label="Bonus" value={slot.perk ?? 'Du hoppet over køen'} accent />}
         </dl>
       </div>
 
-      <p className="text-sm text-muted">{biz.name} just recovered revenue it would otherwise have lost.</p>
+      <p className="text-sm text-muted">{biz.name} berget nettopp inntekt de ellers ville mistet.</p>
 
       <div className="flex flex-wrap justify-center gap-2">
         <Button variant="secondary" onClick={() => go('/')}>
-          Back to marketplace
+          Tilbake til markedsplassen
         </Button>
-        <Button onClick={() => go('/wants')}>Set up an alert</Button>
+        <Button onClick={() => go('/wants')}>Opprett et varsel</Button>
       </div>
     </div>
   )

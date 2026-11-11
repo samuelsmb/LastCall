@@ -11,19 +11,19 @@ export function LastCallDetail({ id }: { id: string }) {
   const [tooSlow, setTooSlow] = useState(false)
   const slot = state.slots.find((s) => s.id === id)
 
-  if (!slot) return <Gone title="This Last Call doesn't exist anymore" />
+  if (!slot) return <Gone title="Denne Last Call finnes ikke lenger" />
   const biz = businessOf(state, slot)
   const available = slot.status === 'released' && slot.start > now
 
   const book = () => {
-    if (bookSlot(slot.id, name.trim() || 'Guest')) go(`/booked/${slot.id}`)
+    if (bookSlot(slot.id, name.trim() || 'Gjest')) go(`/booked/${slot.id}`)
     else setTooSlow(true)
   }
 
   return (
     <div className="flex flex-col gap-6">
       <a href="#/" className="self-start rounded-md px-2 py-1 text-[15px] text-muted hover:bg-black/5 hover:text-ink">
-        ← Back to marketplace
+        ← Tilbake til markedsplassen
       </a>
       <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
         <article className="overflow-hidden rounded-2xl border border-hairline bg-canvas">
@@ -38,10 +38,10 @@ export function LastCallDetail({ id }: { id: string }) {
             </p>
             <p className="max-w-2xl text-ink-2">{slot.description}</p>
             <dl className="mt-4 grid gap-px overflow-hidden rounded-xl border border-hairline bg-hairline sm:grid-cols-2">
-              <Info label="When" value={`${when(slot.start, now)} – ${clock(slot.start + slot.durationMin * 60_000)}`} />
-              <Info label="Duration" value={`${slot.durationMin} min${slot.guests ? ` · table for ${slot.guests}` : ''}`} />
-              <Info label="Address" value={`${biz.address}, ${biz.neighbourhood}`} />
-              <Info label="Distance" value={`${biz.distanceKm.toLocaleString('en-GB')} km away`} />
+              <Info label="Når" value={`${when(slot.start, now)} – ${clock(slot.start + slot.durationMin * 60_000)}`} />
+              <Info label="Varighet" value={`${slot.durationMin} min${slot.guests ? ` · bord for ${slot.guests}` : ''}`} />
+              <Info label="Adresse" value={`${biz.address}, ${biz.neighbourhood}`} />
+              <Info label="Avstand" value={`${biz.distanceKm.toLocaleString('nb-NO')} km unna`} />
             </dl>
           </div>
         </article>
@@ -51,13 +51,13 @@ export function LastCallDetail({ id }: { id: string }) {
             <Countdown start={slot.start} />
             <div>
               <Price slot={slot} big />
-              {savings(slot) > 0 ? <p className="mt-1 font-medium text-green">You save {kr(savings(slot))}</p> : <p className="mt-1 font-medium text-green">{slot.perk ?? 'Skip the queue. Normally fully booked.'}</p>}
+              {savings(slot) > 0 ? <p className="mt-1 font-medium text-green">Du sparer {kr(savings(slot))}</p> : <p className="mt-1 font-medium text-green">{slot.perk ?? 'Hopp over køen. Vanligvis fullbooket.'}</p>}
             </div>
 
             {available && !tooSlow ? (
               <>
                 <label className="flex flex-col gap-1.5">
-                  <span className="eyebrow text-muted">Your name</span>
+                  <span className="eyebrow text-muted">Navnet ditt</span>
                   <input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
@@ -66,21 +66,21 @@ export function LastCallDetail({ id }: { id: string }) {
                   />
                 </label>
                 <Button size="lg" onClick={book}>
-                  Book now
+                  Bestill nå
                 </Button>
-                <p className="text-center text-sm text-faint">No payment needed in this demo.</p>
+                <p className="text-center text-sm text-faint">Ingen betaling nødvendig i denne demoen.</p>
               </>
             ) : (
               <div className="flex flex-col items-center gap-2 rounded-xl bg-paper p-5 text-center">
                 <span className="text-3xl">🐢</span>
-                <p className="title">Too slow!</p>
-                <p className="text-sm text-muted">Gone! We'll ping you when the next one drops.</p>
+                <p className="title">For sent!</p>
+                <p className="text-sm text-muted">Borte! Vi varsler deg når den neste kommer.</p>
                 <div className="mt-2 flex gap-2">
                   <Button size="sm" variant="utility" onClick={() => go('/')}>
-                    Browse more
+                    Se flere
                   </Button>
                   <Button size="sm" onClick={() => go('/wants')}>
-                    Set up an alert
+                    Opprett et varsel
                   </Button>
                 </div>
               </div>
@@ -106,7 +106,7 @@ export function Gone({ title }: { title: string }) {
     <div className="flex flex-col items-center gap-4 py-24 text-center">
       <span className="text-5xl">🫥</span>
       <h1 className="heading-1">{title}</h1>
-      <Button onClick={() => go('/')}>Back to marketplace</Button>
+      <Button onClick={() => go('/')}>Tilbake til markedsplassen</Button>
     </div>
   )
 }
