@@ -140,8 +140,8 @@ export function applyAutoRelease(now: number) {
   if (next !== state) commit(next)
 }
 
-export function addWant(label: string, categories: Category[], window: TimeWindow) {
-  commit({ ...state, wants: [{ id: uid('want'), label, categories, window, createdAt: Date.now() }, ...state.wants] })
+export function addWant(label: string, categories: Category[], window: TimeWindow, area?: string) {
+  commit({ ...state, wants: [{ id: uid('want'), label, categories, window, area, createdAt: Date.now() }, ...state.wants] })
 }
 
 export function removeWant(wantId: string) {

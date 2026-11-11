@@ -21,14 +21,16 @@ export default function App() {
   }, [])
 
   const side = route.startsWith('/biz') ? 'business' : 'customer'
-  const [, first, second] = route.split('/')
+  const [path, query = ''] = route.split('?')
+  const [, first, second] = path.split('/')
+  const params = new URLSearchParams(query)
 
   let page
   if (first === 'lc' && second) page = <LastCallDetail id={second} />
   else if (first === 'booked' && second) page = <Booked id={second} />
-  else if (first === 'wants') page = <Wants />
+  else if (first === 'wants') page = <Wants initialText={params.get('q') ?? ''} />
   else if (first === 'biz' && second === 'register') page = <Register />
-  else if (first === 'biz') page = <BusinessHome />
+  else if (first === 'biz') page = <BusinessHome businessId={second} />
   else page = <Marketplace />
 
   return (

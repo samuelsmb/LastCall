@@ -15,13 +15,13 @@ const STATUS: Record<Slot['status'], { label: string; pill: string }> = {
   sold: { label: 'Sold via LastCall', pill: 'bg-green/10 text-[#13772a]' },
 }
 
-export function BusinessHome() {
+export function BusinessHome({ businessId }: { businessId?: string }) {
   const state = useAppState()
   const now = useNow()
   const [releasing, setReleasing] = useState<Slot | null>(null)
   const [toast, setToast] = useState<string | null>(null)
 
-  const biz = state.businesses.find((b) => b.id === state.currentBusinessId) ?? state.businesses[0]
+  const biz = state.businesses.find((b) => b.id === (businessId ?? state.currentBusinessId)) ?? state.businesses[0]
   const meta = CATEGORY_META[biz.category]
   const rule = state.rules[biz.id] ?? DEFAULT_RULE
   const stats = dashboardStats(state, biz.id)
@@ -60,7 +60,13 @@ export function BusinessHome() {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {calendarBusinesses.length > 1 && (
-            <select value={biz.id} onChange={(e) => setCurrentBusiness(e.target.value)} className="cursor-pointer rounded-lg border border-hairline bg-canvas px-2.5 py-1.5 text-[15px] font-medium outline-none">
+            <select
+              value={biz.id}
+              onChange={(e) => {
+                setCurrentBusiness(e.target.value)
+                go(`/biz/${e.target.value}`)
+              }}
+              className="cursor-pointer rounded-lg border border-hairline bg-canvas px-2.5 py-1.5 text-[15px] font-medium outline-none">
               {calendarBusinesses.map((b) => (
                 <option key={b.id} value={b.id}>
                   {b.name}

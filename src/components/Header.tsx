@@ -20,13 +20,13 @@ export function Header({ side, route }: { side: 'customer' | 'business'; route: 
               <a href="#/" className={link(route === '/')}>
                 Marketplace
               </a>
-              <a href="#/wants" className={link(route === '/wants')}>
+              <a href="#/wants" className={link(route.startsWith('/wants'))}>
                 Wants
               </a>
             </>
           ) : (
             <>
-              <a href="#/biz" className={link(route === '/biz')}>
+              <a href="#/biz" className={link(route === '/biz' || (route.startsWith('/biz/') && route !== '/biz/register'))}>
                 Dashboard
               </a>
               <a href="#/biz/register" className={link(route === '/biz/register')}>

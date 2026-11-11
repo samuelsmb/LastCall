@@ -54,6 +54,8 @@ export interface Want {
   label: string
   categories: Category[]
   window: TimeWindow
+  /** Neighbourhood the Customer mentioned; shown, not used for matching. */
+  area?: string
   createdAt: number
 }
 

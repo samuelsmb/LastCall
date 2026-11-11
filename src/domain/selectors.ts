@@ -1,3 +1,4 @@
+import { NEIGHBOURHOODS } from './categories'
 import { lastCallPrice } from './pricing'
 import type { AutoReleaseRule, Business, Category, Slot, State, TimeWindow, Want } from './types'
 
@@ -88,20 +89,26 @@ export function dashboardStats(state: State, businessId: string) {
 }
 
 const HINTS: [RegExp, Category][] = [
-  [/tyre|tire|car|wash|garage|oil|brake|wheel/i, 'car'],
-  [/dinner|dining|food|lunch|brunch|restaurant|eat|table|tasting/i, 'food'],
-  [/hair|nail|spa|facial|beauty|manicure|cut|glow/i, 'beauty'],
+  [/tyre|tire|car|garage|oil|brake|wheel|dekk/i, 'car'],
+  [/dinner|dining|food|lunch|restaurant|eat|table|tasting|menu/i, 'food'],
+  [/hair|nail|spa|facial|beauty|manicure|haircut|glow/i, 'beauty'],
   [/physio|back|dentist|teeth|massage|doctor|health|knee/i, 'health'],
   [/passport|licen[cs]e|driving test|id card|official|visa/i, 'official'],
-  [/bored|fun|kayak|escape|sauna|comedy|experience|date|surprise|adventure/i, 'experiences'],
+  [/bored|fun|escape|sauna|jazz|comedy|experience|date|surprise|adventure/i, 'experiences'],
 ]
 
-/** Fake "AI": reads a free-text Want and guesses Categories and a time window. */
-export function interpretWant(text: string): { categories: Category[]; window: TimeWindow | null } {
+/** Fake "AI": reads a free-text Want and guesses Categories, a time window and an area. */
+export function interpretWant(text: string): { categories: Category[]; window: TimeWindow | null; area: string | null } {
   const categories = HINTS.filter(([re]) => re.test(text)).map(([, c]) => c)
   let window: TimeWindow | null = null
   if (/\bnow\b|asap|right away|urgent/i.test(text)) window = 'now'
   else if (/today|tonight|this evening/i.test(text)) window = 'today'
   else if (/48|tomorrow|couple of days|two days|weekend|soon/i.test(text)) window = '48h'
-  return { categories: [...new Set(categories)], window }
+  const area = NEIGHBOURHOODS.find((n) => text.toLowerCase().includes(n.toLowerCase())) ?? null
+  return { categories: [...new Set(categories)], window, area }
+}
+
+/** Rough walking time, about 12 minutes per km. */
+export function walkMinutes(biz: Business) {
+  return Math.max(1, Math.round(biz.distanceKm * 12))
 }
