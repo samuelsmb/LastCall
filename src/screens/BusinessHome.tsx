@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { CATEGORY_META } from '../domain/categories'
+import { calculateFee, FEE_CAP_PCT, FEE_PER_SPOT, INTRO_SPOTS } from '../domain/pricing'
 import { dashboardStats, DEFAULT_RULE, lastCallPrice, releaseTime } from '../domain/selectors'
 import { cancelSlot, releaseSlot, setCurrentBusiness, setRule, useAppState, withdrawSlot } from '../domain/store'
-import type { AutoReleaseRule, ReleaseMode, Slot } from '../domain/types'
+import type { AutoReleaseRule, Business, ReleaseMode, Slot } from '../domain/types'
 import { clock, countdown, dayLabel, go, kr, useNow } from '../lib'
 import { Button, Modal, Segmented } from '../ui'
 
@@ -38,6 +39,15 @@ export function BusinessHome() {
     setTimeout(() => setToast(null), 3500)
   }
 
+  // Celebrate sales that arrive from the Customer tab.
+  const soldIds = slots.filter((s) => s.status === 'sold').map((s) => s.id)
+  const seenSold = useRef<Set<string> | null>(null)
+  useEffect(() => {
+    const fresh = seenSold.current ? state.slots.filter((s) => s.businessId === biz.id && s.status === 'sold' && !seenSold.current!.has(s.id)) : []
+    seenSold.current = new Set(state.slots.filter((s) => s.status === 'sold').map((s) => s.id))
+    if (fresh.length) notify(`Empty slot filled. ${kr(lastCallPrice(fresh[0]))} saved.`)
+  }, [soldIds.join(), biz.id])
+
   return (
     <div className="flex flex-col gap-8">
       <section className="flex flex-col gap-4 sm:flex-row sm:items-center">
@@ -64,19 +74,40 @@ export function BusinessHome() {
         </div>
       </section>
 
-      <section className="grid gap-4 sm:grid-cols-4">
-        <div className="rounded-xl border border-hairline bg-canvas p-5 sm:col-span-2">
-          <p className="eyebrow text-muted">Recovered this month</p>
-          <p key={stats.recovered} className="display-2 mt-2 animate-rise tabular-nums">
-            {kr(stats.recovered)}
-          </p>
-          <p className="mt-2 text-sm text-muted">{stats.recovered ? 'Revenue from cancellations that would otherwise be lost.' : 'Nothing yet. Your first Last Call is one cancellation away.'}</p>
+      <section className="flex flex-col gap-4">
+        <div className="grid gap-4 sm:grid-cols-4">
+          <div className="rounded-xl border border-hairline bg-canvas p-5 sm:col-span-2">
+            <p className="eyebrow text-muted">Revenue recovered</p>
+            <p key={stats.recovered} className="display-2 mt-2 animate-rise tabular-nums">
+              {kr(stats.recovered)}
+            </p>
+            <p className="mt-2 text-sm text-muted">{stats.recovered ? 'From cancellations that would otherwise be empty slots.' : 'Nothing yet. Your first Last Call is one cancellation away.'}</p>
+          </div>
+          <div className="rounded-xl border border-hairline bg-canvas p-5">
+            <p className="eyebrow text-muted">LastCall fee</p>
+            <p key={stats.fee} className="heading-2 mt-1 animate-rise tabular-nums">
+              {kr(stats.fee)}
+            </p>
+            {stats.introSpotsLeft > 0 && (
+              <p className="mt-2 text-sm text-muted">
+                Free spots left: <b className="font-semibold text-ink">{stats.introSpotsLeft}/{INTRO_SPOTS}</b>
+              </p>
+            )}
+          </div>
+          <div className="rounded-xl border border-hairline bg-canvas p-5">
+            <p className="eyebrow text-muted">Net recovered</p>
+            <p key={stats.net} className="heading-2 mt-1 animate-rise tabular-nums text-green">
+              {kr(stats.net)}
+            </p>
+            <p className="mt-2 text-sm text-muted">Recovered minus fee</p>
+          </div>
         </div>
-        <Stat label="Released" value={stats.released} />
-        <div className="grid gap-4">
+        <div className="grid grid-cols-3 gap-4">
+          <Stat label="Released" value={stats.released} compact />
           <Stat label="Sold" value={stats.sold} compact />
           <Stat label="Sell-through" value={`${stats.sellThrough}%`} compact />
         </div>
+        <p className="text-sm text-muted">You only pay when we fill a slot, and only if the customer shows up. Invoiced monthly.</p>
       </section>
 
       <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
@@ -157,6 +188,7 @@ export function BusinessHome() {
         <ReleaseDialog
           slot={releasing}
           rule={rule}
+          biz={biz}
           onClose={() => setReleasing(null)}
           onRelease={(d) => {
             releaseSlot(releasing.id, d)
@@ -229,7 +261,27 @@ function SlotRow({ slot, now, heldUntil, onCancel, onRelease, onWithdraw }: { sl
   )
 }
 
-function ReleaseDialog({ slot, rule, onClose, onRelease }: { slot: Slot; rule: AutoReleaseRule; onClose: () => void; onRelease: (discountPct: number) => void }) {
+function FeePreview({ slot, biz }: { slot: Slot; biz: Business }) {
+  const f = calculateFee(slot, biz)
+  const spots = `${f.spots} filled spot${f.spots === 1 ? '' : 's'}`
+  return (
+    <div className="rounded-xl border border-hairline p-4 text-sm text-ink-2">
+      <div className="flex justify-between">
+        <span>LastCall fee if it sells ({spots})</span>
+        <b className="font-semibold">{f.fee === 0 && f.standardFee > 0 ? <><s className="font-normal text-faint">{kr(f.standardFee)}</s> {kr(0)}</> : kr(f.fee)}</b>
+      </div>
+      <div className="mt-1 flex justify-between">
+        <span>You keep</span>
+        <b className="font-semibold text-green">{kr(f.price - f.fee)}</b>
+      </div>
+      <p className="mt-2 text-muted">
+        {f.introSpotsUsed > 0 ? `Intro offer: free. Uses ${f.introSpotsUsed} of your ${biz.introSpotsLeft} free spots left.` : `${FEE_PER_SPOT} kr per filled spot, never more than ${FEE_CAP_PCT}%.`} Only charged if the customer shows up.
+      </p>
+    </div>
+  )
+}
+
+function ReleaseDialog({ slot, biz, rule, onClose, onRelease }: { slot: Slot; biz: Business; rule: AutoReleaseRule; onClose: () => void; onRelease: (discountPct: number) => void }) {
   const [mode, setMode] = useState<ReleaseMode>(rule.mode)
   const [pct, setPct] = useState(rule.discountPct || 20)
   const discount = mode === 'full' ? 0 : pct
@@ -275,6 +327,7 @@ function ReleaseDialog({ slot, rule, onClose, onRelease }: { slot: Slot; rule: A
         <p className="text-[15px] text-ink-2">
           You recover <b className="font-semibold">{kr(price)}</b> instead of <b className="font-semibold">{kr(0)}</b>.
         </p>
+        <FeePreview slot={{ ...slot, discountPct: discount }} biz={biz} />
         <div className="flex gap-2">
           <Button variant="utility" className="flex-1" onClick={onClose}>
             Cancel

@@ -1,10 +1,7 @@
+import { lastCallPrice } from './pricing'
 import type { AutoReleaseRule, Business, Category, Slot, State, TimeWindow, Want } from './types'
 
-export function lastCallPrice(slot: Slot) {
-  const d = slot.discountPct ?? 0
-  if (d === 0) return slot.fullPrice
-  return Math.round((slot.fullPrice * (1 - d / 100)) / 5) * 5
-}
+export { lastCallPrice }
 
 export function savings(slot: Slot) {
   return slot.fullPrice - lastCallPrice(slot)
@@ -75,10 +72,14 @@ export function dashboardStats(state: State, businessId: string) {
   const sold = own.filter((s) => s.status === 'sold')
   const released = own.filter((s) => s.releasedAt)
   const recovered = base.recovered + sold.reduce((sum, s) => sum + lastCallPrice(s), 0)
+  const fee = sold.reduce((sum, s) => sum + (s.fee ?? 0), 0)
   const releasedCount = base.released + released.length
   const soldCount = base.sold + sold.length
   return {
     recovered,
+    fee,
+    net: recovered - fee,
+    introSpotsLeft: state.businesses.find((b) => b.id === businessId)?.introSpotsLeft ?? 0,
     released: releasedCount,
     sold: soldCount,
     live: own.filter((s) => s.status === 'released').length,

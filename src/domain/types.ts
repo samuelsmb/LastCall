@@ -12,6 +12,8 @@ export interface Business {
   address: string
   distanceKm: number
   tagline: string
+  /** Filled spots still free under the intro offer (starts at 10). */
+  introSpotsLeft: number
 }
 
 /** A booking in a Business's calendar. A released Slot is a Last Call. */
@@ -32,6 +34,9 @@ export interface Slot {
   perk?: string
   /** Restaurant tables only: number of guests. fullPrice is the total for the table. */
   guests?: number
+  /** Set when sold: LastCall's fee and how many intro spots it used. */
+  fee?: number
+  introSpotsUsed?: number
 }
 
 export type ReleaseMode = 'full' | 'discount'

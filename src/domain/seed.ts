@@ -1,3 +1,4 @@
+import { INTRO_SPOTS } from './pricing'
 import type { Business, Category, Slot, State } from './types'
 
 export const HERO_BUSINESS_ID = 'teds-garage'
@@ -30,7 +31,7 @@ export function uid(prefix = 'id') {
   return `${prefix}-${Date.now().toString(36)}-${counter}-${Math.random().toString(36).slice(2, 6)}`
 }
 
-const businesses: Business[] = [
+const businesses: Omit<Business, 'introSpotsLeft'>[] = [
   { id: HERO_BUSINESS_ID, name: "Ted's Garage", category: 'car', neighbourhood: 'Majorstuen', address: 'Kirkeveien 64', distanceKm: 0.6, tagline: 'Tyres, oil and honest advice since 1987' },
   { id: 'dekkdoktoren', name: 'Dekkdoktoren', category: 'car', neighbourhood: 'Sagene', address: 'Sandakerveien 24', distanceKm: 2.1, tagline: 'Tyre hotel and wheel swaps' },
   { id: 'wheel-of-fortune', name: 'Wheel of Fortune', category: 'car', neighbourhood: 'Bjørvika', address: 'Dronning Eufemias gate 30', distanceKm: 2.8, tagline: 'Spin in, roll out' },
@@ -164,7 +165,7 @@ export function createSeed(now: number): State {
   return {
     version: 1,
     seededAt: now,
-    businesses,
+    businesses: businesses.map((b) => ({ ...b, introSpotsLeft: INTRO_SPOTS })),
     slots,
     rules: {
       [HERO_BUSINESS_ID]: { enabled: true, mode: 'full', leadMinutes: 60, discountPct: 20 },

@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from 'react'
+import { calculateFee, INTRO_SPOTS } from './pricing'
 import { createSeed, generateCalendar, uid } from './seed'
 import { DEFAULT_RULE, matchesWant, releaseTime, ruleDiscount } from './selectors'
 import type { AutoReleaseRule, Category, ReleaseMode, State, TimeWindow } from './types'
@@ -101,9 +102,12 @@ export function withdrawSlot(slotId: string) {
 export function bookSlot(slotId: string, buyerName: string): boolean {
   const slot = state.slots.find((s) => s.id === slotId)
   if (!slot || slot.status !== 'released' || slot.start <= Date.now()) return false
+  const biz = state.businesses.find((b) => b.id === slot.businessId)!
+  const { fee, introSpotsUsed } = calculateFee(slot, biz)
   commit({
     ...state,
-    slots: state.slots.map((s) => (s.id === slotId ? { ...s, status: 'sold', buyerName, soldAt: Date.now() } : s)),
+    businesses: state.businesses.map((b) => (b.id === biz.id ? { ...b, introSpotsLeft: Math.max(0, b.introSpotsLeft - introSpotsUsed) } : b)),
+    slots: state.slots.map((s) => (s.id === slotId ? { ...s, status: 'sold', buyerName, soldAt: Date.now(), fee, introSpotsUsed } : s)),
   })
   return true
 }
@@ -159,7 +163,7 @@ export function registerBusiness(name: string, category: Category, neighbourhood
     ...state,
     businesses: [
       ...state.businesses,
-      { id, name, category, neighbourhood, address: `${neighbourhood}`, distanceKm: 1 + Math.round(Math.random() * 40) / 10, tagline: 'New on LastCall' },
+      { id, name, category, neighbourhood, address: `${neighbourhood}`, distanceKm: 1 + Math.round(Math.random() * 40) / 10, tagline: 'New on LastCall', introSpotsLeft: INTRO_SPOTS },
     ],
     slots: [...state.slots, ...generateCalendar(id, category, now)],
     rules: { ...state.rules, [id]: { ...DEFAULT_RULE, enabled: true, mode } },
