@@ -9,7 +9,7 @@ import { fetchSiteImage } from '../domain/siteImage'
 import { registerBusiness, useAppState } from '../domain/store'
 import type { Category, ReleaseMode, Slot } from '../domain/types'
 import { go, kr } from '../lib'
-import { Band, Button, CategoryBadge, Chip, DiscountSticker, Price, Segmented } from '../ui'
+import { Band, Button, CategoryBadge, Chip, DiscountSticker, Price, Segmented, SiteImage } from '../ui'
 
 export const WAITLIST_LINE = 'Har du allerede en venteliste? Flott. LastCall trår først inn når ventelisten din ikke klarer å fylle timen.'
 
@@ -32,6 +32,9 @@ const CALENDARS = [
 type CalendarId = (typeof CALENDARS)[number]['id']
 type Entry = 'lookup' | 'manual'
 type Lookup = { status: 'idle' | 'loading' | 'notfound' | 'invalid' | 'error' } | { status: 'found'; org: OrgInfo }
+
+/** A real Oslo restaurant with a website, so a demo runs the whole lookup in one click. */
+const DEMO_ORG = '954080072'
 
 const inputClass = 'rounded border border-[#ddd] bg-canvas px-3 py-2.5 outline-none placeholder:text-faint focus:ring-2 focus:ring-primary/30'
 
@@ -335,17 +338,26 @@ export function Register() {
                   </datalist>
                 </Field>
               </div>
-              <Field label="Nettside (valgfritt)">
-                <div className="flex gap-2">
-                  <input value={site} onChange={(e) => setSite(e.target.value)} placeholder="f.eks. theatercafeen.no" className={`${inputClass} flex-1`} />
-                  <Button variant="secondary" onClick={() => fetchImage()} disabled={!site.trim() || imageStatus === 'loading'}>
-                    {imageStatus === 'loading' ? 'Henter…' : 'Hent bilde'}
-                  </Button>
-                </div>
-                {imageStatus === 'none' && <span className="text-sm text-muted">Fant ikke noe bilde på nettsiden.</span>}
-                {imageStatus === 'error' && <span className="text-sm text-muted">Kunne ikke hente bilde akkurat nå.</span>}
-                {image && <img src={image} alt="" className="mt-1 h-24 w-full rounded-lg object-cover" />}
-              </Field>
+              {/* A looked-up business only shows its website once the register's site gave us a picture; manual entry can fetch one itself. */}
+              {(entry === 'manual' || image) && (
+                <Field label="Nettside (valgfritt)">
+                  <div className="flex gap-2">
+                    <input value={site} onChange={(e) => setSite(e.target.value)} placeholder="f.eks. theatercafeen.no" className={`${inputClass} flex-1`} />
+                    {!image && (
+                      <Button variant="secondary" onClick={() => fetchImage()} disabled={!site.trim() || imageStatus === 'loading'}>
+                        {imageStatus === 'loading' ? 'Henter…' : 'Hent bilde'}
+                      </Button>
+                    )}
+                  </div>
+                  {imageStatus === 'none' && <span className="text-sm text-muted">Fant ikke noe bilde på nettsiden.</span>}
+                  {imageStatus === 'error' && <span className="text-sm text-muted">Kunne ikke hente bilde akkurat nå.</span>}
+                  {image && (
+                    <div className="mt-1 h-24 w-full overflow-hidden rounded-lg bg-paper">
+                      <SiteImage src={image} />
+                    </div>
+                  )}
+                </Field>
+              )}
               <div className="flex flex-col gap-2">
                 <span className="eyebrow text-muted">
                   Hva tilbyr du?{found && category && <span className="ml-2 normal-case text-faint">foreslått ut fra næringskoden</span>}
@@ -430,12 +442,15 @@ function OrgSearch({ onPick, onClear, loading }: { onPick: (orgnr: string) => vo
   const [open, setOpen] = useState(false)
   const [active, setActive] = useState(0)
   const [searching, setSearching] = useState(false)
+  // Picking a hit puts its name in the field; that name shouldn't search again and reopen the list.
+  const picked = useRef('')
 
   const digits = cleanOrgNumber(text)
   const isNumber = /^\d+$/.test(digits)
   const query = isNumber ? '' : text.trim()
 
   useEffect(() => {
+    if (picked.current && query === picked.current) return
     if (query.length < 2) {
       setHits([])
       return
@@ -475,6 +490,7 @@ function OrgSearch({ onPick, onClear, loading }: { onPick: (orgnr: string) => vo
   }
 
   const pick = (hit: OrgHit) => {
+    picked.current = hit.name.trim()
     setText(hit.name)
     setOpen(false)
     onPick(hit.orgNumber)
@@ -505,8 +521,18 @@ function OrgSearch({ onPick, onClear, loading }: { onPick: (orgnr: string) => vo
         aria-expanded={open}
         aria-autocomplete="list"
         autoComplete="off"
-        className={`${inputClass} w-full pr-20 ${isNumber ? 'tabular-nums' : ''}`}
+        className={`${inputClass} w-full ${text ? 'pr-20' : 'pr-44'} ${isNumber ? 'tabular-nums' : ''}`}
       />
+      {!text && !busy && (
+        <button
+          type="button"
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={() => change(DEMO_ORG)}
+          className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer rounded-full bg-paper px-2.5 py-1 text-sm text-muted transition hover:bg-black/5 hover:text-ink"
+        >
+          Tips: prøv <span className="tabular-nums">{formatOrgNumber(DEMO_ORG)}</span>
+        </button>
+      )}
       {busy && <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted">Søker…</span>}
       {open && (
         <ul role="listbox" className="absolute inset-x-0 top-full z-20 mt-1 overflow-hidden rounded-lg border border-hairline bg-canvas shadow-soft">
