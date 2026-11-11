@@ -8,7 +8,7 @@ import { Button } from '../ui'
 
 const RECENT = 15 * 60_000
 
-/** "Dekkskift hos Dekkproff Bjerke i morgen 14:00, 7 min unna. 550 kr." */
+/** "Dekkskift hos Dekkproff Bjerke i morgen 14:00, 15 min unna. 550 kr." */
 export function alertLine(state: State, slot: Slot, now: number) {
   const biz = businessOf(state, slot)
   const day = when(slot.start, now).replace(/^(I dag|I morgen)/, (d) => d.toLowerCase())
