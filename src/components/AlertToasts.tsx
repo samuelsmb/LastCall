@@ -1,46 +1,40 @@
 import { useState } from 'react'
-import { WINDOW_META } from '../domain/categories'
 import { businessOf } from '../domain/selectors'
 import { markAlertSeen, useAppState } from '../domain/store'
-import { go, when } from '../lib'
+import { go, useNow, when } from '../lib'
+import { BellIcon } from '../ui'
 
 const RECENT = 15 * 60_000
 
 /** Pops up Alerts for the Customer, including ones created in another tab. */
 export function AlertToasts() {
   const state = useAppState()
+  const now = useNow()
   const [dismissed, setDismissed] = useState<Set<string>>(new Set())
-  const now = Date.now()
 
   const toasts = state.alerts.filter((a) => !a.seen && !dismissed.has(a.id) && now - a.createdAt < RECENT).slice(0, 3)
   if (!toasts.length) return null
 
   return (
-    <div className="fixed inset-x-3 top-20 z-50 flex flex-col gap-3 sm:inset-x-auto sm:bottom-6 sm:right-6 sm:top-auto sm:w-96">
+    <div className="fixed inset-x-3 top-24 z-50 flex flex-col gap-3 sm:inset-x-auto sm:bottom-8 sm:right-8 sm:top-auto sm:w-[26rem]">
       {toasts.map((a) => {
         const slot = state.slots.find((s) => s.id === a.slotId)
         const want = state.wants.find((w) => w.id === a.wantId)
         if (!slot) return null
         const biz = businessOf(state, slot)
         return (
-          <div key={a.id} className="animate-slide-in rounded-3xl border-[3px] border-ink bg-white p-4 shadow-chunky-lg">
-            <div className="flex items-start gap-3">
-              <span className="animate-wiggle text-3xl">🔔</span>
+          <div key={a.id} className="animate-rise border border-gold/50 bg-ink p-6 text-paper shadow-2xl shadow-ink/30">
+            <div className="flex items-start gap-4">
+              <BellIcon className="mt-1 h-8 w-7 shrink-0 text-gold" />
               <div className="min-w-0 flex-1">
-                <p className="font-display text-xs font-semibold uppercase tracking-wider text-tomato">Psst! A Last Call for you</p>
-                <p className="font-display text-lg font-bold leading-tight">
-                  {biz.emoji} {biz.name} just freed up a slot
+                <p className="eyebrow text-gold">A private notice</p>
+                <p className="mt-2 font-display text-2xl leading-tight">{biz.name} has released a reservation</p>
+                <p className="mt-2 text-sm text-paper/70">
+                  {slot.title} · {when(slot.start, now)} · {biz.neighbourhood}
                 </p>
-                <p className="mt-1 text-sm text-ink/70">
-                  {slot.title} · {when(slot.start, now)} · 📍 {biz.neighbourhood}
-                </p>
-                {want && (
-                  <p className="mt-2 inline-block rounded-full bg-grape/15 px-2 py-0.5 text-xs font-semibold text-grape">
-                    ✨ Matches your Want “{want.label}” ({WINDOW_META[want.window].hint})
-                  </p>
-                )}
+                {want && <p className="mt-3 font-display text-base italic text-gold-light">In accordance with your Want, “{want.label}”.</p>}
               </div>
-              <button className="cursor-pointer text-xl leading-none text-ink/40 hover:text-ink" onClick={() => setDismissed(new Set(dismissed).add(a.id))} aria-label="Dismiss">
+              <button className="cursor-pointer text-lg leading-none text-paper/40 hover:text-paper" onClick={() => setDismissed(new Set(dismissed).add(a.id))} aria-label="Dismiss">
                 ×
               </button>
             </div>
@@ -49,9 +43,9 @@ export function AlertToasts() {
                 markAlertSeen(a.id)
                 go(`/lc/${slot.id}`)
               }}
-              className="mt-3 w-full cursor-pointer rounded-full border-[3px] border-ink bg-tomato py-2 font-display font-semibold text-white shadow-chunky-sm transition hover:-translate-y-0.5"
+              className="eyebrow mt-5 w-full cursor-pointer bg-gold py-3.5 text-ink transition hover:bg-gold-light"
             >
-              Grab it before someone else does →
+              View reservation
             </button>
           </div>
         )

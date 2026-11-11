@@ -4,7 +4,7 @@ import { businessOf, interpretWant, isLive, matchesWant } from '../domain/select
 import { addWant, markAlertSeen, removeWant, useAppState } from '../domain/store'
 import type { Category, TimeWindow } from '../domain/types'
 import { go, useNow, when } from '../lib'
-import { Button, Card, Chip, Mascot, Segmented } from '../ui'
+import { Button, Chip, Mascot, Segmented } from '../ui'
 
 export function Wants() {
   const state = useAppState()
@@ -32,7 +32,7 @@ export function Wants() {
   const save = () => {
     if (!canSave) return
     const fallback = categories.map((c) => CATEGORY_META[c].label).join(' or ')
-    addWant(label.trim() || `${fallback} ${WINDOW_META[window].hint}`, categories, window)
+    addWant(label.trim() || `${fallback}, ${WINDOW_META[window].hint}`, categories, window)
     setLabel('')
     setCategories([])
     setWindow('48h')
@@ -40,39 +40,46 @@ export function Wants() {
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1.1fr_1fr]">
-      <div className="flex flex-col gap-6">
-        <Card className="flex flex-col gap-5 bg-sunny p-6">
-          <div className="flex items-center gap-4">
-            <Mascot size="text-6xl" />
+    <div className="grid gap-14 lg:grid-cols-[1.2fr_1fr]">
+      <div className="flex flex-col gap-12">
+        <section className="flex flex-col gap-8 border border-ink/10 bg-ivory p-8 sm:p-10">
+          <div className="flex items-start justify-between gap-6">
             <div>
-              <h1 className="font-display text-3xl font-bold leading-tight">What are you after?</h1>
-              <p className="text-ink/70">Tell us, and we'll ring the bell the moment someone cancels.</p>
+              <p className="eyebrow text-gold">Your Wants</p>
+              <h1 className="mt-3 font-display text-5xl leading-[1.05]">
+                Tell us what you desire.
+                <br />
+                <em className="text-ink/60">We shall see to it.</em>
+              </h1>
             </div>
+            <Mascot className="hidden h-28 w-24 shrink-0 sm:inline-block" />
           </div>
           <input
             value={label}
             onChange={(e) => onLabel(e.target.value)}
-            placeholder="e.g. I need to change my tyres in the next 48h"
-            className="rounded-2xl border-[3px] border-ink bg-white px-4 py-3 text-lg outline-none"
+            placeholder="A tyre change within 48 hours, naturally."
+            className="border-b border-ink/30 bg-transparent py-3 font-display text-3xl outline-none placeholder:italic placeholder:text-ink/30 focus:border-gold"
           />
           {label && !touched && (
-            <p className="animate-pop font-display text-sm font-semibold">
+            <p className="animate-fade font-display text-lg italic text-gold">
               {guess.categories.length ? (
-                <>✨ Got it: {guess.categories.map((c) => `${CATEGORY_META[c].emoji} ${CATEGORY_META[c].label}`).join(', ')}{guess.window && ` · ${WINDOW_META[guess.window].hint}`}</>
+                <>
+                  Understood: {guess.categories.map((c) => CATEGORY_META[c].label).join(', ')}
+                  {guess.window && `, ${WINDOW_META[guess.window].hint}`}.
+                </>
               ) : (
-                <>🤔 Hmm, pick a category below and I'll learn.</>
+                <>Do indicate a category below, and we shall learn your tastes.</>
               )}
             </p>
           )}
           <div className="flex flex-wrap gap-2">
             {CATEGORIES.map((c) => (
               <Chip key={c} active={categories.includes(c)} onClick={() => toggle(c)}>
-                {CATEGORY_META[c].emoji} {CATEGORY_META[c].label}
+                {CATEGORY_META[c].label}
               </Chip>
             ))}
           </div>
-          <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-end justify-between gap-6">
             <Segmented
               value={window}
               onChange={(w) => {
@@ -82,77 +89,81 @@ export function Wants() {
               options={(['now', 'today', '48h'] as TimeWindow[]).map((w) => ({ value: w, label: WINDOW_META[w].label }))}
             />
             <Button onClick={save} disabled={!canSave}>
-              🔔 Save Want
+              Leave this Want
             </Button>
           </div>
-        </Card>
+        </section>
 
-        <section className="flex flex-col gap-3">
-          <h2 className="font-display text-2xl font-bold">My Wants</h2>
-          {state.wants.length === 0 && <p className="text-ink/60">No Wants yet. Try “fine dining tonight” or “tyres within 48h”.</p>}
-          {state.wants.map((w) => {
-            const matches = state.slots.filter((s) => isLive(s, now) && matchesWant(state, s, w, now)).length
-            return (
-              <Card key={w.id} className="flex items-center gap-4 p-4">
-                <span className="text-3xl">{CATEGORY_META[w.categories[0]].emoji}</span>
-                <div className="min-w-0 flex-1">
-                  <p className="font-display text-lg font-bold leading-tight">“{w.label}”</p>
-                  <p className="text-sm text-ink/60">
-                    {w.categories.map((c) => CATEGORY_META[c].label).join(', ')} · {WINDOW_META[w.window].hint}
-                  </p>
-                  {matches > 0 && (
-                    <p className="text-sm font-semibold text-grape">
-                      👀 {matches} live Last Call{matches === 1 ? '' : 's'} match right now
+        <section className="flex flex-col gap-4">
+          <h2 className="font-display text-3xl">Standing Wants</h2>
+          {state.wants.length === 0 && <p className="font-display text-lg italic text-stone">None as yet. “Fine dining this evening” is a popular choice among our members.</p>}
+          <div className="flex flex-col divide-y divide-ink/10 border-y border-ink/10">
+            {state.wants.map((w) => {
+              const matches = state.slots.filter((s) => isLive(s, now) && matchesWant(state, s, w, now)).length
+              return (
+                <div key={w.id} className="flex items-center gap-6 py-5">
+                  <div className="min-w-0 flex-1">
+                    <p className="font-display text-2xl italic">“{w.label}”</p>
+                    <p className="eyebrow mt-1 text-stone">
+                      {w.categories.map((c) => CATEGORY_META[c].label).join(' · ')} · {WINDOW_META[w.window].hint}
                     </p>
-                  )}
+                    {matches > 0 && (
+                      <p className="mt-2 text-sm text-gold">
+                        {matches} reservation{matches === 1 ? '' : 's'} currently suit{matches === 1 ? 's' : ''} this Want
+                      </p>
+                    )}
+                  </div>
+                  <button onClick={() => removeWant(w.id)} className="eyebrow cursor-pointer text-stone transition hover:text-oxblood">
+                    Withdraw
+                  </button>
                 </div>
-                <button onClick={() => removeWant(w.id)} className="cursor-pointer rounded-full p-2 text-xl hover:bg-ink/5" aria-label="Remove Want">
-                  🗑️
-                </button>
-              </Card>
-            )
-          })}
+              )
+            })}
+          </div>
         </section>
       </div>
 
-      <section className="flex flex-col gap-3">
-        <h2 className="font-display text-2xl font-bold">Alerts 🔔</h2>
+      <section className="flex flex-col gap-4">
+        <p className="eyebrow text-gold">Correspondence</p>
+        <h2 className="font-display text-3xl">Alerts</h2>
         {state.alerts.length === 0 && (
-          <Card className="flex flex-col items-center gap-2 p-8 text-center">
-            <span className="animate-float text-5xl">📭</span>
-            <p className="font-display font-semibold">Quiet… for now.</p>
-            <p className="text-sm text-ink/60">When a Business releases a Last Call that matches your Want, it lands here.</p>
-          </Card>
+          <div className="border border-ink/10 bg-ivory p-10 text-center">
+            <p className="font-display text-2xl italic">All is quiet.</p>
+            <p className="mt-2 text-sm text-stone">Should an establishment release something in accordance with your Wants, you will find it here.</p>
+          </div>
         )}
-        {state.alerts.map((a) => {
-          const slot = state.slots.find((s) => s.id === a.slotId)
-          const want = state.wants.find((w) => w.id === a.wantId)
-          if (!slot) return null
-          const biz = businessOf(state, slot)
-          const live = isLive(slot, now)
-          return (
-            <button
-              key={a.id}
-              onClick={() => {
-                markAlertSeen(a.id)
-                go(`/lc/${slot.id}`)
-              }}
-              className={`flex cursor-pointer items-start gap-3 rounded-3xl border-[3px] border-ink p-4 text-left shadow-chunky-sm transition hover:-translate-y-0.5 ${a.seen ? 'bg-white' : 'bg-bubble/30'} ${live ? '' : 'opacity-50'}`}
-            >
-              <span className="text-3xl">{biz.emoji}</span>
-              <span className="min-w-0 flex-1">
-                <span className="block font-display font-bold">
-                  {!a.seen && <span className="mr-1 inline-block h-2.5 w-2.5 rounded-full bg-tomato" />}
-                  {biz.name}: {slot.title}
+        <div className="flex flex-col gap-3">
+          {state.alerts.map((a) => {
+            const slot = state.slots.find((s) => s.id === a.slotId)
+            const want = state.wants.find((w) => w.id === a.wantId)
+            if (!slot) return null
+            const biz = businessOf(state, slot)
+            const live = isLive(slot, now)
+            return (
+              <button
+                key={a.id}
+                onClick={() => {
+                  markAlertSeen(a.id)
+                  go(`/lc/${slot.id}`)
+                }}
+                className={`flex cursor-pointer flex-col gap-1 border p-5 text-left transition hover:border-ink/40 ${a.seen ? 'border-ink/10 bg-ivory' : 'border-gold/60 bg-ivory'} ${live ? '' : 'opacity-45'}`}
+              >
+                <span className="flex items-center gap-2">
+                  {!a.seen && <span className="h-1.5 w-1.5 rounded-full bg-oxblood" />}
+                  <span className="eyebrow text-stone">
+                    {biz.name} · {biz.neighbourhood}
+                  </span>
                 </span>
-                <span className="block text-sm text-ink/60">
-                  {when(slot.start, now)} · 📍 {biz.neighbourhood} {live ? '' : '· gone'}
+                <span className="font-display text-2xl">{slot.title}</span>
+                <span className="text-sm text-ink/60">
+                  {when(slot.start, now)}
+                  {live ? '' : ' · no longer available'}
                 </span>
-                {want && <span className="block text-xs font-semibold text-grape">✨ Matched “{want.label}”</span>}
-              </span>
-            </button>
-          )
-        })}
+                {want && <span className="font-display italic text-gold">In accordance with “{want.label}”</span>}
+              </button>
+            )
+          })}
+        </div>
       </section>
     </div>
   )

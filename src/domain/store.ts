@@ -3,7 +3,7 @@ import { createSeed, generateCalendar, uid } from './seed'
 import { matchesWant, releaseTime } from './selectors'
 import type { AutoReleaseRule, Category, State, TimeWindow } from './types'
 
-const KEY = 'lastcall-demo-v1'
+const KEY = 'lastcall-demo-v2'
 const MAX_AGE = 6 * 3_600_000
 
 function load(): State {
@@ -152,14 +152,14 @@ export function setCurrentBusiness(businessId: string) {
   commit({ ...state, currentBusinessId: businessId })
 }
 
-export function registerBusiness(name: string, category: Category, neighbourhood: string, emoji: string) {
+export function registerBusiness(name: string, category: Category, neighbourhood: string) {
   const id = uid('biz')
   const now = Date.now()
   commit({
     ...state,
     businesses: [
       ...state.businesses,
-      { id, name, category, neighbourhood, address: `${neighbourhood} High Street 1`, distanceKm: 1 + Math.round(Math.random() * 40) / 10, emoji, tagline: 'Fresh on LastCall!' },
+      { id, name, category, neighbourhood, address: `${neighbourhood}`, distanceKm: 1 + Math.round(Math.random() * 40) / 10, tagline: 'Newly admitted to the collection' },
     ],
     slots: [...state.slots, ...generateCalendar(id, category, now)],
     rules: { ...state.rules, [id]: { enabled: false, leadMinutes: 60, discountPct: 30 } },

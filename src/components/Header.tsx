@@ -1,59 +1,44 @@
 import { useAppState } from '../domain/store'
-import { go } from '../lib'
+import { BellIcon } from '../ui'
 
 export function Header({ side, route }: { side: 'customer' | 'business'; route: string }) {
   const state = useAppState()
   const unseen = state.alerts.filter((a) => !a.seen).length
   const biz = state.businesses.find((b) => b.id === state.currentBusinessId)
 
+  const link = (active: boolean) => `eyebrow border-b pb-1 transition ${active ? 'border-gold text-ink' : 'border-transparent text-ink/55 hover:text-ink'}`
+
   return (
-    <header className="sticky top-0 z-40 border-b-[3px] border-ink bg-cream/90 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3">
-        <a href={side === 'business' ? '#/biz' : '#/'} className="group flex items-center gap-2">
-          <span className="grid h-11 w-11 place-items-center rounded-2xl border-[3px] border-ink bg-sunny text-2xl shadow-chunky-sm transition group-hover:rotate-6">
-            <span className="animate-ring origin-top">🔔</span>
-          </span>
+    <header className="sticky top-0 z-40 border-b border-ink/10 bg-paper/85 backdrop-blur-md">
+      <div className="mx-auto flex max-w-7xl items-center gap-6 px-5 py-4 sm:px-8">
+        <a href={side === 'business' ? '#/biz' : '#/'} className="flex items-center gap-3">
+          <BellIcon className="h-8 w-7 text-gold" />
           <span className="leading-none">
-            <span className="block font-display text-2xl font-bold tracking-tight">
-              Last<span className="text-tomato">Call</span>
-            </span>
-            <span className="hidden font-display text-xs text-ink/60 sm:block">
-              {side === 'business' ? `for ${biz?.name ?? 'business'}` : 'Cooler Copenhagen'}
-            </span>
+            <span className="block font-display text-2xl tracking-[0.28em]">LASTCALL</span>
+            <span className="eyebrow hidden text-[0.55rem] text-stone sm:block">{side === 'business' ? `Establishment · ${biz?.name ?? ''}` : 'Cooler Copenhagen'}</span>
           </span>
         </a>
 
-        <nav className="ml-auto flex items-center gap-1 sm:gap-2">
+        <nav className="ml-auto flex items-center gap-5 sm:gap-8">
           {side === 'customer' && (
             <>
-              <a href="#/" className={`hidden rounded-full px-3 py-1.5 font-display font-medium sm:block ${route === '/' ? 'bg-ink/10' : 'hover:bg-ink/5'}`}>
-                Marketplace
+              <a href="#/" className={`hidden sm:block ${link(route === '/')}`}>
+                The Collection
               </a>
-              <a href="#/wants" className={`relative rounded-full px-3 py-1.5 font-display font-medium ${route === '/wants' ? 'bg-ink/10' : 'hover:bg-ink/5'}`}>
-                <span className="sm:hidden">🔔</span>
-                <span className="hidden sm:inline">My Wants</span>
-                {unseen > 0 && (
-                  <span className="absolute -right-1 -top-1 grid h-5 min-w-5 animate-pop place-items-center rounded-full border-2 border-ink bg-tomato px-1 text-xs font-bold text-white">
-                    {unseen}
-                  </span>
-                )}
+              <a href="#/wants" className={`relative ${link(route === '/wants')}`}>
+                Wants
+                {unseen > 0 && <span className="absolute -right-4 -top-1.5 grid h-4 min-w-4 animate-fade place-items-center rounded-full bg-oxblood px-1 text-[0.55rem] font-semibold tracking-normal text-paper">{unseen}</span>}
               </a>
             </>
           )}
 
-          <div className="ml-1 flex rounded-full border-[3px] border-ink bg-white p-1 shadow-chunky-sm">
-            <button
-              onClick={() => go('/')}
-              className={`cursor-pointer rounded-full px-3 py-1 font-display text-sm font-semibold transition ${side === 'customer' ? 'bg-tomato text-white' : 'hover:bg-ink/5'}`}
-            >
-              🕵️<span className="hidden sm:inline"> Customer</span>
-            </button>
-            <button
-              onClick={() => go('/biz')}
-              className={`cursor-pointer rounded-full px-3 py-1 font-display text-sm font-semibold transition ${side === 'business' ? 'bg-grape text-white' : 'hover:bg-ink/5'}`}
-            >
-              🏪<span className="hidden sm:inline"> Business</span>
-            </button>
+          <div className="flex border border-ink/20">
+            <a href="#/" className={`eyebrow px-3 py-2 transition sm:px-4 ${side === 'customer' ? 'bg-ink text-paper' : 'text-ink/60 hover:text-ink'}`}>
+              Guest
+            </a>
+            <a href="#/biz" className={`eyebrow px-3 py-2 transition sm:px-4 ${side === 'business' ? 'bg-ink text-paper' : 'text-ink/60 hover:text-ink'}`}>
+              Establishment
+            </a>
           </div>
         </nav>
       </div>

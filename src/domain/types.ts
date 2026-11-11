@@ -11,7 +11,6 @@ export interface Business {
   neighbourhood: string
   address: string
   distanceKm: number
-  emoji: string
   tagline: string
 }
 

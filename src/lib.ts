@@ -43,7 +43,7 @@ export function go(path: string) {
 /* ---------- formatting ---------- */
 
 export function kr(n: number) {
-  return `${n.toLocaleString('da-DK')} kr`
+  return `DKK ${n.toLocaleString('da-DK')}`
 }
 
 export function clock(ts: number) {
