@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ButtonHTMLAttributes, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState, type ButtonHTMLAttributes, type ReactNode } from 'react'
 import { CATEGORY_META } from './domain/categories'
 import { lastCallPrice } from './domain/selectors'
 import type { Category, Slot } from './domain/types'
@@ -158,5 +158,45 @@ export function Modal({ onClose, children }: { onClose: () => void; children: Re
 }
 
 export function Mascot({ size = 'text-6xl', className = '' }: { size?: string; className?: string }) {
-  return <span className={`inline-block origin-top cursor-pointer hover:animate-ring ${size} ${className}`}>🔔</span>
+  const ref = useRef<HTMLSpanElement>(null)
+  const sim = useRef({ angle: 0, vel: 0, raf: 0 })
+
+  // Damped pendulum hanging from the top. Positive angle swings the bell's body left.
+  const step = () => {
+    const s = sim.current
+    s.vel += -0.025 * s.angle - 0.035 * s.vel
+    s.angle = Math.max(-70, Math.min(70, s.angle + s.vel))
+    if (ref.current) ref.current.style.transform = `rotate(${s.angle}deg)`
+    if (Math.abs(s.angle) < 0.05 && Math.abs(s.vel) < 0.05) {
+      s.angle = s.vel = s.raf = 0
+      if (ref.current) ref.current.style.transform = ''
+      return
+    }
+    s.raf = requestAnimationFrame(step)
+  }
+
+  const hit = (push: number) => {
+    const s = sim.current
+    s.vel += Math.max(-14, Math.min(14, push))
+    if (!s.raf) s.raf = requestAnimationFrame(step)
+  }
+
+  useEffect(() => () => cancelAnimationFrame(sim.current.raf), [])
+
+  const sideOf = (e: React.PointerEvent) => {
+    const r = e.currentTarget.getBoundingClientRect()
+    return e.clientX > r.left + r.width / 2 ? 1 : -1
+  }
+
+  return (
+    <span
+      ref={ref}
+      onPointerEnter={(e) => hit(Math.abs(e.movementX) > 1 ? -e.movementX * 0.8 : sideOf(e) * 5)}
+      onPointerMove={(e) => hit(-e.movementX * 0.25)}
+      onPointerDown={(e) => hit(sideOf(e) * 12)}
+      className={`inline-block origin-top cursor-pointer select-none ${size} ${className}`}
+    >
+      🔔
+    </span>
+  )
 }
