@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ButtonHTMLAttributes, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ButtonHTMLAttributes, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { CATEGORY_META } from './domain/categories'
 import { lastCallPrice } from './domain/selectors'
@@ -115,7 +115,7 @@ export function Band({ category, image, className = '', iconSize = 'h-14 w-14 te
     <div className={`relative ${className}`}>
       <div className={`absolute inset-0 overflow-hidden ${m.band}`}>
         {image ? (
-          <img src={image} alt="" loading="lazy" className="h-full w-full object-cover" />
+          <SiteImage src={image} />
         ) : (
           <>
             <span className="absolute -right-6 -top-8 h-28 w-28 rounded-full bg-white/15" />
@@ -128,6 +128,24 @@ export function Band({ category, image, className = '', iconSize = 'h-14 w-14 te
       </span>
       {children}
     </div>
+  )
+}
+
+/** Below this natural width a site's picture is treated as a logo or icon rather than a photo. */
+const LOGO_MAX_WIDTH = 400
+
+/** A website's picture: photos fill the frame, logos and icons (small or vector) are scaled down to sit in the middle. */
+export function SiteImage({ src }: { src: string }) {
+  const [smallSrc, setSmallSrc] = useState<string | null>(null)
+  const logo = smallSrc === src || /\.svg(\?|#|$)/i.test(src)
+  return (
+    <img
+      src={src}
+      alt=""
+      loading="lazy"
+      onLoad={(e) => e.currentTarget.naturalWidth < LOGO_MAX_WIDTH && setSmallSrc(src)}
+      className={`h-full w-full ${logo ? 'object-contain p-4' : 'object-cover'}`}
+    />
   )
 }
 

@@ -1,14 +1,15 @@
-import { useEffect, useState, type ReactNode } from 'react'
-import { categoryFromIndustry, cleanOrgNumber, isValidOrgNumber, lookupOrg, type OrgInfo } from '../domain/brreg'
-import { CATEGORIES, CATEGORY_META, NEIGHBOURHOODS } from '../domain/categories'
+import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
+import { categoryFromIndustry, cleanOrgNumber, formatOrgNumber, isValidOrgNumber, listUnits, lookupOrg, searchOrgs, type OrgHit, type OrgInfo, type OrgStatus, type OrgUnit } from '../domain/brreg'
+import { CITY } from '../brand'
+import { CATEGORIES, CATEGORY_META, NEIGHBOURHOODS, neighbourhoodFromPostcode } from '../domain/categories'
 import { calculateFee } from '../domain/pricing'
 import { TEMPLATES } from '../domain/seed'
 import { DEFAULT_RULE } from '../domain/selectors'
 import { fetchSiteImage } from '../domain/siteImage'
-import { registerBusiness } from '../domain/store'
+import { registerBusiness, useAppState } from '../domain/store'
 import type { Category, ReleaseMode, Slot } from '../domain/types'
 import { go, kr } from '../lib'
-import { Band, Button, CategoryBadge, Chip, DiscountSticker, Price, Segmented } from '../ui'
+import { Band, Button, CategoryBadge, Chip, DiscountSticker, Price, Segmented, SiteImage } from '../ui'
 
 export const WAITLIST_LINE = 'Har du allerede en venteliste? Flott. LastCall trår først inn når ventelisten din ikke klarer å fylle timen.'
 
@@ -32,14 +33,31 @@ type CalendarId = (typeof CALENDARS)[number]['id']
 type Entry = 'lookup' | 'manual'
 type Lookup = { status: 'idle' | 'loading' | 'notfound' | 'invalid' | 'error' } | { status: 'found'; org: OrgInfo }
 
+/** A real Oslo restaurant with a website, so a demo runs the whole lookup in one click. */
+const DEMO_ORG = '954080072'
+
 const inputClass = 'rounded border border-[#ddd] bg-canvas px-3 py-2.5 outline-none placeholder:text-faint focus:ring-2 focus:ring-primary/30'
 
+const STATUS_NOTICE: Record<Exclude<OrgStatus, 'ok'>, string> = {
+  bankrupt: 'Bedriften er registrert som konkurs i Brønnøysundregistrene, så den kan ikke registreres på LastCall.',
+  'winding-up': 'Bedriften er under avvikling i Brønnøysundregistrene, så den kan ikke registreres på LastCall.',
+  deleted: 'Bedriften er slettet fra Brønnøysundregistrene, så den kan ikke registreres på LastCall.',
+}
+
+/** Addresses in our city get a neighbourhood from the postcode; elsewhere we keep the post town. */
+function placeOf(a: { postcode: string; place: string; kommune: string }) {
+  return (a.kommune === CITY && neighbourhoodFromPostcode(a.postcode)) || a.place
+}
+
 export function Register() {
+  const state = useAppState()
   const [step, setStep] = useState<'details' | 'pricing' | 'done'>('details')
 
   const [entry, setEntry] = useState<Entry>('lookup')
-  const [orgInput, setOrgInput] = useState('')
   const [lookup, setLookup] = useState<Lookup>({ status: 'idle' })
+  const [units, setUnits] = useState<OrgUnit[]>([])
+  const [unitId, setUnitId] = useState<string | null>(null)
+  const lookupCtrl = useRef<AbortController | null>(null)
 
   const [name, setName] = useState('')
   const [address, setAddress] = useState('')
@@ -52,21 +70,24 @@ export function Register() {
   const [mode, setMode] = useState<ReleaseMode>('full')
 
   const found = entry === 'lookup' && lookup.status === 'found' ? lookup.org : null
-  const detailsOpen = entry === 'manual' || !!found
+  const existing = found ? state.businesses.find((b) => b.orgNumber === found.orgNumber) : undefined
+  const blocked = !!found && (found.status !== 'ok' || !!existing)
+  const needsUnit = !!found && units.length > 1 && !unitId
+  const detailsOpen = entry === 'manual' || (!!found && !blocked)
   // Manual entry skips the lookup step, so the remaining steps count from 1.
   const stepOffset = entry === 'manual' ? 0 : 1
-  const ready = !!name.trim() && !!place.trim() && !!category && !!calendar && !connecting
+  const ready = !!name.trim() && !!place.trim() && !!category && !!calendar && !connecting && !(entry === 'lookup' && (blocked || needsUnit))
   const calendarLabel = CALENDARS.find((c) => c.id === calendar)?.label
 
   const [site, setSite] = useState('')
   const [image, setImage] = useState('')
   const [imageStatus, setImageStatus] = useState<'idle' | 'loading' | 'none' | 'error'>('idle')
 
-  const fetchImage = async () => {
-    if (!site.trim()) return
+  const fetchImage = async (from = site) => {
+    if (!from.trim()) return
     setImageStatus('loading')
     try {
-      const url = await fetchSiteImage(site)
+      const url = await fetchSiteImage(from)
       setImage(url ?? '')
       setImageStatus(url ? 'idle' : 'none')
     } catch {
@@ -74,22 +95,45 @@ export function Register() {
     }
   }
 
-  const runLookup = async () => {
-    const orgnr = cleanOrgNumber(orgInput)
+  const clearLookup = () => {
+    lookupCtrl.current?.abort()
+    setLookup({ status: 'idle' })
+    setUnits([])
+    setUnitId(null)
+  }
+
+  const selectOrg = async (orgnr: string) => {
+    clearLookup()
     if (!isValidOrgNumber(orgnr)) return setLookup({ status: 'invalid' })
+    const ctrl = new AbortController()
+    lookupCtrl.current = ctrl
     setLookup({ status: 'loading' })
     try {
-      const org = await lookupOrg(orgnr)
+      const org = await lookupOrg(orgnr, ctrl.signal)
       if (!org) return setLookup({ status: 'notfound' })
       setLookup({ status: 'found', org })
       setName(org.name)
       setAddress(org.address)
-      setPlace(org.place)
+      setPlace(placeOf(org))
       setTagline(org.industry ?? '')
+      // The register often knows the website; fill it in and fetch its picture straight away.
+      setSite(org.website ?? '')
+      setImage('')
+      setImageStatus('idle')
+      if (org.website) fetchImage(org.website)
       setCategory(categoryFromIndustry(org.industryCode))
+      const locations = await listUnits(orgnr, ctrl.signal).catch(() => [])
+      setUnits(locations)
+      if (locations.length === 1) chooseUnit(locations[0])
     } catch {
-      setLookup({ status: 'error' })
+      if (!ctrl.signal.aborted) setLookup({ status: 'error' })
     }
+  }
+
+  const chooseUnit = (u: OrgUnit) => {
+    setUnitId(u.orgNumber)
+    setAddress(u.address)
+    setPlace(placeOf(u))
   }
 
   const chooseCalendar = (id: CalendarId) => {
@@ -114,6 +158,7 @@ export function Register() {
       orgNumber: found?.orgNumber,
       calendar: calendarLabel,
       image: image || undefined,
+      website: site.trim().replace(/^https?:\/\//i, '') || undefined,
       mode,
     })
     setStep('done')
@@ -205,17 +250,17 @@ export function Register() {
       <div className="mx-auto -mt-4 max-w-2xl text-center">
         <span className="eyebrow inline-block rounded-full bg-canvas px-2.5 py-1 text-primary shadow-soft">For bedrifter · Steg 1 av 2</span>
         <h1 className="display-2 mt-4">Gjør avbestillinger om til inntekt</h1>
-        <p className="mt-4 text-lg text-muted">Skriv inn organisasjonsnummeret, så fyller vi ut resten. Du er live på under ett minutt.</p>
+        <p className="mt-4 text-lg text-muted">Søk opp bedriften din, så fyller vi ut resten. Du er live på under ett minutt.</p>
       </div>
 
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
         <div className="flex flex-col gap-8 rounded-2xl border border-hairline bg-canvas p-6 shadow-soft sm:p-8">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <span className="text-[15px] text-muted">{entry === 'lookup' ? 'Vi henter detaljene fra Brønnøysundregistrene.' : 'Har du ikke org.nr.? Fyll inn selv.'}</span>
+            <span className="text-[15px] text-muted">{entry === 'lookup' ? 'Vi henter detaljene fra Brønnøysundregistrene.' : 'Finner du ikke bedriften? Fyll inn selv.'}</span>
             <Segmented
               value={entry}
               options={[
-                { value: 'lookup', label: 'Org.nr.' },
+                { value: 'lookup', label: 'Søk' },
                 { value: 'manual', label: 'Manuelt' },
               ]}
               onChange={(v) => v && setEntry(v)}
@@ -224,25 +269,7 @@ export function Register() {
 
           {entry === 'lookup' && (
             <Step n={1} title="Finn bedriften din">
-              <form
-                className="flex flex-col gap-2 sm:flex-row"
-                onSubmit={(e) => {
-                  e.preventDefault()
-                  runLookup()
-                }}
-              >
-                <input
-                  value={orgInput}
-                  onChange={(e) => setOrgInput(e.target.value)}
-                  inputMode="numeric"
-                  placeholder="Org.nr., f.eks. 915 615 767"
-                  aria-label="Organisasjonsnummer"
-                  className={`${inputClass} flex-1 tabular-nums`}
-                />
-                <Button type="submit" variant="utility" disabled={!orgInput.trim() || lookup.status === 'loading'}>
-                  {lookup.status === 'loading' ? 'Søker…' : 'Søk'}
-                </Button>
-              </form>
+              <OrgSearch onPick={selectOrg} onClear={clearLookup} loading={lookup.status === 'loading'} />
               <LookupMessage lookup={lookup} />
               {found && (
                 <div className="flex items-start justify-between gap-3 rounded-lg bg-paper p-4 text-[15px]">
@@ -250,9 +277,44 @@ export function Register() {
                     <span className="font-semibold">{found.name}</span>
                     <span className="text-muted">{[found.address, `${found.postcode} ${found.place}`.trim()].filter(Boolean).join(', ')}</span>
                     {found.industry && <span className="text-muted">{found.industry}</span>}
-                    <span className="text-sm text-faint">Org.nr. {found.orgNumber} · Brønnøysundregistrene</span>
+                    <span className="text-sm text-faint">Org.nr. {formatOrgNumber(found.orgNumber)} · Brønnøysundregistrene</span>
                   </div>
-                  <span className="shrink-0 text-sm font-medium text-green">✓ Funnet</span>
+                  {!blocked && <span className="shrink-0 text-sm font-medium text-green">✓ Funnet</span>}
+                </div>
+              )}
+              {found && found.status !== 'ok' && <p className="rounded-lg bg-orange/10 p-4 text-[15px] text-orange-deep">{STATUS_NOTICE[found.status]}</p>}
+              {found && found.status === 'ok' && existing && (
+                <p className="rounded-lg bg-orange/10 p-4 text-[15px] text-orange-deep">
+                  {existing.name} er allerede registrert på LastCall.{' '}
+                  <a href={`#/biz/${existing.id}`} className="font-medium underline">
+                    Gå til oversikten
+                  </a>
+                </p>
+              )}
+              {found && !blocked && units.length > 1 && (
+                <div className="flex flex-col gap-2">
+                  <span className="eyebrow text-muted">
+                    Hvilken avdeling vil du registrere? <span className="ml-1 normal-case text-faint">{units.length} avdelinger</span>
+                  </span>
+                  <div className="grid max-h-80 gap-2 overflow-y-auto sm:grid-cols-2">
+                    {units.map((u) => {
+                      const active = unitId === u.orgNumber
+                      return (
+                        <button
+                          key={u.orgNumber}
+                          type="button"
+                          onClick={() => chooseUnit(u)}
+                          className={`flex cursor-pointer flex-col rounded-lg border px-4 py-3 text-left text-[15px] transition ${active ? 'border-ink bg-paper' : 'border-hairline hover:bg-paper'}`}
+                        >
+                          <span className="font-medium">
+                            {u.name}
+                            {active && <span className="ml-2 text-green">✓</span>}
+                          </span>
+                          <span className="text-muted">{[u.address, `${u.postcode} ${u.place}`.trim()].filter(Boolean).join(', ')}</span>
+                        </button>
+                      )
+                    })}
+                  </div>
                 </div>
               )}
             </Step>
@@ -276,17 +338,26 @@ export function Register() {
                   </datalist>
                 </Field>
               </div>
-              <Field label="Nettside (valgfritt)">
-                <div className="flex gap-2">
-                  <input value={site} onChange={(e) => setSite(e.target.value)} placeholder="f.eks. theatercafeen.no" className={`${inputClass} flex-1`} />
-                  <Button variant="secondary" onClick={fetchImage} disabled={!site.trim() || imageStatus === 'loading'}>
-                    {imageStatus === 'loading' ? 'Henter…' : 'Hent bilde'}
-                  </Button>
-                </div>
-                {imageStatus === 'none' && <span className="text-sm text-muted">Fant ikke noe bilde på nettsiden.</span>}
-                {imageStatus === 'error' && <span className="text-sm text-muted">Kunne ikke hente bilde akkurat nå.</span>}
-                {image && <img src={image} alt="" className="mt-1 h-24 w-full rounded-lg object-cover" />}
-              </Field>
+              {/* A looked-up business only shows its website once the register's site gave us a picture; manual entry can fetch one itself. */}
+              {(entry === 'manual' || image) && (
+                <Field label="Nettside (valgfritt)">
+                  <div className="flex gap-2">
+                    <input value={site} onChange={(e) => setSite(e.target.value)} placeholder="f.eks. theatercafeen.no" className={`${inputClass} flex-1`} />
+                    {!image && (
+                      <Button variant="secondary" onClick={() => fetchImage()} disabled={!site.trim() || imageStatus === 'loading'}>
+                        {imageStatus === 'loading' ? 'Henter…' : 'Hent bilde'}
+                      </Button>
+                    )}
+                  </div>
+                  {imageStatus === 'none' && <span className="text-sm text-muted">Fant ikke noe bilde på nettsiden.</span>}
+                  {imageStatus === 'error' && <span className="text-sm text-muted">Kunne ikke hente bilde akkurat nå.</span>}
+                  {image && (
+                    <div className="mt-1 h-24 w-full overflow-hidden rounded-lg bg-paper">
+                      <SiteImage src={image} />
+                    </div>
+                  )}
+                </Field>
+              )}
               <div className="flex flex-col gap-2">
                 <span className="eyebrow text-muted">
                   Hva tilbyr du?{found && category && <span className="ml-2 normal-case text-faint">foreslått ut fra næringskoden</span>}
@@ -361,9 +432,136 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
   )
 }
 
+/**
+ * One field for both org numbers and names. Digits are grouped as you type and looked up at 9;
+ * text searches Brønnøysundregistrene by name after a short pause.
+ */
+function OrgSearch({ onPick, onClear, loading }: { onPick: (orgnr: string) => void; onClear: () => void; loading: boolean }) {
+  const [text, setText] = useState('')
+  const [hits, setHits] = useState<OrgHit[]>([])
+  const [open, setOpen] = useState(false)
+  const [active, setActive] = useState(0)
+  const [searching, setSearching] = useState(false)
+  // Picking a hit puts its name in the field; that name shouldn't search again and reopen the list.
+  const picked = useRef('')
+
+  const digits = cleanOrgNumber(text)
+  const isNumber = /^\d+$/.test(digits)
+  const query = isNumber ? '' : text.trim()
+
+  useEffect(() => {
+    if (picked.current && query === picked.current) return
+    if (query.length < 2) {
+      setHits([])
+      return
+    }
+    const ctrl = new AbortController()
+    const t = setTimeout(async () => {
+      setSearching(true)
+      try {
+        const found = await searchOrgs(query, ctrl.signal)
+        setHits(found)
+        setActive(0)
+        setOpen(true)
+      } catch {
+        if (!ctrl.signal.aborted) setHits([])
+      } finally {
+        if (!ctrl.signal.aborted) setSearching(false)
+      }
+    }, 300)
+    return () => {
+      clearTimeout(t)
+      ctrl.abort()
+    }
+  }, [query])
+
+  const change = (value: string) => {
+    const d = cleanOrgNumber(value)
+    if (/^\d+$/.test(d)) {
+      const nine = d.slice(0, 9)
+      setText(formatOrgNumber(nine))
+      setOpen(false)
+      if (nine.length === 9) onPick(nine)
+      else onClear()
+      return
+    }
+    setText(value)
+    onClear()
+  }
+
+  const pick = (hit: OrgHit) => {
+    picked.current = hit.name.trim()
+    setText(hit.name)
+    setOpen(false)
+    onPick(hit.orgNumber)
+  }
+
+  const onKey = (e: KeyboardEvent) => {
+    if (!open || !hits.length) return
+    if (e.key === 'ArrowDown') setActive((i) => (i + 1) % hits.length)
+    else if (e.key === 'ArrowUp') setActive((i) => (i - 1 + hits.length) % hits.length)
+    else if (e.key === 'Enter') pick(hits[active])
+    else if (e.key === 'Escape') setOpen(false)
+    else return
+    e.preventDefault()
+  }
+
+  const busy = loading || searching
+  return (
+    <div className="relative">
+      <input
+        value={text}
+        onChange={(e) => change(e.target.value)}
+        onKeyDown={onKey}
+        onFocus={() => hits.length && setOpen(true)}
+        onBlur={() => setOpen(false)}
+        placeholder="Bedriftsnavn eller org.nr."
+        aria-label="Bedriftsnavn eller organisasjonsnummer"
+        role="combobox"
+        aria-expanded={open}
+        aria-autocomplete="list"
+        autoComplete="off"
+        className={`${inputClass} w-full ${text ? 'pr-20' : 'pr-44'} ${isNumber ? 'tabular-nums' : ''}`}
+      />
+      {!text && !busy && (
+        <button
+          type="button"
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={() => change(DEMO_ORG)}
+          className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer rounded-full bg-paper px-2.5 py-1 text-sm text-muted transition hover:bg-black/5 hover:text-ink"
+        >
+          Tips: prøv <span className="tabular-nums">{formatOrgNumber(DEMO_ORG)}</span>
+        </button>
+      )}
+      {busy && <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted">Søker…</span>}
+      {open && (
+        <ul role="listbox" className="absolute inset-x-0 top-full z-20 mt-1 overflow-hidden rounded-lg border border-hairline bg-canvas shadow-soft">
+          {hits.length === 0 && <li className="px-4 py-3 text-[15px] text-muted">Ingen treff. Prøv org.nr., eller fyll inn manuelt.</li>}
+          {hits.map((h, i) => (
+            <li
+              key={h.orgNumber}
+              role="option"
+              aria-selected={i === active}
+              onMouseDown={(e) => {
+                e.preventDefault()
+                pick(h)
+              }}
+              onMouseEnter={() => setActive(i)}
+              className={`flex cursor-pointer flex-col px-4 py-2.5 text-[15px] ${i === active ? 'bg-paper' : ''}`}
+            >
+              <span className="font-medium">{h.name}</span>
+              <span className="text-sm text-muted">{[h.place, h.industry, formatOrgNumber(h.orgNumber)].filter(Boolean).join(' · ')}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  )
+}
+
 function LookupMessage({ lookup }: { lookup: Lookup }) {
   const messages: Partial<Record<Lookup['status'], string>> = {
-    invalid: 'Det ser ikke ut som et gyldig org.nr. Det har 9 sifre.',
+    invalid: 'Det org.nr. er ikke gyldig. Sjekk at sifrene stemmer.',
     notfound: 'Vi fant ikke det org.nr. i Brønnøysundregistrene.',
     error: 'Vi fikk ikke kontakt med Brønnøysundregistrene. Prøv igjen, eller fyll inn manuelt.',
   }

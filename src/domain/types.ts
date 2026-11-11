@@ -18,6 +18,8 @@ export interface Business {
   introSpotsLeft: number
   orgNumber?: string
   calendar?: string
+  /** From Brønnøysundregistrene, without the scheme: "www.example.no". */
+  website?: string
 }
 
 /** A booking in a Business's calendar. A released Slot is a Last Call. */

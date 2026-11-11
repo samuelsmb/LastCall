@@ -165,6 +165,7 @@ export interface NewBusiness {
   orgNumber?: string
   calendar?: string
   image?: string
+  website?: string
   mode: ReleaseMode
 }
 
