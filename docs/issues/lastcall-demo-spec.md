@@ -13,10 +13,10 @@ At the hackathon, the team must get this idea across in a **2-minute pitch**. It
 
 ## Solution
 
-A mocked, whimsical web app called **LastCall**, set in the fictional city of **Cooler Copenhagen**. It works on desktop and in a mobile view. It has two sides, switched with a Customer/Business toggle in the header:
+A mocked, whimsical web app called **LastCall**, set in **Oslo**. It works on desktop and in a mobile view. It has two sides, switched with a Customer/Business toggle in the header:
 
-- **Customer side:** a Marketplace of Last Calls (freed-up booking slots at a discount, each with a countdown), filtered by Category and time window. Customers can open a Last Call, book it with a fake booking, and save a Want ("tyres within 48h") so they get an Alert when a matching Last Call is released.
-- **Business side:** a booking calendar where cancellations show up. The Business can Release a cancelled slot by hand in one click with a suggested discount, or set an Auto-release rule that holds the slot for full-price customers and releases it automatically at a set time before it starts. A dashboard shows the revenue recovered.
+- **Customer side:** a Marketplace of Last Calls (freed-up booking slots at full price ("Skip the queue") or a discount, each with a countdown), filtered by Category and time window. Customers can open a Last Call, book it with a fake booking, and save a Want ("tyres within 48h") so they get an Alert when a matching Last Call is released.
+- **Business side:** a booking calendar where cancellations show up. The Business can Release a cancelled slot by hand in one click at full price or with a suggested discount, or set an Auto-release rule that holds the slot for full-price customers and releases it automatically at a set time before it starts. A dashboard shows the revenue recovered, the LastCall fee and the net.
 
 Everything is fake. Data is hardcoded, and state lives in the browser and syncs across tabs, so a Business tab and a Customer tab side by side update live. The functionality is a set of independent bricks rather than one scripted flow.
 
@@ -24,7 +24,7 @@ Everything is fake. Data is hardcoded, and state lives in the browser and syncs 
 
 ### Customer: Marketplace
 
-1. As a Customer, I want to open LastCall and immediately see a Marketplace of Last Calls in Cooler Copenhagen, so that I can see what's available right now.
+1. As a Customer, I want to open LastCall and immediately see a Marketplace of Last Calls in Oslo, so that I can see what's available right now.
 2. As a Customer, I want each Last Call shown as a card with the Business name, Category, neighbourhood, start time and a picture or illustration, so that I can scan options quickly.
 3. As a Customer, I want to see the original price struck through next to the Last Call price, so that I can see how much I save.
 4. As a Customer, I want a live countdown on each Last Call ("starts in 2h 15m"), so that I feel the urgency and know how much time I have.
@@ -94,7 +94,7 @@ Everything is fake. Data is hardcoded, and state lives in the browser and syncs 
 47. As a presenter, I want a Customer/Business toggle in the header, so that I can switch sides on a single screen.
 48. As a presenter, I want two browser tabs (Customer and Business) to stay in sync live, so that I can show cause and effect side by side.
 49. As a presenter, I want the app to work well in a mobile-sized viewport, so that I can show it on a phone or in a phone frame.
-50. As a presenter, I want the app to open with a rich, believable Cooler Copenhagen catalogue already loaded, so that the Marketplace never looks empty.
+50. As a presenter, I want the app to open with a rich, believable Oslo catalogue already loaded, so that the Marketplace never looks empty.
 51. As a presenter, I want each brick (Marketplace, detail + book, Release, Auto-release rule, dashboard, Want + Alert) usable on its own and in any order, so that the story can change without code changes.
 52. As a presenter, I want everything to feel whimsical (playful colours, illustrations, friendly copy, small animations), so that the pitch is memorable.
 53. As a presenter, I want the demo to have no loading waits, logins or errors, so that 2 minutes is enough.
@@ -116,7 +116,7 @@ Everything is fake. Data is hardcoded, and state lives in the browser and syncs 
 - **Auto-release:** a periodic check (for example every few seconds) releases any held Slot whose start minus the rule's lead time has passed, using the rule's discount. No time fast-forwarding. In the pitch this is explained as an idea, but it still works for real if a slot is set up close to its start.
 - **Suggested discount** for a manual Release: the Business's Auto-release rule discount if it has one, otherwise a fixed default (say 30%).
 - **Time:** countdowns tick live against the real clock. Seed data times are generated relative to when the app loads, so the catalogue always looks "upcoming".
-- **Seed catalogue:** about 15–25 Last Calls across all six Categories from roughly 10–15 Cooler Copenhagen Businesses, with fun names and neighbourhoods. There is one hero Business for the Business side, **Ted's Garage** (Car), whose calendar has a mix of booked slots and a slot that can be cancelled on stage.
+- **Seed catalogue:** about 15–25 Last Calls across all six Categories from roughly 10–15 Oslo Businesses, with fun names and neighbourhoods. There is one hero Business for the Business side, **Ted's Garage** (Car), whose calendar has a mix of booked slots and a slot that can be cancelled on stage.
 - **Screens:** Customer Marketplace (header toggle, Category chips, time filter, sort, card grid/list), Last Call detail, booking confirm and confirmation, Wants (create and list), Alert toast plus a small inbox or badge, Business calendar, Release dialog, Auto-release rule settings, Business dashboard, mocked Register-a-business screen.
 - **Layout:** responsive, mobile-first. On desktop the Customer side uses a card grid, and the Business side shows the calendar and dashboard side by side. The header toggle is always visible.
 - **Look and feel:** whimsical but trustworthy. Use a bold playful palette, rounded shapes, friendly illustrations or emoji per Category, cheeky microcopy ("Someone bailed. Your gain."), and small celebratory animations on Release and on booking.
@@ -135,11 +135,25 @@ Everything is fake. Data is hardcoded, and state lives in the browser and syncs 
 - The presentation script itself.
 - Integrations with real booking systems.
 
+## Iteration decisions (2026-11-11)
+
+These override anything above where they conflict.
+
+- **Market: Oslo.** Neighbourhoods Grünerløkka, Majorstuen, Frogner, Bjørvika, Gamle Oslo, Tøyen, Sagene, St. Hanshaugen. Currency NOK only, shown as `550 kr`. Growth story (copy only): Oslo → rest of Norway → Denmark → Northern Europe; two categories → any bookable service.
+- **Language and brand.** All copy in English; Norwegian place names stay. The slogan lives in one constant, `TAGLINE` in `src/brand.ts` (currently "TBD"). Tone: short, direct, warm, a little cheeky; never shame the Canceller; emojis only in Alerts.
+- **Hero categories.** Fine dining and Tyre change come first and have the most listings. Tyre change 450–700 kr (typical 550). Fine dining 1,500–3,500 kr per person, tables for 2 or 4, shown per person and in total.
+- **Discount is optional.** Per release and in the Auto-release rule the Business picks *Full price* ("Skip the queue": no strike-through, no discount sticker) or *Discount*. Full-price Auto-release releases a cancelled slot at once; discount Auto-release holds it until the lead time, then releases at Y% off. Defaults: Ted's Garage full price; Restaurant Løkka 2 hours before at 20% off.
+- **Business pricing.** 0 kr to join, no monthly fee, no lock-in. 49 kr per Filled spot (one appointment, or one guest; a table for 2 = 98 kr), capped at 10% of the final sold price after discount, only charged if the Customer shows up, invoiced monthly. First 10 Filled spots free (Intro offer), tracked per Business; a table is never split, so if fewer free spots remain than its guests the whole table is free and the counter goes to 0. One pure function, `calculateFee(listing, business)` in `src/domain/pricing.ts`, is used by the dashboard, Release dialog and onboarding. The Fee is fixed on the Slot when it sells.
+- **Dashboard.** Revenue recovered (gross), LastCall fee (with "Free spots left: X/10" while the Intro offer applies), Net recovered, Released / Sold / Sell-through, and "You only pay when we fill a slot."
+- **Onboarding** gets a pricing step: headline, three ticks, a calculator (cancellations per week × average price × 4.3 weeks, max cost via `calculateFee`), two examples, a short FAQ, and the default release mode.
+- **Positioning.** "Already have a waitlist? Great. LastCall kicks in only when your waitlist can't fill the slot." Shown in onboarding and on the Business side.
+- **Demo script** (two tabs, works after `?reset`, every step has a hash URL): see the README.
+
 ## Further Notes
 
 - The planning map is at `docs/wayfinder/map.md`. These map tickets were still open when this spec was written, and the spec fills them with sensible defaults (above) so the build isn't blocked. Revisit if the team decides differently:
   - Look and feel – how whimsical?
-  - The Cooler Copenhagen catalogue
+  - The Oslo catalogue
   - How do Auto-release rules work for a Business?
   - How does a Customer create a Want and receive an Alert?
   - What does the Business dashboard show?
