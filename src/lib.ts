@@ -42,8 +42,9 @@ export function go(path: string) {
 
 /* ---------- formatting ---------- */
 
+/** NOK, the only currency in the app: `550 kr`, `1,500 kr`. */
 export function kr(n: number) {
-  return `DKK ${n.toLocaleString('da-DK')}`
+  return `${Math.round(n).toLocaleString('en-GB')} kr`
 }
 
 export function clock(ts: number) {

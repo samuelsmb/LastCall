@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { CITY, TAGLINE } from './brand'
 import { AlertToasts } from './components/AlertToasts'
 import { Header } from './components/Header'
 import { applyAutoRelease } from './domain/store'
@@ -38,7 +39,7 @@ export default function App() {
       </main>
       {side === 'customer' && <AlertToasts />}
       <footer className="border-t border-hairline bg-paper px-6 py-8 text-center text-sm text-ink-2">
-        <span className="font-semibold">LastCall</span> · the cancellation economy · Cooler Copenhagen
+        <span className="font-semibold">LastCall</span> · {TAGLINE} · Made in {CITY}, coming to the rest of Norway next
       </footer>
     </div>
   )

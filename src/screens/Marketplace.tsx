@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { LastCallCard } from '../components/LastCallCard'
 import { CATEGORIES, CATEGORY_META, WINDOW_META } from '../domain/categories'
 import { marketplace, type SortKey } from '../domain/selectors'
+import { CITY, TAGLINE } from '../brand'
 import { useAppState } from '../domain/store'
 import type { Category, TimeWindow } from '../domain/types'
 import { go, useNow } from '../lib'
@@ -48,10 +49,10 @@ export function Marketplace() {
         ))}
         <div className="relative flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
           <div className="max-w-xl">
-            <span className="eyebrow inline-block rounded-full bg-canvas px-2.5 py-1 text-primary">New in Cooler Copenhagen</span>
+            <span className="eyebrow inline-block rounded-full bg-canvas px-2.5 py-1 text-primary">New in {CITY} · {TAGLINE}</span>
             <h1 className="display-2 mt-5 sm:display-1">Someone cancelled. Now it's yours.</h1>
             <p className="mt-5 text-lg text-white/80">
-              LastCall finds last-minute openings at restaurants, salons, garages and more, the moment a booking is cancelled. Book in seconds, usually for less.
+              Fully booked tables and garages in {CITY}, freed up the moment someone cancels. Skip the queue, sometimes for less. Fjord-ably last minute.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button onClick={surprise}>Surprise me</Button>

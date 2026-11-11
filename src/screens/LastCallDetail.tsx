@@ -61,7 +61,7 @@ export function LastCallDetail({ id }: { id: string }) {
                   <input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="Jane Jensen"
+                    placeholder="Kari Nordmann"
                     className="rounded border border-[#ddd] bg-canvas px-2.5 py-2 text-[15px] outline-none placeholder:text-faint focus:shadow-soft focus:ring-2 focus:ring-primary/30"
                   />
                 </label>
