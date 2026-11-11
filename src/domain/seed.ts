@@ -108,7 +108,7 @@ function lokkaCalendar(now: number): CalendarSeed[] {
   ]
 }
 
-const TEMPLATES: Record<Category, [title: string, price: number, guests?: number][]> = {
+export const TEMPLATES: Record<Category, [title: string, price: number, guests?: number][]> = {
   food: [['Bord for 2', 3600, 2], ['Bord for 4', 7000, 4], ['Bord for 2', 3000, 2]],
   beauty: [['Klipp og farge', 1600], ['Ansiktsbehandling', 1100], ['Manikyr', 550]],
   car: [['Dekkskift', 550], ['Dekkskift og balansering', 700], ['Servicesjekk', 1800]],

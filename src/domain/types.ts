@@ -14,6 +14,8 @@ export interface Business {
   tagline: string
   /** Filled spots still free under the intro offer (starts at 10). */
   introSpotsLeft: number
+  orgNumber?: string
+  calendar?: string
 }
 
 /** A booking in a Business's calendar. A released Slot is a Last Call. */

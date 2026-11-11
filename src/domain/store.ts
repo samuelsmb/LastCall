@@ -156,16 +156,24 @@ export function setCurrentBusiness(businessId: string) {
   commit({ ...state, currentBusinessId: businessId })
 }
 
-export function registerBusiness(name: string, category: Category, neighbourhood: string, mode: ReleaseMode = 'full') {
+export interface NewBusiness {
+  name: string
+  category: Category
+  neighbourhood: string
+  address: string
+  tagline: string
+  orgNumber?: string
+  calendar?: string
+  mode: ReleaseMode
+}
+
+export function registerBusiness({ mode, ...input }: NewBusiness) {
   const id = uid('biz')
   const now = Date.now()
   commit({
     ...state,
-    businesses: [
-      ...state.businesses,
-      { id, name, category, neighbourhood, address: `${neighbourhood}`, distanceKm: 1 + Math.round(Math.random() * 40) / 10, tagline: 'Ny på LastCall', introSpotsLeft: INTRO_SPOTS },
-    ],
-    slots: [...state.slots, ...generateCalendar(id, category, now)],
+    businesses: [...state.businesses, { id, ...input, distanceKm: 1 + Math.round(Math.random() * 40) / 10, introSpotsLeft: INTRO_SPOTS }],
+    slots: [...state.slots, ...generateCalendar(id, input.category, now)],
     rules: { ...state.rules, [id]: { ...DEFAULT_RULE, enabled: true, mode } },
     currentBusinessId: id,
   })
