@@ -2,7 +2,7 @@
 
 # LastCall
 
-When someone cancels, a business is left with an empty slot it can't sell. LastCall puts that slot on a marketplace the moment it frees up, so someone who wants it right now can grab it, at full price ("Skip the queue") or at a discount the business chooses. A mocked hackathon demo set in **Oslo sentrum**, with the UI in Norwegian, starting with two hero categories: **Fine dining** and **Tyre change**.
+When someone cancels, a business is left with an empty slot it can't sell. LastCall puts that slot on a marketplace the moment it frees up, so someone who wants it right now can grab it, at full price ("Skip the queue") or at a discount the business chooses. A mocked hackathon demo set in **Oslo sentrum**, with the UI in Norwegian, starting with two hero categories: **Restaurant** and **Tyre change**.
 
 Businesses pay nothing to join and nothing per month: 49 kr per filled spot, never more than 10% of the sold price, only when the customer shows up. The first 10 filled spots are free.
 

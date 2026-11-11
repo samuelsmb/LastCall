@@ -58,13 +58,13 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
           <input
             value={label}
             onChange={(e) => onLabel(e.target.value)}
-            placeholder="f.eks. dekkskift innen 48 timer nær Bjerke, eller fine dining i kveld"
+            placeholder="f.eks. dekkskift innen 48 timer nær Bjerke, eller restaurant i kveld"
             className="rounded border border-[#ddd] bg-canvas px-3 py-2.5 text-base outline-none placeholder:text-faint focus:ring-2 focus:ring-primary/30"
           />
           {!label && (
             <div className="flex flex-wrap items-center gap-2 text-[15px] text-muted">
               Prøv:
-              {['Dekkskift innen 48 timer nær Bjerke', 'Fine dining i kveld i sentrum'].map((ex) => (
+              {['Dekkskift innen 48 timer nær Bjerke', 'Restaurant i kveld i sentrum'].map((ex) => (
                 <Chip key={ex} active={false} onClick={() => onLabel(ex)}>
                   {ex}
                 </Chip>
@@ -109,7 +109,7 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
 
         <section className="flex flex-col gap-3">
           <h2 className="heading-2">Dine ønsker</h2>
-          {state.wants.length === 0 && <p className="text-muted">Ingen ønsker ennå. Prøv «fine dining i kveld» eller «dekkskift innen 48 timer».</p>}
+          {state.wants.length === 0 && <p className="text-muted">Ingen ønsker ennå. Prøv «restaurant i kveld» eller «dekkskift innen 48 timer».</p>}
           {state.wants.length > 0 && (
             <div className="overflow-hidden rounded-xl border border-hairline bg-canvas">
               {state.wants.map((w) => {

@@ -25,7 +25,7 @@ A notice to a Customer that a newly released Last Call matches one of their Want
 _Avoid_: Notification, push
 
 **Category**:
-The kind of service or experience a Last Call belongs to, e.g. tyre change, fine dining, spa.
+The kind of service or experience a Last Call belongs to, e.g. tyre change, restaurant, spa.
 _Avoid_: Type, vertical
 
 **Business**:
