@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { CATEGORY_META } from '../domain/categories'
-import { calculateFee, FEE_CAP_PCT, FEE_PER_SPOT, INTRO_SPOTS } from '../domain/pricing'
+import { calculateFee, cancellerBonus, FEE_CAP_PCT, FEE_PER_SPOT, INTRO_SPOTS } from '../domain/pricing'
 import { dashboardStats, DEFAULT_RULE, lastCallPrice, releaseTime } from '../domain/selectors'
 import { cancelSlot, releaseSlot, setCurrentBusiness, setRule, useAppState, withdrawSlot } from '../domain/store'
 import type { AutoReleaseRule, Business, ReleaseMode, Slot } from '../domain/types'
@@ -20,7 +20,7 @@ export function BusinessHome({ businessId }: { businessId?: string }) {
   const state = useAppState()
   const now = useNow()
   const [releasing, setReleasing] = useState<Slot | null>(null)
-  const [toast, setToast] = useState<string | null>(null)
+  const [toast, setToast] = useState<{ msg: string; sms?: string } | null>(null)
 
   const biz = state.businesses.find((b) => b.id === (businessId ?? state.currentBusinessId)) ?? state.businesses[0]
   const meta = CATEGORY_META[biz.category]
@@ -35,9 +35,9 @@ export function BusinessHome({ businessId }: { businessId?: string }) {
     days.set(d, [...(days.get(d) ?? []), s])
   }
 
-  const notify = (msg: string) => {
-    setToast(msg)
-    setTimeout(() => setToast(null), 3500)
+  const notify = (msg: string, sms?: string) => {
+    setToast({ msg, sms })
+    setTimeout(() => setToast(null), sms ? 6000 : 3500)
   }
 
   // Celebrate sales that arrive from the Customer tab.
@@ -46,7 +46,8 @@ export function BusinessHome({ businessId }: { businessId?: string }) {
   useEffect(() => {
     const fresh = seenSold.current ? state.slots.filter((s) => s.businessId === biz.id && s.status === 'sold' && !seenSold.current!.has(s.id)) : []
     seenSold.current = new Set(state.slots.filter((s) => s.status === 'sold').map((s) => s.id))
-    if (fresh.length) notify(`Ledig time fylt. ${kr(lastCallPrice(fresh[0]))} reddet.`)
+    const sale = fresh[0]
+    if (sale) notify(`Ledig time fylt. ${kr(lastCallPrice(sale))} reddet.`, sale.cancellerBonusPct ? `SMS til ${sale.customerName}: «Timen du avbestilte ble solgt videre. Takk for at du sa ifra i tide, du får ${kr(cancellerBonus(sale))} tilbake.»` : undefined)
   }, [soldIds.join(), biz.id])
 
   return (
@@ -106,7 +107,7 @@ export function BusinessHome({ businessId }: { businessId?: string }) {
             <p key={stats.net} className="heading-2 mt-1 animate-rise tabular-nums text-green">
               {kr(stats.net)}
             </p>
-            <p className="mt-2 text-sm text-muted">Berget minus gebyr</p>
+            <p className="mt-2 text-sm text-muted">{stats.bonus ? `Berget minus gebyr og ${kr(stats.bonus)} i avbestillingsbonus` : 'Berget minus gebyr'}</p>
           </div>
         </div>
         <div className="grid grid-cols-3 gap-4">
@@ -187,6 +188,22 @@ export function BusinessHome({ businessId }: { businessId?: string }) {
             <p className="rounded-lg bg-paper p-3 text-sm text-muted">
               {rule.enabled ? 'På: LastCall håndterer avbestillinger for deg automatisk.' : 'Av: du velger hva som frigis og når.'}
             </p>
+            <div className="flex flex-col gap-2 border-t border-hairline pt-4">
+              <div className="flex items-center gap-2">
+                <span className="grid h-8 w-8 place-items-center rounded-lg bg-green/15 text-base">🎁</span>
+                <h2 className="title">Avbestillingsbonus</h2>
+              </div>
+              <p className="text-sm text-muted">
+                {rule.cancellerBonusPct ? (
+                  <>
+                    Kunden som avbestiller får <b className="font-semibold text-ink">{rule.cancellerBonusPct} %</b> av salgsprisen tilbake hvis timen blir solgt videre. Da sier flere ifra i stedet for å bare ikke møte opp.
+                  </>
+                ) : (
+                  'Av: kunden som avbestiller får ingenting tilbake.'
+                )}
+              </p>
+              <input type="range" min={0} max={50} step={5} value={rule.cancellerBonusPct} onChange={(e) => setRule(biz.id, { cancellerBonusPct: Number(e.target.value) })} />
+            </div>
             <p className="text-sm text-muted">{WAITLIST_LINE}</p>
           </div>
         </aside>
@@ -210,7 +227,10 @@ export function BusinessHome({ businessId }: { businessId?: string }) {
         <Overlay>
           <div className="fixed inset-x-3 bottom-6 z-50 mx-auto flex max-w-md animate-rise items-center gap-3 rounded-xl border border-hairline bg-canvas px-4 py-3 shadow-lifted">
             <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-green text-sm text-white">✓</span>
-            <span className="text-[15px]">{toast}</span>
+            <span className="flex flex-col gap-1.5 text-[15px]">
+              {toast.msg}
+              {toast.sms && <span className="rounded-lg bg-paper px-3 py-2 text-sm text-ink-2">💬 {toast.sms}</span>}
+            </span>
           </div>
         </Overlay>
       )}
@@ -241,6 +261,11 @@ function SlotRow({ slot, now, heldUntil, onCancel, onRelease, onWithdraw }: { sl
           {slot.guests && slot.guests > 1 ? ` (${kr(slot.fullPrice / slot.guests)} per pers.)` : ''}
           {slot.status === 'sold' && ` · gebyr ${kr(slot.fee ?? 0)}${slot.introSpotsUsed ? ' (introtilbud)' : ''}`}
         </p>
+        {!!slot.cancellerBonusPct && slot.status !== 'booked' && (
+          <p className="text-sm text-[#13772a]">
+            🎁 {slot.status === 'sold' ? `${slot.customerName} fikk ${kr(cancellerBonus(slot))} (${slot.cancellerBonusPct} %) for å avbestille i tide` : `${slot.customerName} får ${slot.cancellerBonusPct} % av salgsprisen hvis timen selges`}
+          </p>
+        )}
       </div>
       <div className="flex flex-wrap items-center gap-2">
         <span className={`eyebrow rounded px-2 py-1 ${st.pill}`}>
@@ -275,6 +300,7 @@ function SlotRow({ slot, now, heldUntil, onCancel, onRelease, onWithdraw }: { sl
 
 function FeePreview({ slot, biz }: { slot: Slot; biz: Business }) {
   const f = calculateFee(slot, biz)
+  const bonus = cancellerBonus(slot)
   const spots = `${f.spots} fylt${f.spots === 1 ? '' : 'e'} plass${f.spots === 1 ? '' : 'er'}`
   return (
     <div className="rounded-xl border border-hairline p-4 text-sm text-ink-2">
@@ -282,9 +308,15 @@ function FeePreview({ slot, biz }: { slot: Slot; biz: Business }) {
         <span>LastCall-gebyr hvis den selges ({spots})</span>
         <b className="font-semibold">{f.fee === 0 && f.standardFee > 0 ? <><s className="font-normal text-faint">{kr(f.standardFee)}</s> {kr(0)}</> : kr(f.fee)}</b>
       </div>
+      {bonus > 0 && (
+        <div className="mt-1 flex justify-between">
+          <span>Avbestillingsbonus til {slot.customerName} ({slot.cancellerBonusPct} %)</span>
+          <b className="font-semibold">{kr(bonus)}</b>
+        </div>
+      )}
       <div className="mt-1 flex justify-between">
         <span>Du beholder</span>
-        <b className="font-semibold text-green">{kr(f.price - f.fee)}</b>
+        <b className="font-semibold text-green">{kr(f.price - f.fee - bonus)}</b>
       </div>
       <p className="mt-2 text-muted">
         {f.introSpotsUsed > 0 ? `Introtilbud: gratis. Bruker ${f.introSpotsUsed} av dine ${biz.introSpotsLeft} gjenværende gratis plasser.` : `${FEE_PER_SPOT} kr per fylte plass, aldri mer enn ${FEE_CAP_PCT} %.`} Kun betaling hvis kunden møter opp.

@@ -2,9 +2,9 @@ import { useSyncExternalStore } from 'react'
 import { calculateFee, INTRO_SPOTS } from './pricing'
 import { createSeed, generateCalendar, uid } from './seed'
 import { DEFAULT_RULE, matchesWant, releaseTime, ruleDiscount } from './selectors'
-import type { AutoReleaseRule, Category, ReleaseMode, State, TimeWindow } from './types'
+import type { AutoReleaseRule, Category, ReleaseMode, State, WantWindow } from './types'
 
-const KEY = 'lastcall-demo-v7-nb'
+const KEY = 'lastcall-demo-v9-nb'
 const MAX_AGE = 6 * 3_600_000
 
 function load(): State {
@@ -77,13 +77,16 @@ export function cancelSlot(slotId: string) {
   const slot = state.slots.find((s) => s.id === slotId)
   if (!slot || slot.status !== 'booked') return
   const rule = state.rules[slot.businessId]
-  const at = releaseTime(state, slot)
+  // The Canceller bonus is promised now, at the rule's current percent, and paid only if the slot sells.
+  const cancellerBonusPct = rule?.cancellerBonusPct ?? 0
+  const promised = { ...state, slots: state.slots.map((s) => (s.id === slotId ? { ...s, cancellerBonusPct } : s)) }
+  const at = releaseTime(promised, slot)
   if (rule?.enabled && at !== null && now >= at) {
-    commit(releaseInto(state, slotId, ruleDiscount(rule), now))
+    commit(releaseInto(promised, slotId, ruleDiscount(rule), now))
     return
   }
   const status = rule?.enabled ? 'held' : 'cancelled'
-  commit({ ...state, slots: state.slots.map((s) => (s.id === slotId ? { ...s, status } : s)) })
+  commit({ ...promised, slots: promised.slots.map((s) => (s.id === slotId ? { ...s, status } : s)) })
 }
 
 export function releaseSlot(slotId: string, discountPct: number) {
@@ -140,8 +143,16 @@ export function applyAutoRelease(now: number) {
   if (next !== state) commit(next)
 }
 
-export function addWant(label: string, categories: Category[], window: TimeWindow, area?: string) {
-  commit({ ...state, wants: [{ id: uid('want'), label, categories, window, area, createdAt: Date.now() }, ...state.wants] })
+export function addWant(label: string, categories: Category[], window: WantWindow, area?: string, businessId?: string) {
+  commit({ ...state, wants: [{ id: uid('want'), label, categories, window, area, businessId, createdAt: Date.now() }, ...state.wants] })
+}
+
+/** Follow or unfollow a Business: an open-ended Want for its Last Calls only. */
+export function toggleFollow(businessId: string) {
+  const existing = state.wants.find((w) => w.businessId === businessId)
+  if (existing) return removeWant(existing.id)
+  const biz = state.businesses.find((b) => b.id === businessId)
+  if (biz) addWant(`Nye Last Calls hos ${biz.name}`, [biz.category], 'any', undefined, biz.id)
 }
 
 export function removeWant(wantId: string) {

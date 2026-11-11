@@ -2,6 +2,9 @@ export type Category = 'food' | 'beauty' | 'car' | 'health' | 'official' | 'expe
 
 export type TimeWindow = 'now' | 'today' | '48h'
 
+/** A Want can also wait for any time: a standing interest rather than a need right now. */
+export type WantWindow = TimeWindow | 'any'
+
 export type SlotStatus = 'booked' | 'cancelled' | 'held' | 'released' | 'sold'
 
 export interface Business {
@@ -43,6 +46,8 @@ export interface Slot {
   /** Set when sold: LastCall's fee and how many intro spots it used. */
   fee?: number
   introSpotsUsed?: number
+  /** Canceller bonus (% of the sold price) promised when the slot was cancelled; paid to the Canceller only if it sells. */
+  cancellerBonusPct?: number
 }
 
 export type ReleaseMode = 'full' | 'discount'
@@ -53,13 +58,17 @@ export interface AutoReleaseRule {
   mode: ReleaseMode
   leadMinutes: number
   discountPct: number
+  /** Percent of the sold price the Canceller gets back if their cancelled slot sells on LastCall. 0 turns it off. */
+  cancellerBonusPct: number
 }
 
 export interface Want {
   id: string
   label: string
   categories: Category[]
-  window: TimeWindow
+  window: WantWindow
+  /** Set when the Customer follows a Business: matches only its Last Calls. */
+  businessId?: string
   /** Neighbourhood the Customer mentioned; shown, not used for matching. */
   area?: string
   createdAt: number

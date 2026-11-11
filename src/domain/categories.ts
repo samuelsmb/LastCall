@@ -1,4 +1,4 @@
-import type { Category, TimeWindow } from './types'
+import type { Category, TimeWindow, WantWindow } from './types'
 
 export const CATEGORIES: Category[] = ['food', 'car', 'beauty', 'health', 'official', 'experiences']
 
@@ -16,6 +16,11 @@ export const WINDOW_META: Record<TimeWindow, { label: string; hint: string }> = 
   now: { label: 'Nå', hint: 'innen 2 timer' },
   today: { label: 'I dag', hint: 'før midnatt' },
   '48h': { label: 'Neste 48 t', hint: 'innen 48 timer' },
+}
+
+export const WANT_WINDOW_META: Record<WantWindow, { label: string; hint: string }> = {
+  ...WINDOW_META,
+  any: { label: 'Når som helst', hint: 'når som helst' },
 }
 
 export const NEIGHBOURHOODS = ['Sentrum', 'Grünerløkka', 'Majorstuen', 'Frogner', 'Bjørvika', 'Bjerke', 'Storo', 'Gamle Oslo', 'Tøyen', 'Sagene', 'St. Hanshaugen']

@@ -17,7 +17,7 @@ A Business's standing instruction for cancelled slots: either release them at on
 _Avoid_: Automation, trigger
 
 **Want**:
-A Customer's saved need, such as "tyre change within 48h", that LastCall matches new Last Calls against.
+A Customer's saved need, such as "tyre change within 48h", that LastCall matches new Last Calls against. A Want can also be open-ended ("any time"), such as "I like restaurants in Sentrum". Following a Business is a Want for that Business's Last Calls only.
 _Avoid_: Wish, request, subscription
 
 **Alert**:
@@ -39,6 +39,10 @@ _Avoid_: User, buyer, consumer
 **Canceller**:
 The person whose cancellation freed up the slot behind a Last Call.
 _Avoid_: Original customer
+
+**Canceller bonus**:
+A share of the sold price a Business promises the Canceller (0–50 % in steps of 5, set with a slider next to its Auto-release rule) for cancelling in time. The percent is fixed when the slot is cancelled; it is paid in kroner, worked out from the price the slot sells for, and only if it sells on LastCall. It comes out of the Business's net.
+_Avoid_: Refund, reward, cashback
 
 **Skip the queue**:
 A Last Call released at full price (0% off). The Customer's gain is getting in at all, not a lower price. Shown as a sticker instead of a discount.

@@ -1,6 +1,6 @@
 import { NEIGHBOURHOODS } from './categories'
-import { lastCallPrice } from './pricing'
-import type { AutoReleaseRule, Business, Category, Slot, State, TimeWindow, Want } from './types'
+import { cancellerBonus, lastCallPrice } from './pricing'
+import type { AutoReleaseRule, Business, Category, Slot, State, TimeWindow, Want, WantWindow } from './types'
 
 export { lastCallPrice }
 
@@ -16,8 +16,9 @@ export function isLive(slot: Slot, now: number) {
   return slot.status === 'released' && slot.start > now
 }
 
-export function inWindow(start: number, window: TimeWindow, now: number) {
+export function inWindow(start: number, window: WantWindow, now: number) {
   if (start <= now) return false
+  if (window === 'any') return true
   if (window === 'now') return start - now <= 2 * 3_600_000
   if (window === '48h') return start - now <= 48 * 3_600_000
   const endOfToday = new Date(now)
@@ -26,6 +27,7 @@ export function inWindow(start: number, window: TimeWindow, now: number) {
 }
 
 export function matchesWant(state: State, slot: Slot, want: Want, now: number) {
+  if (want.businessId) return slot.businessId === want.businessId && inWindow(slot.start, want.window, now)
   const biz = businessOf(state, slot)
   return want.categories.includes(biz.category) && inWindow(slot.start, want.window, now)
 }
@@ -65,7 +67,7 @@ export function ruleDiscount(rule: AutoReleaseRule) {
   return rule.mode === 'full' ? 0 : rule.discountPct
 }
 
-export const DEFAULT_RULE: AutoReleaseRule = { enabled: false, mode: 'full', leadMinutes: 60, discountPct: 20 }
+export const DEFAULT_RULE: AutoReleaseRule = { enabled: false, mode: 'full', leadMinutes: 60, discountPct: 20, cancellerBonusPct: 10 }
 
 export function dashboardStats(state: State, businessId: string) {
   const base = state.baselines[businessId] ?? { recovered: 0, released: 0, sold: 0 }
@@ -74,12 +76,14 @@ export function dashboardStats(state: State, businessId: string) {
   const released = own.filter((s) => s.releasedAt)
   const recovered = base.recovered + sold.reduce((sum, s) => sum + lastCallPrice(s), 0)
   const fee = sold.reduce((sum, s) => sum + (s.fee ?? 0), 0)
+  const bonus = sold.reduce((sum, s) => sum + cancellerBonus(s), 0)
   const releasedCount = base.released + released.length
   const soldCount = base.sold + sold.length
   return {
     recovered,
     fee,
-    net: recovered - fee,
+    bonus,
+    net: recovered - fee - bonus,
     introSpotsLeft: state.businesses.find((b) => b.id === businessId)?.introSpotsLeft ?? 0,
     released: releasedCount,
     sold: soldCount,
@@ -98,12 +102,13 @@ const HINTS: [RegExp, Category][] = [
 ]
 
 /** Fake "AI": reads a free-text Want and guesses Categories, a time window and an area. */
-export function interpretWant(text: string): { categories: Category[]; window: TimeWindow | null; area: string | null } {
+export function interpretWant(text: string): { categories: Category[]; window: WantWindow | null; area: string | null } {
   const categories = HINTS.filter(([re]) => re.test(text)).map(([, c]) => c)
-  let window: TimeWindow | null = null
+  let window: WantWindow | null = null
   if (/\bnow\b|asap|right away|urgent|\bnå\b|med en gang|haster|umiddelbart/i.test(text)) window = 'now'
   else if (/today|tonight|this evening|i dag|idag|i kveld/i.test(text)) window = 'today'
   else if (/48|tomorrow|couple of days|two days|weekend|soon|i morgen|imorgen|to dager|helg|snart/i.test(text)) window = '48h'
+  else if (/\b(liker|elsker|følg|følger|når som helst|alltid|gjerne|interessert)\b|\b(love|like|follow|anytime|whenever)\b/i.test(text)) window = 'any'
   const area = NEIGHBOURHOODS.find((n) => text.toLowerCase().includes(n.toLowerCase())) ?? null
   return { categories: [...new Set(categories)], window, area }
 }

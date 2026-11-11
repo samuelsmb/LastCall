@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { alertLine } from '../components/AlertToasts'
-import { CATEGORIES, CATEGORY_META, WINDOW_META } from '../domain/categories'
+import { CATEGORIES, CATEGORY_META, WANT_WINDOW_META } from '../domain/categories'
 import { businessOf, interpretWant, isLive, matchesWant } from '../domain/selectors'
 import { addWant, markAlertSeen, removeWant, useAppState } from '../domain/store'
-import type { Category, TimeWindow } from '../domain/types'
+import type { Category, WantWindow } from '../domain/types'
 import { go, useNow } from '../lib'
 import { Button, Chip, Mascot, Segmented } from '../ui'
 
@@ -13,7 +13,7 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
   const initial = interpretWant(initialText)
   const [label, setLabel] = useState(initialText)
   const [categories, setCategories] = useState<Category[]>(initial.categories)
-  const [window, setWindow] = useState<TimeWindow | null>(initial.window ?? '48h')
+  const [window, setWindow] = useState<WantWindow | null>(initial.window ?? '48h')
   const [area, setArea] = useState<string | null>(initial.area)
   const [touched, setTouched] = useState(false)
 
@@ -36,7 +36,7 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
   const save = () => {
     if (!canSave) return
     const fallback = categories.map((c) => CATEGORY_META[c].label).join(' eller ')
-    addWant(label.trim() || `${fallback} ${WINDOW_META[window].hint}`, categories, window, area ?? undefined)
+    addWant(label.trim() || `${fallback} ${WANT_WINDOW_META[window].hint}`, categories, window, area ?? undefined)
     setLabel('')
     setCategories([])
     setWindow('48h')
@@ -64,7 +64,7 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
           {!label && (
             <div className="flex flex-wrap items-center gap-2 text-[15px] text-muted">
               Prøv:
-              {['Dekkskift innen 48 timer nær Bjerke', 'Restaurant i kveld i sentrum'].map((ex) => (
+              {['Dekkskift innen 48 timer nær Bjerke', 'Restaurant i kveld i sentrum', 'Jeg liker restaurant i sentrum'].map((ex) => (
                 <Chip key={ex} active={false} onClick={() => onLabel(ex)}>
                   {ex}
                 </Chip>
@@ -77,7 +77,7 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
               {guess.categories.length ? (
                 <>
                   Gjenkjente {guess.categories.map((c) => CATEGORY_META[c].label).join(', ')}
-                  {guess.window && `, ${WINDOW_META[guess.window].hint}`}
+                  {guess.window && `, ${WANT_WINDOW_META[guess.window].hint}`}
                   {guess.area && `, nær ${guess.area}`}
                 </>
               ) : (
@@ -99,7 +99,7 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
                 setTouched(true)
                 setWindow(w)
               }}
-              options={(['now', 'today', '48h'] as TimeWindow[]).map((w) => ({ value: w, label: WINDOW_META[w].label }))}
+              options={(['now', 'today', '48h', 'any'] as WantWindow[]).map((w) => ({ value: w, label: WANT_WINDOW_META[w].label }))}
             />
             <Button onClick={save} disabled={!canSave}>
               Lagre ønske
@@ -114,13 +114,14 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
             <div className="overflow-hidden rounded-xl border border-hairline bg-canvas">
               {state.wants.map((w) => {
                 const matches = state.slots.filter((s) => isLive(s, now) && matchesWant(state, s, w, now)).length
+                const followed = w.businessId ? state.businesses.find((b) => b.id === w.businessId) : undefined
                 return (
                   <div key={w.id} className="flex items-center gap-3 border-b border-hairline px-4 py-3 last:border-b-0">
                     <span className="text-xl">{CATEGORY_META[w.categories[0]].icon}</span>
                     <div className="min-w-0 flex-1">
                       <p className="font-medium">{w.label}</p>
                       <p className="text-sm text-muted">
-                        {w.categories.map((c) => CATEGORY_META[c].label).join(', ')} · {WINDOW_META[w.window].hint}
+                        {followed ? `Følger ${followed.name}` : w.categories.map((c) => CATEGORY_META[c].label).join(', ')} · {WANT_WINDOW_META[w.window].hint}
                         {w.area && ` · nær ${w.area}`}
                         {matches > 0 && <span className="text-primary"> · {matches} passer nå</span>}
                       </p>
