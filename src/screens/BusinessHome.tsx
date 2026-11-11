@@ -5,7 +5,7 @@ import { dashboardStats, DEFAULT_RULE, lastCallPrice, releaseTime } from '../dom
 import { cancelSlot, releaseSlot, setCurrentBusiness, setRule, useAppState, withdrawSlot } from '../domain/store'
 import type { AutoReleaseRule, Business, ReleaseMode, Slot } from '../domain/types'
 import { clock, countdown, dayLabel, go, kr, useNow } from '../lib'
-import { Button, Modal, Segmented } from '../ui'
+import { Button, Modal, Overlay, Segmented } from '../ui'
 import { WAITLIST_LINE } from './Register'
 
 const STATUS: Record<Slot['status'], { label: string; pill: string }> = {
@@ -207,10 +207,12 @@ export function BusinessHome({ businessId }: { businessId?: string }) {
       )}
 
       {toast && (
-        <div className="fixed inset-x-3 bottom-6 z-50 mx-auto flex max-w-md animate-rise items-center gap-3 rounded-xl border border-hairline bg-canvas px-4 py-3 shadow-lifted">
-          <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-green text-sm text-white">✓</span>
-          <span className="text-[15px]">{toast}</span>
-        </div>
+        <Overlay>
+          <div className="fixed inset-x-3 bottom-6 z-50 mx-auto flex max-w-md animate-rise items-center gap-3 rounded-xl border border-hairline bg-canvas px-4 py-3 shadow-lifted">
+            <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-green text-sm text-white">✓</span>
+            <span className="text-[15px]">{toast}</span>
+          </div>
+        </Overlay>
       )}
     </div>
   )

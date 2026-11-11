@@ -1,4 +1,5 @@
 import { useEffect, useRef, type ButtonHTMLAttributes, type ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 import { CATEGORY_META } from './domain/categories'
 import { lastCallPrice } from './domain/selectors'
 import type { Category, Slot } from './domain/types'
@@ -131,12 +132,19 @@ export function Modal({ onClose, children }: { onClose: () => void; children: Re
     return () => window.removeEventListener('keydown', onKey)
   }, [onClose])
   return (
-    <div className="fixed inset-0 z-50 flex animate-fade items-end justify-center bg-black/30 p-3 sm:items-center" onClick={onClose}>
-      <div className="w-full max-w-md animate-rise rounded-2xl bg-canvas p-6 shadow-lifted" onClick={(e) => e.stopPropagation()}>
-        {children}
+    <Overlay>
+      <div className="fixed inset-0 z-50 flex animate-fade items-end justify-center bg-black/30 p-3 sm:items-center" onClick={onClose}>
+        <div className="max-h-[calc(100vh-1.5rem)] w-full max-w-md animate-rise overflow-y-auto rounded-2xl bg-canvas p-6 shadow-lifted" onClick={(e) => e.stopPropagation()}>
+          {children}
+        </div>
       </div>
-    </div>
+    </Overlay>
   )
+}
+
+/** Renders on document.body so `fixed` is relative to the viewport, not an animated (transformed) ancestor. */
+export function Overlay({ children }: { children: ReactNode }) {
+  return createPortal(children, document.body)
 }
 
 export function BellIcon({ className = '' }: { className?: string }) {
