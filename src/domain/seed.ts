@@ -105,7 +105,7 @@ const TEMPLATES: Record<Category, [title: string, price: number, guests?: number
   beauty: [['Cut and colour', 1600], ['Facial', 1100], ['Manicure', 550]],
   car: [['Tyre change', 550], ['Tyre change and balancing', 700], ['Service check', 1800]],
   health: [['Physio session', 750], ['60-min massage', 900], ['Check-up', 1100]],
-  official: [['Passport appointment', 0], ['ID card renewal', 0], ['Driving test', 1300]],
+  official: [['Passport appointment', 650], ['ID card renewal', 300], ['Driving test', 1300]],
   experiences: [['Guided tour', 450], ['Workshop seat', 650], ['Tasting session', 750]],
 }
 
