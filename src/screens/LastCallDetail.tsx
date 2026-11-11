@@ -51,7 +51,7 @@ export function LastCallDetail({ id }: { id: string }) {
             <Countdown start={slot.start} />
             <div>
               <Price slot={slot} big />
-              {savings(slot) > 0 ? <p className="mt-1 font-medium text-green">You save {kr(savings(slot))}</p> : slot.perk && <p className="mt-1 font-medium text-green">{slot.perk}</p>}
+              {savings(slot) > 0 ? <p className="mt-1 font-medium text-green">You save {kr(savings(slot))}</p> : <p className="mt-1 font-medium text-green">{slot.perk ?? 'Skip the queue. Normally fully booked.'}</p>}
             </div>
 
             {available && !tooSlow ? (
@@ -73,8 +73,8 @@ export function LastCallDetail({ id }: { id: string }) {
             ) : (
               <div className="flex flex-col items-center gap-2 rounded-xl bg-paper p-5 text-center">
                 <span className="text-3xl">🐢</span>
-                <p className="title">Someone else booked this one</p>
-                <p className="text-sm text-muted">Set up an alert to be first next time.</p>
+                <p className="title">Too slow!</p>
+                <p className="text-sm text-muted">Gone! We'll ping you when the next one drops.</p>
                 <div className="mt-2 flex gap-2">
                   <Button size="sm" variant="utility" onClick={() => go('/')}>
                     Browse more

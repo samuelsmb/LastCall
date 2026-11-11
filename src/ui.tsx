@@ -95,7 +95,7 @@ export function Price({ slot, big = false }: { slot: Slot; big?: boolean }) {
 
 export function DiscountSticker({ slot, className = '' }: { slot: Slot; className?: string }) {
   const d = slot.discountPct ?? 0
-  return <span className={`eyebrow rounded-full bg-canvas px-2.5 py-1 text-ink shadow-soft ${className}`}>{d > 0 ? `−${d}%` : slot.perk ?? 'Last Call'}</span>
+  return <span className={`eyebrow rounded-full bg-canvas px-2.5 py-1 text-ink shadow-soft ${className}`}>{d > 0 ? `−${d}%` : slot.perk ?? 'Skip the queue'}</span>
 }
 
 /** Colour-blocked illustration band with a page-icon tile, the Notion way. */

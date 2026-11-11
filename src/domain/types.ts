@@ -34,8 +34,12 @@ export interface Slot {
   guests?: number
 }
 
+export type ReleaseMode = 'full' | 'discount'
+
 export interface AutoReleaseRule {
   enabled: boolean
+  /** full: release at once at full price ("Skip the queue"). discount: hold until leadMinutes before start, then release at discountPct off. */
+  mode: ReleaseMode
   leadMinutes: number
   discountPct: number
 }

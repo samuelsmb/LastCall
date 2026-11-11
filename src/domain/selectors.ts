@@ -1,4 +1,4 @@
-import type { Business, Category, Slot, State, TimeWindow, Want } from './types'
+import type { AutoReleaseRule, Business, Category, Slot, State, TimeWindow, Want } from './types'
 
 export function lastCallPrice(slot: Slot) {
   const d = slot.discountPct ?? 0
@@ -58,8 +58,16 @@ export function marketplace(state: State, now: number, f: MarketplaceFilters): S
 export function releaseTime(state: State, slot: Slot): number | null {
   const rule = state.rules[slot.businessId]
   if (!rule?.enabled) return null
+  if (rule.mode === 'full') return 0
   return slot.start - rule.leadMinutes * 60_000
 }
+
+/** The discount an Auto-release rule applies: 0 when it releases at full price. */
+export function ruleDiscount(rule: AutoReleaseRule) {
+  return rule.mode === 'full' ? 0 : rule.discountPct
+}
+
+export const DEFAULT_RULE: AutoReleaseRule = { enabled: false, mode: 'full', leadMinutes: 60, discountPct: 20 }
 
 export function dashboardStats(state: State, businessId: string) {
   const base = state.baselines[businessId] ?? { recovered: 0, released: 0, sold: 0 }
