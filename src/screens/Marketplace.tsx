@@ -52,7 +52,7 @@ export function Marketplace() {
             <span className="eyebrow inline-block rounded-full bg-canvas px-2.5 py-1 text-primary">Nytt i {CITY}</span>
             <h1 className="display-2 mt-5 sm:display-1">Noen avbestilte. Nå er den din.</h1>
             <p className="mt-5 text-lg text-white/80">
-              Fullbooka bord og verksteder i {CITY}, ledige i det øyeblikket noen avbestiller. Hopp over køen, noen ganger til lavere pris. Fjord-abelt i siste liten.
+              Fullbooka bord og verksteder i {CITY}, ledige i det øyeblikket noen avbestiller. Hopp over køen, noen ganger til lavere pris. Rimelig i siste liten.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button onClick={surprise}>Overrask meg</Button>
