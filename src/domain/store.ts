@@ -4,7 +4,7 @@ import { createSeed, generateCalendar, uid } from './seed'
 import { DEFAULT_RULE, matchesWant, releaseTime, ruleDiscount } from './selectors'
 import type { AutoReleaseRule, Category, ReleaseMode, State, TimeWindow } from './types'
 
-const KEY = 'lastcall-demo-v4'
+const KEY = 'lastcall-demo-v4-nb'
 const MAX_AGE = 6 * 3_600_000
 
 function load(): State {
@@ -163,7 +163,7 @@ export function registerBusiness(name: string, category: Category, neighbourhood
     ...state,
     businesses: [
       ...state.businesses,
-      { id, name, category, neighbourhood, address: `${neighbourhood}`, distanceKm: 1 + Math.round(Math.random() * 40) / 10, tagline: 'New on LastCall', introSpotsLeft: INTRO_SPOTS },
+      { id, name, category, neighbourhood, address: `${neighbourhood}`, distanceKm: 1 + Math.round(Math.random() * 40) / 10, tagline: 'Ny på LastCall', introSpotsLeft: INTRO_SPOTS },
     ],
     slots: [...state.slots, ...generateCalendar(id, category, now)],
     rules: { ...state.rules, [id]: { ...DEFAULT_RULE, enabled: true, mode } },

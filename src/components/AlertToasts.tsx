@@ -8,11 +8,11 @@ import { Button } from '../ui'
 
 const RECENT = 15 * 60_000
 
-/** "Tyre change at Ted's Garage tomorrow 14:00, 7 min away. 550 kr." */
+/** "Dekkskift hos Ted's Garage i morgen 14:00, 7 min unna. 550 kr." */
 export function alertLine(state: State, slot: Slot, now: number) {
   const biz = businessOf(state, slot)
-  const day = when(slot.start, now).replace(/^(Today|Tomorrow)/, (d) => d.toLowerCase())
-  return `${slot.title} at ${biz.name} ${day}, ${walkMinutes(biz)} min away. ${kr(lastCallPrice(slot))}.`
+  const day = when(slot.start, now).replace(/^(I dag|I morgen)/, (d) => d.toLowerCase())
+  return `${slot.title} hos ${biz.name} ${day}, ${walkMinutes(biz)} min unna. ${kr(lastCallPrice(slot))}.`
 }
 
 /** Pops up Alerts for the Customer, including ones created in another tab. */
@@ -36,11 +36,11 @@ export function AlertToasts() {
             <div className="flex items-start gap-3">
               <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-hairline text-xl">{CATEGORY_META[biz.category].icon}</span>
               <div className="min-w-0 flex-1">
-                <p className="eyebrow text-primary">🔔 Someone cancelled</p>
+                <p className="eyebrow text-primary">🔔 Noen avbestilte</p>
                 <p className="mt-0.5 font-semibold leading-snug">{alertLine(state, slot, now)}</p>
-                {want && <p className="mt-2 text-sm text-ink-2">Matches your Want “{want.label}”</p>}
+                {want && <p className="mt-2 text-sm text-ink-2">Matcher ønsket ditt «{want.label}»</p>}
               </div>
-              <button className="cursor-pointer rounded-md px-1.5 text-lg leading-none text-faint hover:bg-black/5 hover:text-ink" onClick={() => setDismissed(new Set(dismissed).add(a.id))} aria-label="Dismiss">
+              <button className="cursor-pointer rounded-md px-1.5 text-lg leading-none text-faint hover:bg-black/5 hover:text-ink" onClick={() => setDismissed(new Set(dismissed).add(a.id))} aria-label="Lukk">
                 ×
               </button>
             </div>
@@ -52,7 +52,7 @@ export function AlertToasts() {
                 go(`/lc/${slot.id}`)
               }}
             >
-              View Last Call
+              Se Last Call
             </Button>
           </div>
         )

@@ -18,16 +18,16 @@ export function Header({ side, route }: { side: 'customer' | 'business'; route: 
           {side === 'customer' ? (
             <>
               <a href="#/" className={link(route === '/')}>
-                Marketplace
+                Markedsplass
               </a>
               <a href="#/wants" className={link(route.startsWith('/wants'))}>
-                Wants
+                Ønsker
               </a>
             </>
           ) : (
             <>
               <a href="#/biz" className={link(route.startsWith('/biz'))}>
-                Dashboard
+                Oversikt
               </a>
             </>
           )}
@@ -35,21 +35,21 @@ export function Header({ side, route }: { side: 'customer' | 'business'; route: 
 
         <div className="ml-auto flex items-center gap-2">
           {side === 'customer' && (
-            <a href="#/wants" className="relative grid h-9 w-9 place-items-center rounded-lg text-lg hover:bg-black/5 sm:hidden" aria-label="Wants">
+            <a href="#/wants" className="relative grid h-9 w-9 place-items-center rounded-lg text-lg hover:bg-black/5 sm:hidden" aria-label="Ønsker">
               🔔
             </a>
           )}
           {side === 'customer' && unseen > 0 && (
             <a href="#/wants" className="eyebrow hidden animate-fade rounded-full bg-primary/10 px-2.5 py-1 text-primary sm:inline-block">
-              {unseen} new alert{unseen === 1 ? '' : 's'}
+              {unseen} {unseen === 1 ? 'nytt varsel' : 'nye varsler'}
             </a>
           )}
           <div className="inline-flex rounded-lg border border-hairline bg-paper p-0.5">
             <a href="#/" className={`rounded-md px-3 py-1 text-[15px] font-medium transition ${side === 'customer' ? 'bg-canvas text-ink shadow-soft' : 'text-muted hover:text-ink'}`}>
-              Customer
+              Kunde
             </a>
             <a href="#/biz" className={`rounded-md px-3 py-1 text-[15px] font-medium transition ${side === 'business' ? 'bg-canvas text-ink shadow-soft' : 'text-muted hover:text-ink'}`}>
-              Business
+              Bedrift
             </a>
           </div>
         </div>

@@ -35,7 +35,7 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
   const canSave = categories.length > 0 && window
   const save = () => {
     if (!canSave) return
-    const fallback = categories.map((c) => CATEGORY_META[c].label).join(' or ')
+    const fallback = categories.map((c) => CATEGORY_META[c].label).join(' eller ')
     addWant(label.trim() || `${fallback} ${WINDOW_META[window].hint}`, categories, window, area ?? undefined)
     setLabel('')
     setCategories([])
@@ -50,15 +50,15 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
         <section className="flex flex-col gap-5 rounded-2xl border border-hairline bg-canvas p-6 sm:p-8">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h1 className="heading-1">What do you need?</h1>
-              <p className="mt-2 text-muted">Tell us, and we'll alert you the moment a matching Last Call is released.</p>
+              <h1 className="heading-1">Hva trenger du?</h1>
+              <p className="mt-2 text-muted">Si fra, så varsler vi deg i det øyeblikket en passende Last Call frigis.</p>
             </div>
             <Mascot className="hidden text-6xl sm:inline-block" />
           </div>
           <input
             value={label}
             onChange={(e) => onLabel(e.target.value)}
-            placeholder="e.g. tyre change within 48h near Majorstuen"
+            placeholder="f.eks. dekkskift innen 48 timer nær Majorstuen"
             className="rounded border border-[#ddd] bg-canvas px-3 py-2.5 text-base outline-none placeholder:text-faint focus:ring-2 focus:ring-primary/30"
           />
           {label && !touched && (
@@ -66,12 +66,12 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
               <span className="rounded bg-purple/40 px-1.5 text-purple-deep">✦ AI</span>
               {guess.categories.length ? (
                 <>
-                  Detected {guess.categories.map((c) => CATEGORY_META[c].label).join(', ')}
+                  Gjenkjente {guess.categories.map((c) => CATEGORY_META[c].label).join(', ')}
                   {guess.window && `, ${WINDOW_META[guess.window].hint}`}
-                  {guess.area && `, near ${guess.area}`}
+                  {guess.area && `, nær ${guess.area}`}
                 </>
               ) : (
-                <>Not sure yet. Pick a category below.</>
+                <>Usikker ennå. Velg en kategori under.</>
               )}
             </p>
           )}
@@ -92,14 +92,14 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
               options={(['now', 'today', '48h'] as TimeWindow[]).map((w) => ({ value: w, label: WINDOW_META[w].label }))}
             />
             <Button onClick={save} disabled={!canSave}>
-              Save Want
+              Lagre ønske
             </Button>
           </div>
         </section>
 
         <section className="flex flex-col gap-3">
-          <h2 className="heading-2">Your Wants</h2>
-          {state.wants.length === 0 && <p className="text-muted">No Wants yet. Try “fine dining tonight” or “tyres within 48 hours”.</p>}
+          <h2 className="heading-2">Dine ønsker</h2>
+          {state.wants.length === 0 && <p className="text-muted">Ingen ønsker ennå. Prøv «fine dining i kveld» eller «dekkskift innen 48 timer».</p>}
           {state.wants.length > 0 && (
             <div className="overflow-hidden rounded-xl border border-hairline bg-canvas">
               {state.wants.map((w) => {
@@ -111,12 +111,12 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
                       <p className="font-medium">{w.label}</p>
                       <p className="text-sm text-muted">
                         {w.categories.map((c) => CATEGORY_META[c].label).join(', ')} · {WINDOW_META[w.window].hint}
-                        {w.area && ` · near ${w.area}`}
-                        {matches > 0 && <span className="text-primary"> · {matches} matching now</span>}
+                        {w.area && ` · nær ${w.area}`}
+                        {matches > 0 && <span className="text-primary"> · {matches} passer nå</span>}
                       </p>
                     </div>
                     <Button size="sm" variant="ghost" onClick={() => removeWant(w.id)}>
-                      Remove
+                      Fjern
                     </Button>
                   </div>
                 )
@@ -127,12 +127,12 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
       </div>
 
       <section className="flex flex-col gap-3">
-        <h2 className="heading-2">Alerts</h2>
+        <h2 className="heading-2">Varsler</h2>
         {state.alerts.length === 0 && (
           <div className="flex flex-col items-center gap-2 rounded-2xl bg-canvas px-6 py-12 text-center">
             <span className="text-4xl">📭</span>
-            <p className="title">No alerts yet</p>
-            <p className="text-sm text-muted">When a business releases a Last Call that matches one of your Wants, it shows up here.</p>
+            <p className="title">Ingen varsler ennå</p>
+            <p className="text-sm text-muted">Når en bedrift frigir en Last Call som passer et av ønskene dine, dukker den opp her.</p>
           </div>
         )}
         {state.alerts.length > 0 && (
@@ -158,9 +158,9 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
                     <span className="block font-medium">{alertLine(state, slot, now)}</span>
                     <span className="block text-sm text-muted">
                       {biz.neighbourhood}
-                      {live ? '' : ' · no longer available'}
+                      {live ? '' : ' · ikke lenger tilgjengelig'}
                     </span>
-                    {want && <span className="block text-sm text-ink-2">Matched “{want.label}”</span>}
+                    {want && <span className="block text-sm text-ink-2">Passet «{want.label}»</span>}
                   </span>
                 </button>
               )

@@ -2,7 +2,7 @@
 
 # LastCall
 
-When someone cancels, a business is left with an empty slot it can't sell. LastCall puts that slot on a marketplace the moment it frees up, so someone who wants it right now can grab it, at full price ("Skip the queue") or at a discount the business chooses. A mocked hackathon demo set in **Oslo**, starting with two hero categories: **Fine dining** and **Tyre change**.
+When someone cancels, a business is left with an empty slot it can't sell. LastCall puts that slot on a marketplace the moment it frees up, so someone who wants it right now can grab it, at full price ("Skip the queue") or at a discount the business chooses. A mocked hackathon demo set in **Oslo sentrum**, with the UI in Norwegian, starting with two hero categories: **Fine dining** and **Tyre change**.
 
 Businesses pay nothing to join and nothing per month: 49 kr per filled spot, never more than 10% of the sold price, only when the customer shows up. The first 10 filled spots are free.
 
@@ -26,15 +26,15 @@ Start with `?reset` once, then use two tabs: **Customer** (left) and **Business*
 | # | Tab | URL | What to do |
 | --- | --- | --- | --- |
 | 0 | any | `http://localhost:5173/?reset#/` | Fresh data. |
-| 1 | Customer | `#/wants?q=tyre%20change%20within%2048h%20near%20Majorstuen` | The fake AI has already read "tyre change within 48h near Majorstuen" and picked Tyre change, Next 48h, Majorstuen. Click **Save Want**. |
-| 2 | Business | `#/biz/teds-garage` | Ted's Garage, Auto-release on at full price. Click **Simulate cancellation** on **tomorrow 14:00, Tyre change**. It goes live at once as "Skip the queue". |
+| 1 | Customer | `#/wants?q=dekkskift%20innen%2048%20timer%20n%C3%A6r%20Majorstuen` | The fake AI has already read "dekkskift innen 48 timer nær Majorstuen" and picked Dekkskift, Neste 48 t, Majorstuen. Click **Lagre ønske**. |
+| 2 | Business | `#/biz/teds-garage` | Ted's Garage, Auto-release on at full price. Click **Simuler avbestilling** on **tomorrow 14:00, Tyre change**. It goes live at once as "Skip the queue". |
 | 3 | Customer | `#/lc/demo-teds-tyre` → `#/booked/demo-teds-tyre` | The Alert pops up: "Someone cancelled. Tyre change at Ted's Garage tomorrow 14:00, 7 min away. 550 kr." Open it, book. The ticket says "You skipped the queue". |
 | 4 | Business | `#/biz/teds-garage` | "Empty slot filled. 550 kr saved." Revenue recovered 550 kr, fee 0 kr (free spots left 9/10), net 550 kr. |
-| 5 | Business | `#/biz/restaurant-lokka` | Restaurant Løkka, Auto-release 2 hours before at 20% off. **Simulate cancellation** on **19:30, Table for 2** (2,000 kr pp). It is held until 17:30; click **Release now** (20% preselected, fee preview shows 98 kr waived by the Intro offer). |
+| 5 | Business | `#/biz/restaurant-lokka` | Theatercaféen, Auto-release 2 hours before at 20% off. **Simuler avbestilling** on **19:30, Table for 2** (2,000 kr pp). It is held until 17:30; click **Frigi nå** (20% preselected, fee preview shows 98 kr waived by the Intro offer). |
 | 5b | Customer | `#/lc/demo-lokka-table` | Book the table: 1,600 kr pp, 3,200 kr total. The Business dashboard shows 3,200 kr recovered, fee 0 kr, free spots left 8/10 (a table for 2 uses 2). |
 | 6 | Third tab | `#/lc/demo-teds-tyre` | Open before step 3 and try to book after: "Too slow! Gone! We'll ping you when the next one drops." |
 
-Notes: if it's later than about 18:45, the Løkka table is seeded for tomorrow 19:30 instead of tonight. If it's within 2 hours of 19:30, the cancellation releases straight away without "Release now".
+Notes: if it's later than about 18:45, the Theatercaféen table is seeded for tomorrow 19:30 instead of tonight. If it's within 2 hours of 19:30, the cancellation releases straight away without "Release now".
 
 ## Other screens
 

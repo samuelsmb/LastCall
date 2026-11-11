@@ -89,21 +89,21 @@ export function dashboardStats(state: State, businessId: string) {
 }
 
 const HINTS: [RegExp, Category][] = [
-  [/tyre|tire|car|garage|oil|brake|wheel|dekk/i, 'car'],
-  [/dinner|dining|food|lunch|restaurant|eat|table|tasting|menu/i, 'food'],
-  [/hair|nail|spa|facial|beauty|manicure|haircut|glow/i, 'beauty'],
-  [/physio|back|dentist|teeth|massage|doctor|health|knee/i, 'health'],
-  [/passport|licen[cs]e|driving test|id card|official|visa/i, 'official'],
-  [/bored|fun|escape|sauna|jazz|comedy|experience|date|surprise|adventure/i, 'experiences'],
+  [/tyre|tire|car|garage|oil|brake|wheel|dekk|\bbil|verksted|olje|bremse|hjul|punktering/i, 'car'],
+  [/dinner|dining|food|lunch|restaurant|eat|table|tasting|menu|middag|\bmat\b|lunsj|spise|bord|smaksmeny|meny/i, 'food'],
+  [/hair|nail|spa|facial|beauty|manicure|haircut|glow|hår|frisør|klipp|negl|ansikt|skjønnhet/i, 'beauty'],
+  [/physio|back|dentist|teeth|massage|doctor|health|knee|fysio|tann|rygg|lege|helse|kne/i, 'health'],
+  [/passport|licen[cs]e|driving test|id card|official|visa|pass\b|førerkort|førerprøve|ID-kort|politi/i, 'official'],
+  [/bored|fun|escape|sauna|badstu|jazz|comedy|experience|opplevelse|date|surprise|overrask|adventure|kjedet|moro/i, 'experiences'],
 ]
 
 /** Fake "AI": reads a free-text Want and guesses Categories, a time window and an area. */
 export function interpretWant(text: string): { categories: Category[]; window: TimeWindow | null; area: string | null } {
   const categories = HINTS.filter(([re]) => re.test(text)).map(([, c]) => c)
   let window: TimeWindow | null = null
-  if (/\bnow\b|asap|right away|urgent/i.test(text)) window = 'now'
-  else if (/today|tonight|this evening/i.test(text)) window = 'today'
-  else if (/48|tomorrow|couple of days|two days|weekend|soon/i.test(text)) window = '48h'
+  if (/\bnow\b|asap|right away|urgent|\bnå\b|med en gang|haster|umiddelbart/i.test(text)) window = 'now'
+  else if (/today|tonight|this evening|i dag|idag|i kveld/i.test(text)) window = 'today'
+  else if (/48|tomorrow|couple of days|two days|weekend|soon|i morgen|imorgen|to dager|helg|snart/i.test(text)) window = '48h'
   const area = NEIGHBOURHOODS.find((n) => text.toLowerCase().includes(n.toLowerCase())) ?? null
   return { categories: [...new Set(categories)], window, area }
 }
