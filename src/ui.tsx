@@ -4,28 +4,28 @@ import { lastCallPrice } from './domain/selectors'
 import type { Category, Slot } from './domain/types'
 import { countdown, kr, useNow } from './lib'
 
-type Variant = 'primary' | 'secondary' | 'gold' | 'ghost' | 'light'
+type Variant = 'primary' | 'secondary' | 'utility' | 'ghost' | 'danger'
 
 const VARIANTS: Record<Variant, string> = {
-  primary: 'bg-ink text-paper hover:bg-oxblood',
-  secondary: 'border border-ink text-ink hover:bg-ink hover:text-paper',
-  gold: 'bg-gold text-ink hover:bg-gold-light',
-  light: 'border border-paper/60 text-paper hover:bg-paper hover:text-ink',
-  ghost: 'text-ink underline-offset-[6px] hover:underline px-0!',
+  primary: 'rounded-full bg-primary text-white hover:bg-primary-active',
+  secondary: 'rounded-full bg-canvas text-ink shadow-soft hover:bg-paper',
+  utility: 'rounded-lg border border-hairline bg-canvas text-ink hover:bg-paper',
+  ghost: 'rounded-lg text-ink-2 hover:bg-black/5',
+  danger: 'rounded-lg border border-hairline bg-canvas text-ink-2 hover:bg-paper',
 }
 
 export function Button({ variant = 'primary', size = 'md', className = '', ...rest }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: Variant; size?: 'sm' | 'md' | 'lg' }) {
-  const sizes = { sm: 'px-4 py-2 text-[0.62rem]', md: 'px-7 py-3.5 text-[0.68rem]', lg: 'px-9 py-4 text-[0.72rem]' }
+  const sizes = { sm: 'px-3.5 py-1 text-[15px]', md: 'px-5 py-2.5 text-base', lg: 'px-6 py-3 text-base' }
   return (
     <button
       {...rest}
-      className={`inline-flex cursor-pointer items-center justify-center gap-3 font-medium uppercase tracking-[0.24em] transition duration-300 disabled:cursor-not-allowed disabled:opacity-40 ${sizes[size]} ${VARIANTS[variant]} ${className}`}
+      className={`inline-flex cursor-pointer items-center justify-center gap-2 font-medium transition active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100 ${sizes[size]} ${VARIANTS[variant]} ${className}`}
     />
   )
 }
 
 export function Card({ className = '', children }: { className?: string; children: ReactNode }) {
-  return <div className={`border border-ink/12 bg-ivory ${className}`}>{children}</div>
+  return <div className={`rounded-xl border border-hairline bg-canvas ${className}`}>{children}</div>
 }
 
 export function Chip({ active, onClick, children }: { active: boolean; onClick: () => void; children: ReactNode }) {
@@ -33,7 +33,7 @@ export function Chip({ active, onClick, children }: { active: boolean; onClick: 
     <button
       type="button"
       onClick={onClick}
-      className={`eyebrow shrink-0 cursor-pointer whitespace-nowrap border px-4 py-2.5 transition duration-300 ${active ? 'border-ink bg-ink text-paper' : 'border-ink/15 text-ink/70 hover:border-ink hover:text-ink'}`}
+      className={`inline-flex shrink-0 cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-1.5 text-[15px] font-medium transition ${active ? 'border-ink bg-ink text-white' : 'border-hairline bg-canvas text-ink-2 hover:bg-paper'}`}
     >
       {children}
     </button>
@@ -42,13 +42,13 @@ export function Chip({ active, onClick, children }: { active: boolean; onClick: 
 
 export function Segmented<T extends string>({ value, options, onChange }: { value: T | null; options: { value: T; label: ReactNode }[]; onChange: (v: T | null) => void }) {
   return (
-    <div className="flex gap-6">
+    <div className="inline-flex rounded-lg border border-hairline bg-canvas p-0.5">
       {options.map((o) => (
         <button
           key={o.value}
           type="button"
           onClick={() => onChange(value === o.value ? null : o.value)}
-          className={`cursor-pointer border-b pb-1 font-display text-lg italic transition ${value === o.value ? 'border-gold text-ink' : 'border-transparent text-ink/50 hover:text-ink'}`}
+          className={`cursor-pointer rounded-md px-3 py-1 text-[15px] font-medium transition ${value === o.value ? 'bg-paper text-ink shadow-soft' : 'text-muted hover:text-ink'}`}
         >
           {o.label}
         </button>
@@ -57,8 +57,14 @@ export function Segmented<T extends string>({ value, options, onChange }: { valu
   )
 }
 
-export function CategoryBadge({ category, className = '' }: { category: Category; className?: string }) {
-  return <span className={`eyebrow text-gold ${className}`}>{CATEGORY_META[category].label}</span>
+export function CategoryBadge({ category }: { category: Category }) {
+  const m = CATEGORY_META[category]
+  return (
+    <span className={`eyebrow inline-flex items-center gap-1.5 rounded-full px-2 py-1 ${m.tint} ${m.text}`}>
+      <span className={`h-1.5 w-1.5 rounded-full ${m.dot}`} />
+      {m.label}
+    </span>
+  )
 }
 
 export function Countdown({ start, className = '' }: { start: number; className?: string }) {
@@ -66,62 +72,45 @@ export function Countdown({ start, className = '' }: { start: number; className?
   const ms = start - now
   const urgent = ms < 3_600_000
   return (
-    <span className={`eyebrow inline-flex items-center gap-2 tabular-nums ${urgent ? 'text-oxblood' : 'text-stone'} ${className}`}>
-      <span className={`h-1.5 w-1.5 rounded-full ${urgent ? 'bg-oxblood' : 'bg-stone/60'}`} />
-      {ms > 0 ? `Commences in ${countdown(ms)}` : 'Commenced'}
+    <span className={`inline-flex items-center gap-1.5 text-sm font-medium tabular-nums ${urgent ? 'text-orange' : 'text-muted'} ${className}`}>
+      <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.6">
+        <circle cx="8" cy="8" r="6.5" />
+        <path d="M8 4.5V8l2.5 1.5" strokeLinecap="round" />
+      </svg>
+      {ms > 0 ? `Starts in ${countdown(ms)}` : 'Started'}
     </span>
   )
 }
 
-export function Price({ slot, big = false, light = false }: { slot: Slot; big?: boolean; light?: boolean }) {
+export function Price({ slot, big = false }: { slot: Slot; big?: boolean }) {
   const price = lastCallPrice(slot)
   const discounted = (slot.discountPct ?? 0) > 0
   return (
-    <span className="inline-flex items-baseline gap-3">
-      <span className={`font-display ${big ? 'text-5xl' : 'text-2xl'}`}>{kr(price)}</span>
-      {discounted && <s className={`${light ? 'text-paper/50' : 'text-stone'} ${big ? 'text-base' : 'text-xs'}`}>{kr(slot.fullPrice)}</s>}
+    <span className="inline-flex items-baseline gap-2">
+      <span className={big ? 'heading-1' : 'title'}>{kr(price)}</span>
+      {discounted && <s className={`text-faint ${big ? 'text-base' : 'text-sm'}`}>{kr(slot.fullPrice)}</s>}
     </span>
   )
 }
 
 export function DiscountSticker({ slot, className = '' }: { slot: Slot; className?: string }) {
   const d = slot.discountPct ?? 0
-  return (
-    <span className={`border border-gold/70 bg-ink/40 px-3 py-1 text-gold-light backdrop-blur-sm ${d > 0 ? 'font-display text-lg italic' : 'eyebrow'} ${className}`}>
-      {d > 0 ? `−${d}%` : slot.perk ?? 'Released'}
-    </span>
-  )
+  return <span className={`eyebrow rounded-full bg-canvas px-2.5 py-1 text-ink shadow-soft ${className}`}>{d > 0 ? `−${d}%` : slot.perk ?? 'Last Call'}</span>
 }
 
-export function initials(name: string) {
-  return name
-    .split(/\s+/)
-    .filter((w) => w && !/^(the|&|and|of|at)$/i.test(w))
-    .slice(0, 2)
-    .map((w) => w[0].toUpperCase())
-    .join('')
-}
-
-/** A dark, category-tinted panel with a gold monogram, standing in for photography. */
-export function Panel({ category, name, className = '', monogram = 'text-7xl', children }: { category: Category; name: string; className?: string; monogram?: string; children?: ReactNode }) {
+/** Colour-blocked illustration band with a page-icon tile, the Notion way. */
+export function Band({ category, className = '', iconSize = 'h-14 w-14 text-3xl', children }: { category: Category; className?: string; iconSize?: string; children?: ReactNode }) {
+  const m = CATEGORY_META[category]
   return (
-    <div className={`relative overflow-hidden bg-linear-to-br ${CATEGORY_META[category].panel} ${className}`}>
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_15%,rgb(255_255_255/0.12),transparent_55%)]" />
-      <div className="absolute inset-3 border border-gold/35" />
-      <div className="absolute inset-0 grid place-items-center">
-        <span className={`font-display italic text-gold-light/85 transition duration-[1200ms] group-hover:scale-110 ${monogram}`}>{initials(name)}</span>
+    <div className={`relative ${className}`}>
+      <div className={`absolute inset-0 overflow-hidden ${m.band}`}>
+        <span className="absolute -right-6 -top-8 h-28 w-28 rounded-full bg-white/15" />
+        <span className="absolute -bottom-10 left-1/3 h-24 w-24 rounded-full bg-black/5" />
       </div>
+      <span className={`absolute bottom-0 left-5 z-10 grid translate-y-1/2 place-items-center rounded-xl border border-hairline bg-canvas shadow-soft transition duration-300 group-hover:-rotate-6 ${iconSize}`}>
+        {m.icon}
+      </span>
       {children}
-    </div>
-  )
-}
-
-export function Ornament({ className = '' }: { className?: string }) {
-  return (
-    <div className={`flex items-center justify-center gap-3 text-gold ${className}`}>
-      <span className="h-px w-12 bg-gold/60" />
-      <span className="text-xs">◆</span>
-      <span className="h-px w-12 bg-gold/60" />
     </div>
   )
 }
@@ -133,8 +122,8 @@ export function Modal({ onClose, children }: { onClose: () => void; children: Re
     return () => window.removeEventListener('keydown', onKey)
   }, [onClose])
   return (
-    <div className="fixed inset-0 z-50 flex animate-fade items-end justify-center bg-ink/60 p-3 backdrop-blur-sm sm:items-center" onClick={onClose}>
-      <div className="w-full max-w-md animate-rise border border-gold/40 bg-paper p-8" onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 z-50 flex animate-fade items-end justify-center bg-black/30 p-3 sm:items-center" onClick={onClose}>
+      <div className="w-full max-w-md animate-rise rounded-2xl bg-canvas p-6 shadow-lifted" onClick={(e) => e.stopPropagation()}>
         {children}
       </div>
     </div>
@@ -143,11 +132,10 @@ export function Modal({ onClose, children }: { onClose: () => void; children: Re
 
 export function BellIcon({ className = '' }: { className?: string }) {
   return (
-    <svg viewBox="0 0 64 72" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" className={className} aria-hidden>
-      <circle cx="32" cy="6" r="3.2" />
-      <path d="M32 9.5c-11.2 0-18.5 8.2-18.5 20.2v13.6L7 52.5h50l-6.5-9.2V29.7C50.5 17.7 43.2 9.5 32 9.5z" />
-      <path d="M13.8 44.5h36.4" opacity="0.5" />
-      <path d="M25.5 56.5a6.5 6.5 0 0 0 13 0" />
+    <svg viewBox="0 0 64 72" fill="none" stroke="currentColor" strokeWidth="5" strokeLinejoin="round" className={className} aria-hidden>
+      <circle cx="32" cy="7" r="3.5" />
+      <path d="M32 11c-11 0-18 8-18 20v13l-7 10h50l-7-10V31c0-12-7-20-18-20z" />
+      <path d="M25 58a7 7 0 0 0 14 0" />
     </svg>
   )
 }
@@ -190,9 +178,9 @@ export function Mascot({ className = '' }: { className?: string }) {
       onPointerEnter={(e) => hit(Math.abs(e.movementX) > 1 ? -e.movementX * 0.8 : sideOf(e) * 5)}
       onPointerMove={(e) => hit(-e.movementX * 0.25)}
       onPointerDown={(e) => hit(sideOf(e) * 12)}
-      className={`inline-block origin-top cursor-pointer select-none text-gold ${className}`}
+      className={`inline-block origin-top cursor-pointer select-none text-6xl leading-none ${className}`}
     >
-      <BellIcon className="h-full w-full" />
+      🔔
     </span>
   )
 }

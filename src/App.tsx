@@ -31,15 +31,14 @@ export default function App() {
   else page = <Marketplace />
 
   return (
-    <div className="min-h-screen">
+    <div className="flex min-h-screen flex-col">
       <Header side={side} route={route} />
-      <main key={route} className="mx-auto max-w-7xl animate-rise px-5 pb-28 pt-10 sm:px-8">
+      <main key={route} className="mx-auto w-full max-w-[1200px] flex-1 animate-rise px-4 pb-24 pt-8 sm:px-6">
         {page}
       </main>
       {side === 'customer' && <AlertToasts />}
-      <footer className="border-t border-ink/10 py-10 text-center">
-        <p className="font-display text-2xl tracking-[0.3em]">LASTCALL</p>
-        <p className="eyebrow mt-2 text-stone">Cooler Copenhagen · Est. 2026 · Membership by discernment</p>
+      <footer className="border-t border-hairline bg-paper px-6 py-8 text-center text-sm text-ink-2">
+        <span className="font-semibold">LastCall</span> · the cancellation economy · Cooler Copenhagen
       </footer>
     </div>
   )

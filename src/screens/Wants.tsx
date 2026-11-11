@@ -32,7 +32,7 @@ export function Wants() {
   const save = () => {
     if (!canSave) return
     const fallback = categories.map((c) => CATEGORY_META[c].label).join(' or ')
-    addWant(label.trim() || `${fallback}, ${WINDOW_META[window].hint}`, categories, window)
+    addWant(label.trim() || `${fallback} ${WINDOW_META[window].hint}`, categories, window)
     setLabel('')
     setCategories([])
     setWindow('48h')
@@ -40,46 +40,43 @@ export function Wants() {
   }
 
   return (
-    <div className="grid gap-14 lg:grid-cols-[1.2fr_1fr]">
-      <div className="flex flex-col gap-12">
-        <section className="flex flex-col gap-8 border border-ink/10 bg-ivory p-8 sm:p-10">
-          <div className="flex items-start justify-between gap-6">
+    <div className="grid gap-8 lg:grid-cols-[1.25fr_1fr]">
+      <div className="flex flex-col gap-8">
+        <section className="flex flex-col gap-5 rounded-2xl border border-hairline bg-canvas p-6 sm:p-8">
+          <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="eyebrow text-gold">Your Wants</p>
-              <h1 className="mt-3 font-display text-5xl leading-[1.05]">
-                Tell us what you desire.
-                <br />
-                <em className="text-ink/60">We shall see to it.</em>
-              </h1>
+              <h1 className="heading-1">What do you need?</h1>
+              <p className="mt-2 text-muted">Tell us, and we'll alert you the moment a matching Last Call is released.</p>
             </div>
-            <Mascot className="hidden h-28 w-24 shrink-0 sm:inline-block" />
+            <Mascot className="hidden text-6xl sm:inline-block" />
           </div>
           <input
             value={label}
             onChange={(e) => onLabel(e.target.value)}
-            placeholder="A tyre change within 48 hours, naturally."
-            className="border-b border-ink/30 bg-transparent py-3 font-display text-3xl outline-none placeholder:italic placeholder:text-ink/30 focus:border-gold"
+            placeholder="e.g. Change my tyres in the next 48 hours"
+            className="rounded border border-[#ddd] bg-canvas px-3 py-2.5 text-base outline-none placeholder:text-faint focus:ring-2 focus:ring-primary/30"
           />
           {label && !touched && (
-            <p className="animate-fade font-display text-lg italic text-gold">
+            <p className="flex animate-fade items-center gap-2 text-[15px] text-ink-2">
+              <span className="rounded bg-purple/40 px-1.5 text-purple-deep">✦ AI</span>
               {guess.categories.length ? (
                 <>
-                  Understood: {guess.categories.map((c) => CATEGORY_META[c].label).join(', ')}
-                  {guess.window && `, ${WINDOW_META[guess.window].hint}`}.
+                  Detected {guess.categories.map((c) => CATEGORY_META[c].label).join(', ')}
+                  {guess.window && `, ${WINDOW_META[guess.window].hint}`}
                 </>
               ) : (
-                <>Do indicate a category below, and we shall learn your tastes.</>
+                <>Not sure yet. Pick a category below.</>
               )}
             </p>
           )}
           <div className="flex flex-wrap gap-2">
             {CATEGORIES.map((c) => (
               <Chip key={c} active={categories.includes(c)} onClick={() => toggle(c)}>
-                {CATEGORY_META[c].label}
+                <span>{CATEGORY_META[c].icon}</span> {CATEGORY_META[c].label}
               </Chip>
             ))}
           </div>
-          <div className="flex flex-wrap items-end justify-between gap-6">
+          <div className="flex flex-wrap items-center justify-between gap-3">
             <Segmented
               value={window}
               onChange={(w) => {
@@ -89,81 +86,82 @@ export function Wants() {
               options={(['now', 'today', '48h'] as TimeWindow[]).map((w) => ({ value: w, label: WINDOW_META[w].label }))}
             />
             <Button onClick={save} disabled={!canSave}>
-              Leave this Want
+              Save Want
             </Button>
           </div>
         </section>
 
-        <section className="flex flex-col gap-4">
-          <h2 className="font-display text-3xl">Standing Wants</h2>
-          {state.wants.length === 0 && <p className="font-display text-lg italic text-stone">None as yet. “Fine dining this evening” is a popular choice among our members.</p>}
-          <div className="flex flex-col divide-y divide-ink/10 border-y border-ink/10">
-            {state.wants.map((w) => {
-              const matches = state.slots.filter((s) => isLive(s, now) && matchesWant(state, s, w, now)).length
-              return (
-                <div key={w.id} className="flex items-center gap-6 py-5">
-                  <div className="min-w-0 flex-1">
-                    <p className="font-display text-2xl italic">“{w.label}”</p>
-                    <p className="eyebrow mt-1 text-stone">
-                      {w.categories.map((c) => CATEGORY_META[c].label).join(' · ')} · {WINDOW_META[w.window].hint}
-                    </p>
-                    {matches > 0 && (
-                      <p className="mt-2 text-sm text-gold">
-                        {matches} reservation{matches === 1 ? '' : 's'} currently suit{matches === 1 ? 's' : ''} this Want
+        <section className="flex flex-col gap-3">
+          <h2 className="heading-2">Your Wants</h2>
+          {state.wants.length === 0 && <p className="text-muted">No Wants yet. Try “fine dining tonight” or “tyres within 48 hours”.</p>}
+          {state.wants.length > 0 && (
+            <div className="overflow-hidden rounded-xl border border-hairline bg-canvas">
+              {state.wants.map((w) => {
+                const matches = state.slots.filter((s) => isLive(s, now) && matchesWant(state, s, w, now)).length
+                return (
+                  <div key={w.id} className="flex items-center gap-3 border-b border-hairline px-4 py-3 last:border-b-0">
+                    <span className="text-xl">{CATEGORY_META[w.categories[0]].icon}</span>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium">{w.label}</p>
+                      <p className="text-sm text-muted">
+                        {w.categories.map((c) => CATEGORY_META[c].label).join(', ')} · {WINDOW_META[w.window].hint}
+                        {matches > 0 && <span className="text-primary"> · {matches} matching now</span>}
                       </p>
-                    )}
+                    </div>
+                    <Button size="sm" variant="ghost" onClick={() => removeWant(w.id)}>
+                      Remove
+                    </Button>
                   </div>
-                  <button onClick={() => removeWant(w.id)} className="eyebrow cursor-pointer text-stone transition hover:text-oxblood">
-                    Withdraw
-                  </button>
-                </div>
-              )
-            })}
-          </div>
+                )
+              })}
+            </div>
+          )}
         </section>
       </div>
 
-      <section className="flex flex-col gap-4">
-        <p className="eyebrow text-gold">Correspondence</p>
-        <h2 className="font-display text-3xl">Alerts</h2>
+      <section className="flex flex-col gap-3">
+        <h2 className="heading-2">Alerts</h2>
         {state.alerts.length === 0 && (
-          <div className="border border-ink/10 bg-ivory p-10 text-center">
-            <p className="font-display text-2xl italic">All is quiet.</p>
-            <p className="mt-2 text-sm text-stone">Should an establishment release something in accordance with your Wants, you will find it here.</p>
+          <div className="flex flex-col items-center gap-2 rounded-2xl bg-canvas px-6 py-12 text-center">
+            <span className="text-4xl">📭</span>
+            <p className="title">No alerts yet</p>
+            <p className="text-sm text-muted">When a business releases a Last Call that matches one of your Wants, it shows up here.</p>
           </div>
         )}
-        <div className="flex flex-col gap-3">
-          {state.alerts.map((a) => {
-            const slot = state.slots.find((s) => s.id === a.slotId)
-            const want = state.wants.find((w) => w.id === a.wantId)
-            if (!slot) return null
-            const biz = businessOf(state, slot)
-            const live = isLive(slot, now)
-            return (
-              <button
-                key={a.id}
-                onClick={() => {
-                  markAlertSeen(a.id)
-                  go(`/lc/${slot.id}`)
-                }}
-                className={`flex cursor-pointer flex-col gap-1 border p-5 text-left transition hover:border-ink/40 ${a.seen ? 'border-ink/10 bg-ivory' : 'border-gold/60 bg-ivory'} ${live ? '' : 'opacity-45'}`}
-              >
-                <span className="flex items-center gap-2">
-                  {!a.seen && <span className="h-1.5 w-1.5 rounded-full bg-oxblood" />}
-                  <span className="eyebrow text-stone">
-                    {biz.name} · {biz.neighbourhood}
+        {state.alerts.length > 0 && (
+          <div className="overflow-hidden rounded-xl border border-hairline bg-canvas">
+            {state.alerts.map((a) => {
+              const slot = state.slots.find((s) => s.id === a.slotId)
+              const want = state.wants.find((w) => w.id === a.wantId)
+              if (!slot) return null
+              const biz = businessOf(state, slot)
+              const live = isLive(slot, now)
+              return (
+                <button
+                  key={a.id}
+                  onClick={() => {
+                    markAlertSeen(a.id)
+                    go(`/lc/${slot.id}`)
+                  }}
+                  className={`flex w-full cursor-pointer items-start gap-3 border-b border-hairline px-4 py-3 text-left transition last:border-b-0 hover:bg-paper ${live ? '' : 'opacity-50'}`}
+                >
+                  <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full" style={{ background: a.seen ? 'transparent' : 'var(--color-primary)' }} />
+                  <span className="text-xl">{CATEGORY_META[biz.category].icon}</span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block font-medium">
+                      {biz.name}: {slot.title}
+                    </span>
+                    <span className="block text-sm text-muted">
+                      {when(slot.start, now)} · {biz.neighbourhood}
+                      {live ? '' : ' · no longer available'}
+                    </span>
+                    {want && <span className="block text-sm text-ink-2">Matched “{want.label}”</span>}
                   </span>
-                </span>
-                <span className="font-display text-2xl">{slot.title}</span>
-                <span className="text-sm text-ink/60">
-                  {when(slot.start, now)}
-                  {live ? '' : ' · no longer available'}
-                </span>
-                {want && <span className="font-display italic text-gold">In accordance with “{want.label}”</span>}
-              </button>
-            )
-          })}
-        </div>
+                </button>
+              )
+            })}
+          </div>
+        )}
       </section>
     </div>
   )

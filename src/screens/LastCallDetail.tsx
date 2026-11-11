@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { businessOf, savings } from '../domain/selectors'
 import { bookSlot, useAppState } from '../domain/store'
 import { clock, go, kr, useNow, when } from '../lib'
-import { Button, CategoryBadge, Countdown, DiscountSticker, Panel, Price } from '../ui'
+import { Band, Button, CategoryBadge, Countdown, DiscountSticker, Price } from '../ui'
 
 export function LastCallDetail({ id }: { id: string }) {
   const state = useAppState()
@@ -11,7 +11,7 @@ export function LastCallDetail({ id }: { id: string }) {
   const [tooSlow, setTooSlow] = useState(false)
   const slot = state.slots.find((s) => s.id === id)
 
-  if (!slot) return <Gone title="This reservation is no longer with us." />
+  if (!slot) return <Gone title="This Last Call doesn't exist anymore" />
   const biz = businessOf(state, slot)
   const available = slot.status === 'released' && slot.start > now
 
@@ -21,70 +21,66 @@ export function LastCallDetail({ id }: { id: string }) {
   }
 
   return (
-    <div className="flex flex-col gap-8">
-      <a href="#/" className="eyebrow text-stone transition hover:text-ink">
-        ← Return to the Collection
+    <div className="flex flex-col gap-6">
+      <a href="#/" className="self-start rounded-md px-2 py-1 text-[15px] text-muted hover:bg-black/5 hover:text-ink">
+        ← Back to marketplace
       </a>
-      <div className="grid gap-10 lg:grid-cols-[1.4fr_1fr]">
-        <article className="flex flex-col gap-8">
-          <Panel category={biz.category} name={biz.name} className="aspect-[16/10]" monogram="text-[9rem]">
-            <DiscountSticker slot={slot} className="absolute right-8 top-8 text-2xl" />
-          </Panel>
-          <div className="flex flex-col gap-4">
+      <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
+        <article className="overflow-hidden rounded-2xl border border-hairline bg-canvas">
+          <Band category={biz.category} className="h-48" iconSize="h-20 w-20 text-5xl">
+            <DiscountSticker slot={slot} className="absolute right-5 top-5" />
+          </Band>
+          <div className="flex flex-col gap-3 px-6 pb-8 pt-14 sm:px-8">
             <CategoryBadge category={biz.category} />
-            <h1 className="font-display text-5xl leading-[1.05] sm:text-6xl">{slot.title}</h1>
-            <p className="font-display text-2xl italic text-ink/70">
-              {biz.name}, <span className="text-stone">{biz.tagline.charAt(0).toLowerCase() + biz.tagline.slice(1)}</span>
+            <h1 className="heading-1">{slot.title}</h1>
+            <p className="title text-ink-2">
+              {biz.name} <span className="font-normal text-muted">· {biz.tagline}</span>
             </p>
-            <p className="max-w-2xl text-lg leading-relaxed text-ink/75">{slot.description}</p>
+            <p className="max-w-2xl text-ink-2">{slot.description}</p>
+            <dl className="mt-4 grid gap-px overflow-hidden rounded-xl border border-hairline bg-hairline sm:grid-cols-2">
+              <Info label="When" value={`${when(slot.start, now)} – ${clock(slot.start + slot.durationMin * 60_000)}`} />
+              <Info label="Duration" value={`${slot.durationMin} min`} />
+              <Info label="Address" value={`${biz.address}, ${biz.neighbourhood}`} />
+              <Info label="Distance" value={`${biz.distanceKm.toLocaleString('en-GB')} km away`} />
+            </dl>
           </div>
-          <dl className="grid gap-px border border-ink/10 bg-ink/10 sm:grid-cols-2">
-            <Info label="When" value={`${when(slot.start, now)} – ${clock(slot.start + slot.durationMin * 60_000)}`} />
-            <Info label="Duration" value={`${slot.durationMin} minutes`} />
-            <Info label="Address" value={`${biz.address}, ${biz.neighbourhood}`} />
-            <Info label="Distance" value={`${biz.distanceKm.toLocaleString('en-GB')} km from you`} />
-          </dl>
         </article>
 
-        <aside className="lg:sticky lg:top-28 lg:self-start">
-          <div className="flex flex-col gap-6 border border-ink/15 bg-ivory p-8">
+        <aside className="lg:sticky lg:top-24 lg:self-start">
+          <div className="flex flex-col gap-5 rounded-2xl border border-hairline bg-canvas p-6 shadow-soft">
             <Countdown start={slot.start} />
-            <div className="flex flex-col gap-2">
+            <div>
               <Price slot={slot} big />
-              {savings(slot) > 0 ? (
-                <p className="font-display text-lg italic text-gold">A saving of {kr(savings(slot))}</p>
-              ) : (
-                slot.perk && <p className="font-display text-lg italic text-gold">{slot.perk}</p>
-              )}
+              {savings(slot) > 0 ? <p className="mt-1 font-medium text-green">You save {kr(savings(slot))}</p> : slot.perk && <p className="mt-1 font-medium text-green">{slot.perk}</p>}
             </div>
 
             {available && !tooSlow ? (
               <>
-                <label className="flex flex-col gap-2">
-                  <span className="eyebrow text-stone">Name for the reservation</span>
+                <label className="flex flex-col gap-1.5">
+                  <span className="eyebrow text-muted">Your name</span>
                   <input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="Mr. or Ms. …"
-                    className="border-b border-ink/30 bg-transparent py-2 font-display text-2xl outline-none placeholder:italic placeholder:text-ink/30 focus:border-gold"
+                    placeholder="Jane Jensen"
+                    className="rounded border border-[#ddd] bg-canvas px-2.5 py-2 text-[15px] outline-none placeholder:text-faint focus:shadow-soft focus:ring-2 focus:ring-primary/30"
                   />
                 </label>
                 <Button size="lg" onClick={book}>
-                  Secure reservation
+                  Book now
                 </Button>
-                <p className="text-center text-xs leading-relaxed text-stone">Settled discreetly with the establishment. No payment is taken in this demonstration.</p>
+                <p className="text-center text-sm text-faint">No payment needed in this demo.</p>
               </>
             ) : (
-              <div className="flex flex-col gap-3 border-t border-ink/10 pt-6 text-center">
-                <p className="eyebrow text-oxblood">No longer available</p>
-                <p className="font-display text-2xl">Regrettably, another guest was quicker.</p>
-                <p className="text-sm text-stone">Leave a Want, and you shall be the first to know next time.</p>
-                <div className="mt-2 flex justify-center gap-3">
-                  <Button size="sm" variant="secondary" onClick={() => go('/')}>
-                    The Collection
+              <div className="flex flex-col items-center gap-2 rounded-xl bg-paper p-5 text-center">
+                <span className="text-3xl">🐢</span>
+                <p className="title">Someone else booked this one</p>
+                <p className="text-sm text-muted">Set up an alert to be first next time.</p>
+                <div className="mt-2 flex gap-2">
+                  <Button size="sm" variant="utility" onClick={() => go('/')}>
+                    Browse more
                   </Button>
                   <Button size="sm" onClick={() => go('/wants')}>
-                    Leave a Want
+                    Set up an alert
                   </Button>
                 </div>
               </div>
@@ -98,19 +94,19 @@ export function LastCallDetail({ id }: { id: string }) {
 
 function Info({ label, value }: { label: string; value: string }) {
   return (
-    <div className="bg-ivory p-5">
-      <dt className="eyebrow text-stone">{label}</dt>
-      <dd className="mt-1 font-display text-xl">{value}</dd>
+    <div className="bg-canvas p-4">
+      <dt className="eyebrow text-faint">{label}</dt>
+      <dd className="mt-0.5 font-medium">{value}</dd>
     </div>
   )
 }
 
 export function Gone({ title }: { title: string }) {
   return (
-    <div className="flex flex-col items-center gap-6 py-24 text-center">
-      <p className="eyebrow text-gold">Our apologies</p>
-      <h1 className="font-display text-5xl">{title}</h1>
-      <Button onClick={() => go('/')}>Return to the Collection</Button>
+    <div className="flex flex-col items-center gap-4 py-24 text-center">
+      <span className="text-5xl">🫥</span>
+      <h1 className="heading-1">{title}</h1>
+      <Button onClick={() => go('/')}>Back to marketplace</Button>
     </div>
   )
 }
