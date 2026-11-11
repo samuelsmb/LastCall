@@ -30,6 +30,8 @@ export interface Slot {
   soldAt?: number
   buyerName?: string
   perk?: string
+  /** Restaurant tables only: number of guests. fullPrice is the total for the table. */
+  guests?: number
 }
 
 export interface AutoReleaseRule {

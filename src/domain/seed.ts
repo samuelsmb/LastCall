@@ -1,6 +1,11 @@
 import type { Business, Category, Slot, State } from './types'
 
 export const HERO_BUSINESS_ID = 'teds-garage'
+export const RESTAURANT_ID = 'restaurant-lokka'
+
+/** Fixed ids so every demo step has a stable hash URL. */
+export const DEMO_TYRE_SLOT = 'demo-teds-tyre'
+export const DEMO_TABLE_SLOT = 'demo-lokka-table'
 
 const MIN = 60_000
 
@@ -11,6 +16,14 @@ function at(now: number, minutesFromNow: number, snap = 5) {
   return Math.ceil(t / step) * step
 }
 
+/** A fixed clock time, `daysAhead` days from today. */
+function onDay(now: number, daysAhead: number, hours: number, minutes = 0) {
+  const d = new Date(now)
+  d.setDate(d.getDate() + daysAhead)
+  d.setHours(hours, minutes, 0, 0)
+  return d.getTime()
+}
+
 let counter = 0
 export function uid(prefix = 'id') {
   counter += 1
@@ -18,75 +31,90 @@ export function uid(prefix = 'id') {
 }
 
 const businesses: Business[] = [
-  { id: HERO_BUSINESS_ID, name: "Ted's Garage", category: 'car', neighbourhood: 'Valby', address: 'Gammel Køge Landevej 7', distanceKm: 3.2, tagline: 'Tyres, oil and honest advice since 1987' },
-  { id: 'lustre', name: 'Lustre Auto Spa', category: 'car', neighbourhood: 'Amager', address: 'Englandsvej 12', distanceKm: 4.8, tagline: 'Hand wash and detailing' },
-  { id: 'mosegaard', name: 'Mosegaard', category: 'food', neighbourhood: 'Nørrebro', address: 'Jægersborggade 3', distanceKm: 1.4, tagline: 'Seasonal tasting menu' },
-  { id: 'kanal-21', name: 'Kanal 21', category: 'food', neighbourhood: 'Christianshavn', address: 'Overgaden Neden Vandet 21', distanceKm: 2.1, tagline: 'Dinner by the canal' },
-  { id: 'schonnemann', name: 'Schønnemann & Daughters', category: 'food', neighbourhood: 'Indre By', address: 'Hauser Plads 16', distanceKm: 0.8, tagline: 'Classic smørrebrød lunch' },
-  { id: 'salon-orsted', name: 'Salon Ørsted', category: 'beauty', neighbourhood: 'Frederiksberg', address: 'Gammel Kongevej 44', distanceKm: 1.1, tagline: 'Hair salon' },
-  { id: 'hammam', name: 'Hammam Nordique', category: 'beauty', neighbourhood: 'Østerbro', address: 'Strandboulevarden 2', distanceKm: 2.9, tagline: 'Spa and bathhouse' },
-  { id: 'maison-manicure', name: 'Maison Manicure', category: 'beauty', neighbourhood: 'Frederiksberg', address: 'Værnedamsvej 5', distanceKm: 2.3, tagline: 'Nail studio' },
-  { id: 'kinesis', name: 'Kinesis Physiotherapy', category: 'health', neighbourhood: 'Frederiksberg', address: 'Falkoner Allé 18', distanceKm: 2.6, tagline: 'Physio and sports massage' },
-  { id: 'atelier-dentaire', name: 'Atelier Dentaire', category: 'health', neighbourhood: 'Østerbro', address: 'Østerbrogade 101', distanceKm: 3.4, tagline: 'Dental clinic' },
-  { id: 'citizen-desk', name: 'Citizen Services', category: 'official', neighbourhood: 'Indre By', address: 'Rådhuspladsen 1', distanceKm: 1.7, tagline: 'Passports, ID and paperwork' },
-  { id: 'driving-centre', name: 'Driving Test Centre', category: 'official', neighbourhood: 'Valby', address: 'Retortvej 8', distanceKm: 3.6, tagline: 'Practical driving tests' },
-  { id: 'royal-sailing', name: 'Harbour Sailing Club', category: 'experiences', neighbourhood: 'Nyhavn', address: 'Nyhavn 6', distanceKm: 2.0, tagline: 'Sailing trips on the harbour' },
-  { id: 'cipher-room', name: 'The Cipher Room', category: 'experiences', neighbourhood: 'Vesterbro', address: 'Istedgade 13', distanceKm: 0.9, tagline: 'Escape rooms' },
-  { id: 'badeskib', name: 'Badeskib', category: 'experiences', neighbourhood: 'Holmen', address: 'Holmens Kanal 4', distanceKm: 5.1, tagline: 'Floating sauna' },
-  { id: 'kaelder-jazz', name: 'Kælder Jazz Club', category: 'experiences', neighbourhood: 'Indre By', address: 'Store Regnegade 2', distanceKm: 1.3, tagline: 'Live jazz every night' },
+  { id: HERO_BUSINESS_ID, name: "Ted's Garage", category: 'car', neighbourhood: 'Majorstuen', address: 'Kirkeveien 64', distanceKm: 0.6, tagline: 'Tyres, oil and honest advice since 1987' },
+  { id: 'dekkdoktoren', name: 'Dekkdoktoren', category: 'car', neighbourhood: 'Sagene', address: 'Sandakerveien 24', distanceKm: 2.1, tagline: 'Tyre hotel and wheel swaps' },
+  { id: 'wheel-of-fortune', name: 'Wheel of Fortune', category: 'car', neighbourhood: 'Bjørvika', address: 'Dronning Eufemias gate 30', distanceKm: 2.8, tagline: 'Spin in, roll out' },
+  { id: RESTAURANT_ID, name: 'Restaurant Løkka', category: 'food', neighbourhood: 'Grünerløkka', address: 'Thorvald Meyers gate 40', distanceKm: 2.4, tagline: 'Nordic tasting menu' },
+  { id: 'fjordbord', name: 'Fjordbord', category: 'food', neighbourhood: 'Bjørvika', address: 'Operagata 9', distanceKm: 2.6, tagline: 'Seafood with a fjord view' },
+  { id: 'frogner-counter', name: 'The Frogner Counter', category: 'food', neighbourhood: 'Frogner', address: 'Bygdøy allé 18', distanceKm: 1.2, tagline: "Eight seats at the chef's counter" },
+  { id: 'hanshaugen-hearth', name: 'Hanshaugen Hearth', category: 'food', neighbourhood: 'St. Hanshaugen', address: 'Ullevålsveien 12', distanceKm: 1.5, tagline: 'New Nordic, cooked over fire' },
+  { id: 'salong-sagene', name: 'Salong Sagene', category: 'beauty', neighbourhood: 'Sagene', address: 'Kierschows gate 3', distanceKm: 1.9, tagline: 'Hair salon' },
+  { id: 'nailed-it', name: 'Nailed It Frogner', category: 'beauty', neighbourhood: 'Frogner', address: 'Gabels gate 5', distanceKm: 1.4, tagline: 'Nail studio' },
+  { id: 'toyen-fysio', name: 'Tøyen Fysio', category: 'health', neighbourhood: 'Tøyen', address: 'Hagegata 22', distanceKm: 2.7, tagline: 'Physio and sports massage' },
+  { id: 'smile-majorstuen', name: 'Smile Majorstuen', category: 'health', neighbourhood: 'Majorstuen', address: 'Bogstadveien 51', distanceKm: 0.4, tagline: 'Dental clinic' },
+  { id: 'passport-office', name: 'Passport Office', category: 'official', neighbourhood: 'Gamle Oslo', address: 'Grønlandsleiret 44', distanceKm: 3.0, tagline: 'Passports and national ID cards' },
+  { id: 'driving-test', name: 'Driving Test Centre', category: 'official', neighbourhood: 'Gamle Oslo', address: 'Kjelsåsveien 1', distanceKm: 3.4, tagline: 'Practical driving tests' },
+  { id: 'brrrjorvika', name: 'Brrrjørvika Sauna Raft', category: 'experiences', neighbourhood: 'Bjørvika', address: 'Langkaia 1', distanceKm: 2.5, tagline: 'Wood-fired sauna, fjord plunge included' },
+  { id: 'cellar-jazz', name: 'Cellar Jazz Club', category: 'experiences', neighbourhood: 'St. Hanshaugen', address: 'Waldemar Thranes gate 8', distanceKm: 1.7, tagline: 'Live jazz every night' },
+  { id: 'escape-toyen', name: 'Escape Tøyen', category: 'experiences', neighbourhood: 'Tøyen', address: 'Kolstadgata 1', distanceKm: 2.9, tagline: 'Escape rooms' },
 ]
 
-type LastCallSeed = [businessId: string, title: string, description: string, minutesFromNow: number, durationMin: number, fullPrice: number, discountPct: number, perk?: string]
+type LastCallSeed = [businessId: string, title: string, description: string, minutesFromNow: number, durationMin: number, fullPrice: number, discountPct: number, guests?: number, perk?: string]
 
 const lastCalls: LastCallSeed[] = [
-  ['mosegaard', 'Tasting menu for two', 'A table for two opened up tonight. Twelve seasonal courses at one of the hardest tables to book in town.', 180, 180, 4200, 35],
-  ['kanal-21', 'Five-course dinner for two', 'A canal-side table freed up after a cancellation. Five courses, candlelight, and a great view.', 300, 150, 1600, 40],
-  ['schonnemann', 'Lunch for four', 'The window table for four, available for lunch today. Classic smørrebrød and a cold drink.', 40, 90, 720, 30],
-  ['salon-orsted', 'Cut and blow-dry', 'A 60-minute appointment with a senior stylist, freed up by a last-minute cancellation.', 55, 60, 650, 40],
-  ['hammam', '90-minute spa ritual', 'Steam, scrub and a long soak. Robe and towels included.', 140, 90, 1100, 45],
-  ['maison-manicure', 'Gel manicure', 'A 45-minute gel manicure. Long-lasting, no chips.', 1560, 45, 380, 30],
-  ['lustre', 'Hand wash and wax', 'A full exterior hand wash and wax. Takes about an hour.', 75, 60, 500, 40],
-  ['kinesis', 'Sports physio session', 'A 50-minute session with a sports physiotherapist. Bring that niggle you have been ignoring.', 110, 50, 750, 35],
-  ['atelier-dentaire', 'Dental cleaning', 'A 40-minute hygienist appointment.', 1380, 40, 900, 30],
-  ['kinesis', 'Deep tissue massage', 'A 60-minute deep tissue massage.', 1800, 60, 800, 25],
-  ['citizen-desk', 'Passport appointment', 'Passport appointments usually have a six-week wait. This one is today.', 230, 20, 650, 0, 'Skip the 6-week wait'],
-  ['driving-centre', 'Driving test', 'A practical driving test slot. The usual wait is nine weeks; this one is tomorrow.', 1740, 60, 900, 0, 'Skip the 9-week wait'],
-  ['royal-sailing', 'Sunset sail for two', 'Two hours on a classic wooden boat with a skipper, sailing past the palaces at sunset.', 240, 120, 700, 40],
-  ['cipher-room', 'Escape room for 4–6', 'A 60-minute escape room for a group of four to six.', 170, 60, 1200, 50],
-  ['badeskib', 'Private floating sauna for 6', 'Two hours in a wood-fired sauna on the harbour, just for your group. Jump in between rounds.', 1560, 120, 2400, 35],
-  ['kaelder-jazz', 'Two front-row seats tonight', 'Front-row seats for tonight’s set at a small cellar jazz club.', 420, 120, 400, 50],
+  [RESTAURANT_ID, 'Tasting menu, table for 2', 'A table for two opened up. Twelve Nordic courses at one of the hardest tables to book in Grünerløkka.', 200, 180, 3900, 20, 2],
+  ['fjordbord', 'Seafood menu, table for 4', 'A table for four by the window freed up after a cancellation. Shellfish, fjord view, candlelight.', 300, 150, 6000, 25, 4],
+  ['frogner-counter', "Chef's counter for 2", "Two of the eight counter seats, usually booked out for weeks. Full price, but you're in.", 1560, 180, 7000, 0, 2],
+  ['hanshaugen-hearth', 'Six courses, table for 2', 'Six courses cooked over fire. A table for two came free tonight.', 420, 150, 3300, 15, 2],
+  [RESTAURANT_ID, 'Late seating, table for 4', 'A late table for four tomorrow evening.', 1500, 150, 6400, 20, 4],
+  ['dekkdoktoren', 'Tyre change', 'Four wheels swapped and pressure-checked. Garages are fully booked in tyre season, so this is a rare one.', 95, 30, 550, 0],
+  ['wheel-of-fortune', 'Tyre change and balancing', 'Wheels swapped and balanced while you wait. Coffee included.', 200, 45, 700, 0],
+  ['dekkdoktoren', 'Tyre change', 'Four wheels swapped. Bring your own set or pick up from the tyre hotel.', 1380, 30, 450, 10],
+  ['wheel-of-fortune', 'Tyre change', 'Wheels swapped, nuts torqued, done in half an hour.', 1700, 30, 600, 0],
+  ['salong-sagene', 'Cut and blow-dry', 'A 60-minute appointment with a senior stylist, freed up by a last-minute cancellation.', 55, 60, 890, 30],
+  ['nailed-it', 'Gel manicure', 'A 45-minute gel manicure. Long-lasting, no chips.', 1560, 45, 650, 25],
+  ['toyen-fysio', 'Sports physio session', 'A 50-minute session with a sports physiotherapist. Bring that niggle you have been ignoring.', 110, 50, 750, 0],
+  ['smile-majorstuen', 'Dental cleaning', 'A 40-minute hygienist appointment.', 1380, 40, 1100, 20],
+  ['passport-office', 'Passport appointment', 'Passport appointments usually have a six-week wait. This one is today.', 230, 20, 0, 0, undefined, 'Skip the 6-week wait'],
+  ['brrrjorvika', 'Private sauna for 6', 'Two hours in a wood-fired sauna on the fjord, just for your group. Jump in between rounds.', 240, 120, 1800, 30],
+  ['cellar-jazz', 'Two front-row seats tonight', 'Front-row seats for tonight’s set at a small cellar jazz club.', 420, 120, 590, 40],
 ]
 
-type CalendarSeed = [title: string, description: string, minutesFromNow: number, durationMin: number, fullPrice: number, status: Slot['status'], customerName: string, discountPct?: number]
+type CalendarSeed = { title: string; description: string; start: number; durationMin: number; fullPrice: number; status: Slot['status']; customerName: string; discountPct?: number; guests?: number; id?: string }
 
-const tedsCalendar: CalendarSeed[] = [
-  ['Winter tyre swap', 'Swap to winter tyres, balanced and checked.', 45, 45, 450, 'booked', 'Mette K.'],
-  ['Tyre change and balancing', 'Four tyres fitted and balanced while you wait.', 90, 60, 600, 'booked', 'Jonas P.'],
-  ['Full service', 'Oil, filters, brakes, fluids and a full check-up.', 165, 120, 1800, 'released', 'Anders B.', 30],
-  ['Puncture repair', 'Quick puncture repair.', 240, 30, 300, 'booked', 'Freja L.'],
-  ['Oil change', 'New oil and filter.', 360, 40, 700, 'booked', 'Kasper M.'],
-  ['Tyre change', 'Four tyres swapped and pressure-checked.', 1320, 45, 450, 'booked', 'Ida S.'],
-  ['Brake check', 'Pads, discs and fluid checked.', 1500, 45, 550, 'booked', 'Oliver N.'],
-  ['Winter tyre swap', 'Get ready for the frost.', 1620, 45, 450, 'booked', 'Sofie H.'],
-  ['Tyre hotel pick-up', 'Collect your stored tyres and have them fitted.', 2760, 30, 250, 'booked', 'Emil R.'],
-]
-
-const TEMPLATES: Record<Category, [string, number][]> = {
-  food: [['Dinner for two', 900], ["Chef's table for four", 2400], ['Brunch for two', 450]],
-  beauty: [['Cut and colour', 1200], ['Facial', 800], ['Manicure', 350]],
-  car: [['Tyre change', 450], ['Car wash', 300], ['Service check', 1200]],
-  health: [['Physio session', 700], ['60-min massage', 650], ['Check-up', 900]],
-  official: [['Passport appointment', 650], ['ID card renewal', 300], ['Driving test', 900]],
-  experiences: [['Guided tour', 600], ['Workshop seat', 450], ['Tasting session', 500]],
+function tedsCalendar(now: number): CalendarSeed[] {
+  return [
+    { title: 'Tyre change', description: 'Four wheels swapped and pressure-checked.', start: at(now, 45, 15), durationMin: 30, fullPrice: 550, status: 'booked', customerName: 'Ingrid H.' },
+    { title: 'Tyre change and balancing', description: 'Four wheels swapped and balanced while you wait.', start: at(now, 90, 15), durationMin: 45, fullPrice: 700, status: 'booked', customerName: 'Lars B.' },
+    { title: 'Full service', description: 'Oil, filters, brakes, fluids and a full check-up.', start: at(now, 165, 15), durationMin: 120, fullPrice: 2900, status: 'released', customerName: 'Anders B.', discountPct: 0 },
+    { title: 'Puncture repair', description: 'Quick puncture repair.', start: at(now, 240, 15), durationMin: 30, fullPrice: 450, status: 'booked', customerName: 'Sigrid L.' },
+    { title: 'Tyre change', description: 'Four wheels swapped and pressure-checked.', start: at(now, 360, 15), durationMin: 30, fullPrice: 550, status: 'booked', customerName: 'Magnus E.' },
+    { id: DEMO_TYRE_SLOT, title: 'Tyre change', description: 'Four wheels swapped and pressure-checked, done in half an hour.', start: onDay(now, 1, 14), durationMin: 30, fullPrice: 550, status: 'booked', customerName: 'Mette K.' },
+    { title: 'Brake check', description: 'Pads, discs and fluid checked.', start: onDay(now, 1, 10, 30), durationMin: 45, fullPrice: 650, status: 'booked', customerName: 'Oliver N.' },
+    { title: 'Tyre change', description: 'Four wheels swapped and pressure-checked.', start: onDay(now, 1, 16), durationMin: 30, fullPrice: 550, status: 'booked', customerName: 'Sofie H.' },
+    { title: 'Tyre hotel pick-up', description: 'Collect your stored tyres and have them fitted.', start: onDay(now, 2, 9), durationMin: 30, fullPrice: 600, status: 'booked', customerName: 'Emil R.' },
+  ]
 }
 
-const CUSTOMER_NAMES = ['Mette K.', 'Jonas P.', 'Freja L.', 'Kasper M.', 'Ida S.', 'Oliver N.', 'Sofie H.', 'Emil R.']
+function lokkaCalendar(now: number): CalendarSeed[] {
+  // "Tonight 19:30" for the demo; if it's already too late today, the same table tomorrow.
+  const tonight = onDay(now, 0, 19, 30)
+  const tableStart = tonight - now > 45 * MIN ? tonight : onDay(now, 1, 19, 30)
+  return [
+    { title: 'Table for 4', description: 'Tasting menu, four guests.', start: at(now, 120, 15), durationMin: 180, fullPrice: 7800, status: 'booked', customerName: 'Nora V.', guests: 4 },
+    { id: DEMO_TABLE_SLOT, title: 'Table for 2', description: 'Twelve-course Nordic tasting menu for two.', start: tableStart, durationMin: 180, fullPrice: 4000, status: 'booked', customerName: 'Henrik S.', guests: 2 },
+    { title: 'Table for 2', description: 'Tasting menu, two guests.', start: tableStart + 60 * MIN, durationMin: 180, fullPrice: 4000, status: 'booked', customerName: 'Maja T.', guests: 2 },
+    { title: 'Table for 4', description: 'Tasting menu, four guests.', start: onDay(now, 1, 18), durationMin: 180, fullPrice: 7800, status: 'booked', customerName: 'Erik P.', guests: 4 },
+    { title: 'Table for 2', description: 'Tasting menu, two guests.', start: onDay(now, 1, 20), durationMin: 180, fullPrice: 3900, status: 'booked', customerName: 'Kari N.', guests: 2 },
+  ]
+}
+
+const TEMPLATES: Record<Category, [title: string, price: number, guests?: number][]> = {
+  food: [['Table for 2', 3600, 2], ['Table for 4', 7000, 4], ['Table for 2', 3000, 2]],
+  beauty: [['Cut and colour', 1600], ['Facial', 1100], ['Manicure', 550]],
+  car: [['Tyre change', 550], ['Tyre change and balancing', 700], ['Service check', 1800]],
+  health: [['Physio session', 750], ['60-min massage', 900], ['Check-up', 1100]],
+  official: [['Passport appointment', 0], ['ID card renewal', 0], ['Driving test', 1300]],
+  experiences: [['Guided tour', 450], ['Workshop seat', 650], ['Tasting session', 750]],
+}
+
+const CUSTOMER_NAMES = ['Mette K.', 'Lars B.', 'Sigrid L.', 'Magnus E.', 'Ingrid H.', 'Oliver N.', 'Sofie H.', 'Emil R.']
 
 /** Generates a believable calendar for a newly registered Business. */
 export function generateCalendar(businessId: string, category: Category, now: number): Slot[] {
   const offsets = [50, 110, 200, 320, 1380, 1500, 1680, 2700]
   return offsets.map((m, i) => {
-    const [title, fullPrice] = TEMPLATES[category][i % 3]
+    const [title, fullPrice, guests] = TEMPLATES[category][i % 3]
     return {
       id: uid('slot'),
       businessId,
@@ -95,16 +123,26 @@ export function generateCalendar(businessId: string, category: Category, now: nu
       start: at(now, m, 15),
       durationMin: 60,
       fullPrice,
+      guests,
       status: 'booked',
       customerName: CUSTOMER_NAMES[i % CUSTOMER_NAMES.length],
     }
   })
 }
 
+function calendarSlots(businessId: string, entries: CalendarSeed[], now: number): Slot[] {
+  return entries.map(({ id, ...e }) => ({
+    ...e,
+    id: id ?? uid('slot'),
+    businessId,
+    releasedAt: e.status === 'released' ? now - 20 * MIN : undefined,
+  }))
+}
+
 export function createSeed(now: number): State {
   const slots: Slot[] = []
 
-  for (const [businessId, title, description, m, durationMin, fullPrice, discountPct, perk] of lastCalls) {
+  for (const [businessId, title, description, m, durationMin, fullPrice, discountPct, guests, perk] of lastCalls) {
     slots.push({
       id: uid('slot'),
       businessId,
@@ -113,6 +151,7 @@ export function createSeed(now: number): State {
       start: at(now, m),
       durationMin,
       fullPrice,
+      guests,
       status: 'released',
       discountPct,
       releasedAt: now - (10 + Math.floor(Math.random() * 120)) * MIN,
@@ -120,21 +159,7 @@ export function createSeed(now: number): State {
     })
   }
 
-  for (const [title, description, m, durationMin, fullPrice, status, customerName, discountPct] of tedsCalendar) {
-    slots.push({
-      id: uid('slot'),
-      businessId: HERO_BUSINESS_ID,
-      title,
-      description,
-      start: at(now, m, 15),
-      durationMin,
-      fullPrice,
-      status,
-      customerName,
-      discountPct,
-      releasedAt: status === 'released' ? now - 20 * MIN : undefined,
-    })
-  }
+  slots.push(...calendarSlots(HERO_BUSINESS_ID, tedsCalendar(now), now), ...calendarSlots(RESTAURANT_ID, lokkaCalendar(now), now))
 
   return {
     version: 1,
@@ -143,10 +168,9 @@ export function createSeed(now: number): State {
     slots,
     rules: {
       [HERO_BUSINESS_ID]: { enabled: true, leadMinutes: 60, discountPct: 30 },
+      [RESTAURANT_ID]: { enabled: true, leadMinutes: 120, discountPct: 20 },
     },
-    baselines: {
-      [HERO_BUSINESS_ID]: { recovered: 14350, released: 23, sold: 19 },
-    },
+    baselines: {},
     wants: [],
     alerts: [],
     currentBusinessId: HERO_BUSINESS_ID,

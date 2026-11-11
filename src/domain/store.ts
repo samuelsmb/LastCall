@@ -3,7 +3,7 @@ import { createSeed, generateCalendar, uid } from './seed'
 import { matchesWant, releaseTime } from './selectors'
 import type { AutoReleaseRule, Category, State, TimeWindow } from './types'
 
-const KEY = 'lastcall-demo-v3'
+const KEY = 'lastcall-demo-v4'
 const MAX_AGE = 6 * 3_600_000
 
 function load(): State {
