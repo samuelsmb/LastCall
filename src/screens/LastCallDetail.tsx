@@ -27,7 +27,7 @@ export function LastCallDetail({ id }: { id: string }) {
       </a>
       <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
         <article className="overflow-hidden rounded-2xl border border-hairline bg-canvas">
-          <Band category={biz.category} className="h-48" iconSize="h-20 w-20 text-5xl">
+          <Band category={biz.category} image={biz.image} className="h-48" iconSize="h-20 w-20 text-5xl">
             <DiscountSticker slot={slot} className="absolute right-5 top-5" />
           </Band>
           <div className="flex flex-col gap-3 px-6 pb-8 pt-14 sm:px-8">

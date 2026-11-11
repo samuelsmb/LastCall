@@ -109,13 +109,19 @@ export function DiscountSticker({ slot, className = '' }: { slot: Slot; classNam
 }
 
 /** Colour-blocked illustration band with a page-icon tile, the Notion way. */
-export function Band({ category, className = '', iconSize = 'h-14 w-14 text-3xl', children }: { category: Category; className?: string; iconSize?: string; children?: ReactNode }) {
+export function Band({ category, image, className = '', iconSize = 'h-14 w-14 text-3xl', children }: { category: Category; image?: string; className?: string; iconSize?: string; children?: ReactNode }) {
   const m = CATEGORY_META[category]
   return (
     <div className={`relative ${className}`}>
       <div className={`absolute inset-0 overflow-hidden ${m.band}`}>
-        <span className="absolute -right-6 -top-8 h-28 w-28 rounded-full bg-white/15" />
-        <span className="absolute -bottom-10 left-1/3 h-24 w-24 rounded-full bg-black/5" />
+        {image ? (
+          <img src={image} alt="" loading="lazy" className="h-full w-full object-cover" />
+        ) : (
+          <>
+            <span className="absolute -right-6 -top-8 h-28 w-28 rounded-full bg-white/15" />
+            <span className="absolute -bottom-10 left-1/3 h-24 w-24 rounded-full bg-black/5" />
+          </>
+        )}
       </div>
       <span className={`absolute bottom-0 left-5 z-10 grid translate-y-1/2 place-items-center rounded-xl border border-hairline bg-canvas shadow-soft transition duration-300 group-hover:-rotate-6 ${iconSize}`}>
         {m.icon}

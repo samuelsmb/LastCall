@@ -32,15 +32,15 @@ export function uid(prefix = 'id') {
 }
 
 const businesses: Omit<Business, 'introSpotsLeft'>[] = [
-  { id: HERO_BUSINESS_ID, name: 'Dekkproff Bjerke', category: 'car', neighbourhood: 'Bjerke', address: 'Refstadveien 27', distanceKm: 5.1, tagline: 'Hjulskift uten timebestilling' },
+  { id: HERO_BUSINESS_ID, name: 'Dekkproff Bjerke', category: 'car', neighbourhood: 'Bjerke', address: 'Refstadveien 27', distanceKm: 5.1, tagline: 'Hjulskift uten timebestilling', image: 'img/dekkproff.jpg' },
   { id: 'dekkdoktoren', name: 'Vianor Storo', category: 'car', neighbourhood: 'Storo', address: 'Storo', distanceKm: 4.3, tagline: 'Dekkverksted og dekkhotell' },
   { id: 'wheel-of-fortune', name: 'Snap Drive', category: 'car', neighbourhood: 'Oslo', address: 'Oslo', distanceKm: 3.0, tagline: 'Dekkskift og bilservice' },
-  { id: RESTAURANT_ID, name: 'Theatercaféen', category: 'food', neighbourhood: 'Sentrum', address: 'Stortingsgata 24', distanceKm: 0.2, tagline: 'Klassisk wienerkafé siden 1900' },
-  { id: 'fjordbord', name: 'Maaemo', category: 'food', neighbourhood: 'Bjørvika', address: 'Schweigaards gate 15B', distanceKm: 1.3, tagline: 'Norsk gourmetrestaurant med tre Michelin-stjerner' },
-  { id: 'frogner-counter', name: 'Statholdergaarden', category: 'food', neighbourhood: 'Sentrum', address: 'Rådhusgata 11', distanceKm: 0.6, tagline: 'Gourmetrestaurant med Michelin-stjerne siden 1998' },
-  { id: 'hanshaugen-hearth', name: 'Statholderens Mat & Vinkjeller', category: 'food', neighbourhood: 'Sentrum', address: 'Rådhusgata 11', distanceKm: 0.6, tagline: 'Moderne bistro med sesongmenyer' },
+  { id: RESTAURANT_ID, name: 'Theatercaféen', category: 'food', neighbourhood: 'Sentrum', address: 'Stortingsgata 24', distanceKm: 0.2, tagline: 'Klassisk wienerkafé siden 1900', image: 'img/theatercafeen.jpg' },
+  { id: 'fjordbord', name: 'Maaemo', category: 'food', neighbourhood: 'Bjørvika', address: 'Schweigaards gate 15B', distanceKm: 1.3, tagline: 'Norsk gourmetrestaurant med tre Michelin-stjerner', image: 'img/maaemo.jpg' },
+  { id: 'frogner-counter', name: 'Statholdergaarden', category: 'food', neighbourhood: 'Sentrum', address: 'Rådhusgata 11', distanceKm: 0.6, tagline: 'Gourmetrestaurant med Michelin-stjerne siden 1998', image: 'img/statholdergaarden.jpg' },
+  { id: 'hanshaugen-hearth', name: 'Statholderens Mat & Vinkjeller', category: 'food', neighbourhood: 'Sentrum', address: 'Rådhusgata 11', distanceKm: 0.6, tagline: 'Moderne bistro med sesongmenyer', image: 'img/statholdergaarden.jpg' },
   { id: 'passport-office', name: 'Pass- og ID-kontoret', category: 'official', neighbourhood: 'Gamle Oslo', address: 'Grønlandsleiret 44', distanceKm: 1.5, tagline: 'Pass og nasjonale ID-kort' },
-  { id: 'cellar-jazz', name: 'Herr Nilsen', category: 'experiences', neighbourhood: 'Sentrum', address: 'C.J. Hambros plass 5', distanceKm: 0.4, tagline: 'Live jazz hver kveld' },
+  { id: 'cellar-jazz', name: 'Herr Nilsen', category: 'experiences', neighbourhood: 'Sentrum', address: 'C.J. Hambros plass 5', distanceKm: 0.4, tagline: 'Live jazz hver kveld', image: 'img/herr-nilsen.jpg' },
 ]
 
 type LastCallSeed = [businessId: string, title: string, description: string, minutesFromNow: number, durationMin: number, fullPrice: number, discountPct: number, guests?: number, perk?: string]

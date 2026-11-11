@@ -11,7 +11,7 @@ export function LastCallCard({ state, slot, now }: { state: State; slot: Slot; n
 
   return (
     <a href={`#/lc/${slot.id}`} className={`group flex flex-col overflow-hidden rounded-xl border bg-canvas transition hover:shadow-soft ${fresh ? 'border-primary/50' : 'border-hairline'}`}>
-      <Band category={biz.category} className="h-28">
+      <Band category={biz.category} image={biz.image} className="h-28">
         <DiscountSticker slot={slot} className="absolute right-3 top-3" />
         {fresh && <span className="eyebrow absolute left-3 top-3 rounded-full bg-primary px-2.5 py-1 text-white">Nettopp frigitt</span>}
       </Band>
