@@ -12,6 +12,8 @@ export interface Business {
   address: string
   distanceKm: number
   tagline: string
+  /** Photo in public/img (relative path). Falls back to the category band. */
+  image?: string
   /** Filled spots still free under the intro offer (starts at 10). */
   introSpotsLeft: number
   orgNumber?: string

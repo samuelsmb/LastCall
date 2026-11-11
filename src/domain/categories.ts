@@ -4,7 +4,7 @@ export const CATEGORIES: Category[] = ['food', 'car', 'beauty', 'health', 'offic
 
 /** Sticker colours are decoration only: bands, icon tiles and dots. Never actions. */
 export const CATEGORY_META: Record<Category, { label: string; icon: string; band: string; tint: string; text: string; dot: string }> = {
-  food: { label: 'Fine dining', icon: '🍽️', band: 'bg-orange', tint: 'bg-orange/10', text: 'text-orange-deep', dot: 'bg-orange' },
+  food: { label: 'Restaurant', icon: '🍽️', band: 'bg-orange', tint: 'bg-orange/10', text: 'text-orange-deep', dot: 'bg-orange' },
   car: { label: 'Dekkskift', icon: '🚗', band: 'bg-sky', tint: 'bg-sky/15', text: 'text-[#1d5d94]', dot: 'bg-sky' },
   beauty: { label: 'Skjønnhet og spa', icon: '💅', band: 'bg-pink', tint: 'bg-pink/10', text: 'text-[#9b1f6e]', dot: 'bg-pink' },
   health: { label: 'Helse', icon: '🩺', band: 'bg-teal', tint: 'bg-teal/10', text: 'text-[#1c6b68]', dot: 'bg-teal' },
@@ -18,4 +18,4 @@ export const WINDOW_META: Record<TimeWindow, { label: string; hint: string }> = 
   '48h': { label: 'Neste 48 t', hint: 'innen 48 timer' },
 }
 
-export const NEIGHBOURHOODS = ['Sentrum', 'Grünerløkka', 'Majorstuen', 'Frogner', 'Bjørvika', 'Gamle Oslo', 'Tøyen', 'Sagene', 'St. Hanshaugen']
+export const NEIGHBOURHOODS = ['Sentrum', 'Grünerløkka', 'Majorstuen', 'Frogner', 'Bjørvika', 'Bjerke', 'Storo', 'Gamle Oslo', 'Tøyen', 'Sagene', 'St. Hanshaugen']

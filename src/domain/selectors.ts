@@ -110,5 +110,6 @@ export function interpretWant(text: string): { categories: Category[]; window: T
 
 /** Rough walking time, about 12 minutes per km. */
 export function walkMinutes(biz: Business) {
-  return Math.max(1, Math.round(biz.distanceKm * 12))
+  // Til fots opp til 2 km, ellers bil/kollektiv (ca. 3 min per km)
+  return Math.max(1, Math.round(biz.distanceKm <= 2 ? biz.distanceKm * 12 : biz.distanceKm * 3))
 }

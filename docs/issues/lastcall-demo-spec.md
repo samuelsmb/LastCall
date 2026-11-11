@@ -28,7 +28,7 @@ Everything is fake. Data is hardcoded, and state lives in the browser and syncs 
 2. As a Customer, I want each Last Call shown as a card with the Business name, Category, neighbourhood, start time and a picture or illustration, so that I can scan options quickly.
 3. As a Customer, I want to see the original price struck through next to the Last Call price, so that I can see how much I save.
 4. As a Customer, I want a live countdown on each Last Call ("starts in 2h 15m"), so that I feel the urgency and know how much time I have.
-5. As a Customer, I want to filter by Category chips (Food, Beauty & Spa, Car, Health, Official appointments, Experiences), so that tyre changes and fine dining don't get mixed together.
+5. As a Customer, I want to filter by Category chips (Food, Beauty & Spa, Car, Health, Official appointments, Experiences), so that tyre changes and restaurant don't get mixed together.
 6. As a Customer, I want to select several Category chips at once, or none to see everything, so that I can browse broadly or narrowly.
 7. As a Customer, I want a time filter (Now / Today / Next 48h), so that I only see Last Calls that fit when I'm free.
 8. As a Customer, I want to sort by Soonest, Biggest discount or Nearest, so that I can choose by what matters to me.
@@ -141,7 +141,7 @@ These override anything above where they conflict.
 
 - **Market: Oslo.** Neighbourhoods Grünerløkka, Majorstuen, Frogner, Bjørvika, Gamle Oslo, Tøyen, Sagene, St. Hanshaugen. Currency NOK only, shown as `550 kr`. Growth story (copy only): Oslo → rest of Norway → Denmark → Northern Europe; two categories → any bookable service.
 - **Language and brand.** All copy in English; Norwegian place names stay. The slogan lives in one constant, `TAGLINE` in `src/brand.ts` (currently "TBD"). Tone: short, direct, warm, a little cheeky; never shame the Canceller; emojis only in Alerts.
-- **Hero categories.** Fine dining and Tyre change come first and have the most listings. Tyre change 450–700 kr (typical 550). Fine dining 1,500–3,500 kr per person, tables for 2 or 4, shown per person and in total.
+- **Hero categories.** Restaurant and Tyre change come first and have the most listings. Tyre change 450–700 kr (typical 550). Restaurant 1,500–3,500 kr per person, tables for 2 or 4, shown per person and in total.
 - **Discount is optional.** Per release and in the Auto-release rule the Business picks *Full price* ("Skip the queue": no strike-through, no discount sticker) or *Discount*. Full-price Auto-release releases a cancelled slot at once; discount Auto-release holds it until the lead time, then releases at Y% off. Defaults: Ted's Garage full price; Restaurant Løkka 2 hours before at 20% off.
 - **Business pricing.** 0 kr to join, no monthly fee, no lock-in. 49 kr per Filled spot (one appointment, or one guest; a table for 2 = 98 kr), capped at 10% of the final sold price after discount, only charged if the Customer shows up, invoiced monthly. First 10 Filled spots free (Intro offer), tracked per Business; a table is never split, so if fewer free spots remain than its guests the whole table is free and the counter goes to 0. One pure function, `calculateFee(listing, business)` in `src/domain/pricing.ts`, is used by the dashboard, Release dialog and onboarding. The Fee is fixed on the Slot when it sells.
 - **Dashboard.** Revenue recovered (gross), LastCall fee (with "Free spots left: X/10" while the Intro offer applies), Net recovered, Released / Sold / Sell-through, and "You only pay when we fill a slot."
