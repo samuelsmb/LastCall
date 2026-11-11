@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { LastCallCard } from '../components/LastCallCard'
 import { CATEGORIES, CATEGORY_META, WINDOW_META } from '../domain/categories'
-import { marketplace, type SortKey } from '../domain/selectors'
+import { businessOf, marketplace, type SortKey } from '../domain/selectors'
 import { CITY } from '../brand'
 import { useAppState } from '../domain/store'
 import type { Category, TimeWindow } from '../domain/types'
@@ -13,6 +13,9 @@ const SORTS: { value: SortKey; label: string }[] = [
   { value: 'discount', label: 'Størst rabatt' },
   { value: 'nearest', label: 'Nærmest' },
 ]
+
+// «Overrask meg» foreslår ikke dekkskift, helse eller offentlige timer.
+const SURPRISE_EXCLUDED: Category[] = ['car', 'health', 'official']
 
 const STARS = [
   ['8%', '20%', 'bg-purple', 'h-2 w-2'],
@@ -37,7 +40,8 @@ export function Marketplace() {
   const toggle = (c: Category) => setCategories(categories.includes(c) ? categories.filter((x) => x !== c) : [...categories, c])
 
   const surprise = () => {
-    const pool = list.length ? list : marketplace(state, now, { categories: [], window: null, sort: 'soonest' })
+    const base = list.length ? list : marketplace(state, now, { categories: [], window: null, sort: 'soonest' })
+    const pool = base.filter((s) => !SURPRISE_EXCLUDED.includes(businessOf(state, s).category))
     if (pool.length) go(`/lc/${pool[Math.floor(Math.random() * pool.length)].id}`)
   }
 
