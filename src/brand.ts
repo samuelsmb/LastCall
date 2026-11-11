@@ -1,4 +1,4 @@
-/** The one place the slogan lives. Bytt den her når teamet har valgt en. */
-export const TAGLINE = 'TBD'
+/** The one place the slogan lives. Bytt den her om teamet velger en annen. */
+export const TAGLINE = 'Avbestillinger blir siste-liten-tilbud'
 
 export const CITY = 'Oslo'
