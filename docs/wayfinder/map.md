@@ -29,7 +29,7 @@ A spec for a mocked, whimsical LastCall web demo (desktop + mobile view) set in 
 
 <!-- one line per closed ticket -->
 
-- 2026-11-11 iteration (see "Iteration decisions" in [the spec](../issues/lastcall-demo-spec.md)): market is Oslo, NOK only (`550 kr`); all copy English with a single `TAGLINE` constant; Restaurant and Tyre change are the hero categories; discount is optional (full price = "Skip the queue"); Businesses pay 49 kr per Filled spot capped at 10%, first 10 spots free; dashboard shows recovered, fee and net; onboarding has a pricing step; LastCall complements a waitlist.
+- 2026-11-11 iteration (see "Iteration decisions" in [the spec](../issues/lastcall-demo-spec.md)): market is Oslo, NOK only (`550 kr`); all copy English; Restaurant and Tyre change are the hero categories; discount is optional (full price = "Skip the queue"); Businesses pay 49 kr per Filled spot capped at 10%, first 10 spots free; dashboard shows recovered, fee and net; onboarding has a pricing step; LastCall complements a waitlist.
 
 ## Not yet specified
 

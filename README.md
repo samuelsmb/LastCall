@@ -48,7 +48,7 @@ Notes: if it's later than about 18:45, the Theatercaféen table is seeded for to
 
 ## Where things live
 
-- `src/brand.ts`: `TAGLINE` (the one place for the slogan) and the city.
+- `src/brand.ts`: the city.
 - `src/domain/pricing.ts`: `calculateFee` and the Intro offer rules.
 - `src/domain/store.ts`, `selectors.ts`, `seed.ts`: state, business rules and the Oslo catalogue.
 - Look and feel follows the Notion design language in `docs/DESIGN.md`.

@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { LastCallCard } from '../components/LastCallCard'
 import { CATEGORIES, CATEGORY_META, WINDOW_META } from '../domain/categories'
 import { marketplace, type SortKey } from '../domain/selectors'
-import { CITY, TAGLINE } from '../brand'
+import { CITY } from '../brand'
 import { useAppState } from '../domain/store'
 import type { Category, TimeWindow } from '../domain/types'
 import { go, useNow } from '../lib'
@@ -49,7 +49,7 @@ export function Marketplace() {
         ))}
         <div className="relative flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
           <div className="max-w-xl">
-            <span className="eyebrow inline-block rounded-full bg-canvas px-2.5 py-1 text-primary">Nytt i {CITY} · {TAGLINE}</span>
+            <span className="eyebrow inline-block rounded-full bg-canvas px-2.5 py-1 text-primary">Nytt i {CITY}</span>
             <h1 className="display-2 mt-5 sm:display-1">Noen avbestilte. Nå er den din.</h1>
             <p className="mt-5 text-lg text-white/80">
               Fullbooka bord og verksteder i {CITY}, ledige i det øyeblikket noen avbestiller. Hopp over køen, noen ganger til lavere pris. Fjord-abelt i siste liten.
