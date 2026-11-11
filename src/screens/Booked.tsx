@@ -1,7 +1,7 @@
 import { CATEGORY_META } from '../domain/categories'
 import { businessOf, lastCallPrice, savings } from '../domain/selectors'
 import { useAppState } from '../domain/store'
-import { go, kr, useNow, when } from '../lib'
+import { clock, dayLabel, go, kr, useNow, when } from '../lib'
 import { Button } from '../ui'
 import { Gone } from './LastCallDetail'
 
@@ -12,13 +12,15 @@ export function Booked({ id }: { id: string }) {
   if (!slot || slot.status !== 'sold') return <Gone title="We couldn't find this booking" />
   const biz = businessOf(state, slot)
   const first = slot.buyerName && slot.buyerName !== 'Guest' ? `, ${slot.buyerName.split(' ')[0]}` : ''
+  const day = dayLabel(slot.start, now)
+  const seeYou = day === 'Today' ? `today at ${clock(slot.start)}` : `${day === 'Tomorrow' ? 'tomorrow' : day} at ${clock(slot.start)}`
 
   return (
     <div className="mx-auto flex max-w-lg flex-col items-center gap-6 py-8 text-center">
       <span className="grid h-16 w-16 animate-rise place-items-center rounded-full bg-green text-3xl text-white">✓</span>
       <div>
-        <h1 className="display-2">You're booked{first}!</h1>
-        <p className="mt-3 text-lg text-muted">Someone's cancellation just became your plan.</p>
+        <h1 className="display-2">It's yours{first}.</h1>
+        <p className="mt-3 text-lg text-muted">See you {seeYou}.</p>
       </div>
 
       <div className="w-full rounded-2xl border border-hairline bg-canvas p-6 text-left shadow-soft">
@@ -33,7 +35,7 @@ export function Booked({ id }: { id: string }) {
           <Row label="When" value={when(slot.start, now)} />
           <Row label="Where" value={`${biz.address}, ${biz.neighbourhood}`} />
           <Row label="You pay" value={kr(lastCallPrice(slot))} />
-          <Row label="You saved" value={savings(slot) > 0 ? kr(savings(slot)) : slot.perk ?? '–'} accent />
+          {savings(slot) > 0 ? <Row label="You saved" value={kr(savings(slot))} accent /> : <Row label="Bonus" value={slot.perk ?? 'You skipped the queue'} accent />}
         </dl>
       </div>
 

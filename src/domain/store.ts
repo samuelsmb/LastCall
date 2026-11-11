@@ -1,9 +1,10 @@
 import { useSyncExternalStore } from 'react'
+import { calculateFee, INTRO_SPOTS } from './pricing'
 import { createSeed, generateCalendar, uid } from './seed'
-import { matchesWant, releaseTime } from './selectors'
-import type { AutoReleaseRule, Category, State, TimeWindow } from './types'
+import { DEFAULT_RULE, matchesWant, releaseTime, ruleDiscount } from './selectors'
+import type { AutoReleaseRule, Category, ReleaseMode, State, TimeWindow } from './types'
 
-const KEY = 'lastcall-demo-v3'
+const KEY = 'lastcall-demo-v4'
 const MAX_AGE = 6 * 3_600_000
 
 function load(): State {
@@ -78,7 +79,7 @@ export function cancelSlot(slotId: string) {
   const rule = state.rules[slot.businessId]
   const at = releaseTime(state, slot)
   if (rule?.enabled && at !== null && now >= at) {
-    commit(releaseInto(state, slotId, rule.discountPct, now))
+    commit(releaseInto(state, slotId, ruleDiscount(rule), now))
     return
   }
   const status = rule?.enabled ? 'held' : 'cancelled'
@@ -101,15 +102,18 @@ export function withdrawSlot(slotId: string) {
 export function bookSlot(slotId: string, buyerName: string): boolean {
   const slot = state.slots.find((s) => s.id === slotId)
   if (!slot || slot.status !== 'released' || slot.start <= Date.now()) return false
+  const biz = state.businesses.find((b) => b.id === slot.businessId)!
+  const { fee, introSpotsUsed } = calculateFee(slot, biz)
   commit({
     ...state,
-    slots: state.slots.map((s) => (s.id === slotId ? { ...s, status: 'sold', buyerName, soldAt: Date.now() } : s)),
+    businesses: state.businesses.map((b) => (b.id === biz.id ? { ...b, introSpotsLeft: Math.max(0, b.introSpotsLeft - introSpotsUsed) } : b)),
+    slots: state.slots.map((s) => (s.id === slotId ? { ...s, status: 'sold', buyerName, soldAt: Date.now(), fee, introSpotsUsed } : s)),
   })
   return true
 }
 
 export function setRule(businessId: string, patch: Partial<AutoReleaseRule>) {
-  const prev = state.rules[businessId] ?? { enabled: false, leadMinutes: 60, discountPct: 30 }
+  const prev = state.rules[businessId] ?? DEFAULT_RULE
   const rule = { ...prev, ...patch }
   let slots = state.slots
   if (prev.enabled !== rule.enabled) {
@@ -131,13 +135,13 @@ export function applyAutoRelease(now: number) {
     if (slot.status !== 'held' || slot.start <= now) continue
     const at = releaseTime(next, slot)
     const rule = next.rules[slot.businessId]
-    if (at !== null && rule && now >= at) next = releaseInto(next, slot.id, rule.discountPct, now)
+    if (at !== null && rule && now >= at) next = releaseInto(next, slot.id, ruleDiscount(rule), now)
   }
   if (next !== state) commit(next)
 }
 
-export function addWant(label: string, categories: Category[], window: TimeWindow) {
-  commit({ ...state, wants: [{ id: uid('want'), label, categories, window, createdAt: Date.now() }, ...state.wants] })
+export function addWant(label: string, categories: Category[], window: TimeWindow, area?: string) {
+  commit({ ...state, wants: [{ id: uid('want'), label, categories, window, area, createdAt: Date.now() }, ...state.wants] })
 }
 
 export function removeWant(wantId: string) {
@@ -152,17 +156,17 @@ export function setCurrentBusiness(businessId: string) {
   commit({ ...state, currentBusinessId: businessId })
 }
 
-export function registerBusiness(name: string, category: Category, neighbourhood: string) {
+export function registerBusiness(name: string, category: Category, neighbourhood: string, mode: ReleaseMode = 'full') {
   const id = uid('biz')
   const now = Date.now()
   commit({
     ...state,
     businesses: [
       ...state.businesses,
-      { id, name, category, neighbourhood, address: `${neighbourhood}`, distanceKm: 1 + Math.round(Math.random() * 40) / 10, tagline: 'New on LastCall' },
+      { id, name, category, neighbourhood, address: `${neighbourhood}`, distanceKm: 1 + Math.round(Math.random() * 40) / 10, tagline: 'New on LastCall', introSpotsLeft: INTRO_SPOTS },
     ],
     slots: [...state.slots, ...generateCalendar(id, category, now)],
-    rules: { ...state.rules, [id]: { enabled: false, leadMinutes: 60, discountPct: 30 } },
+    rules: { ...state.rules, [id]: { ...DEFAULT_RULE, enabled: true, mode } },
     currentBusinessId: id,
   })
   return id

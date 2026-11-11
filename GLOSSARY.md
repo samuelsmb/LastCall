@@ -5,7 +5,7 @@ A marketplace for the cancellation economy: businesses resell booking slots free
 ## Language
 
 **Last Call**:
-A freed-up booking slot that a business has put up for sale on the marketplace.
+A freed-up booking slot that a business has put up for sale on the marketplace, at full price or a discount.
 _Avoid_: Listing, event, appointment, deal, offer
 
 **Release**:
@@ -13,7 +13,7 @@ The act of a Business putting a cancelled slot on the marketplace as a Last Call
 _Avoid_: Publish, post, list
 
 **Auto-release rule**:
-A Business's standing instruction to release cancelled slots automatically at a set time before they start, at a set discount, giving full-price customers first chance until then.
+A Business's standing instruction for cancelled slots: either release them at once at full price (Skip the queue), or hold them for full-price customers until a set time before they start and then release them at a set discount.
 _Avoid_: Automation, trigger
 
 **Want**:
@@ -39,3 +39,19 @@ _Avoid_: User, buyer, consumer
 **Canceller**:
 The person whose cancellation freed up the slot behind a Last Call.
 _Avoid_: Original customer
+
+**Skip the queue**:
+A Last Call released at full price (0% off). The Customer's gain is getting in at all, not a lower price. Shown as a sticker instead of a discount.
+_Avoid_: No-discount deal, full-price offer
+
+**Filled spot**:
+The unit LastCall charges for: one sold appointment, or one guest at a sold restaurant table (a table for 2 is 2 filled spots). Tables are never split.
+_Avoid_: Booking, seat, cover
+
+**Fee**:
+What a Business pays LastCall for a sold Last Call: 49 kr per Filled spot, capped at 10% of the final sold price, only if the Customer shows up. Computed by `calculateFee`.
+_Avoid_: Commission, cut, take rate
+
+**Intro offer**:
+A Business's first 10 Filled spots are free. A table that needs more free spots than remain is still entirely free; the counter then stops at 0.
+_Avoid_: Trial, free tier

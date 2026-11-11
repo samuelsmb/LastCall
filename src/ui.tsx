@@ -1,4 +1,5 @@
 import { useEffect, useRef, type ButtonHTMLAttributes, type ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 import { CATEGORY_META } from './domain/categories'
 import { lastCallPrice } from './domain/selectors'
 import type { Category, Slot } from './domain/types'
@@ -85,17 +86,26 @@ export function Countdown({ start, className = '' }: { start: number; className?
 export function Price({ slot, big = false }: { slot: Slot; big?: boolean }) {
   const price = lastCallPrice(slot)
   const discounted = (slot.discountPct ?? 0) > 0
+  const guests = slot.guests ?? 0
   return (
-    <span className="inline-flex items-baseline gap-2">
-      <span className={big ? 'heading-1' : 'title'}>{kr(price)}</span>
-      {discounted && <s className={`text-faint ${big ? 'text-base' : 'text-sm'}`}>{kr(slot.fullPrice)}</s>}
+    <span className="inline-flex flex-col">
+      <span className="inline-flex items-baseline gap-2">
+        <span className={big ? 'heading-1' : 'title'}>{kr(guests > 1 ? price / guests : price)}</span>
+        {guests > 1 && <span className={`text-muted ${big ? 'text-base' : 'text-sm'}`}>per person</span>}
+        {discounted && <s className={`text-faint ${big ? 'text-base' : 'text-sm'}`}>{kr(guests > 1 ? slot.fullPrice / guests : slot.fullPrice)}</s>}
+      </span>
+      {guests > 1 && (
+        <span className="text-sm text-muted">
+          {kr(price)} total for {guests} guests
+        </span>
+      )}
     </span>
   )
 }
 
 export function DiscountSticker({ slot, className = '' }: { slot: Slot; className?: string }) {
   const d = slot.discountPct ?? 0
-  return <span className={`eyebrow rounded-full bg-canvas px-2.5 py-1 text-ink shadow-soft ${className}`}>{d > 0 ? `−${d}%` : slot.perk ?? 'Last Call'}</span>
+  return <span className={`eyebrow rounded-full bg-canvas px-2.5 py-1 text-ink shadow-soft ${className}`}>{d > 0 ? `−${d}%` : slot.perk ?? 'Skip the queue'}</span>
 }
 
 /** Colour-blocked illustration band with a page-icon tile, the Notion way. */
@@ -122,12 +132,19 @@ export function Modal({ onClose, children }: { onClose: () => void; children: Re
     return () => window.removeEventListener('keydown', onKey)
   }, [onClose])
   return (
-    <div className="fixed inset-0 z-50 flex animate-fade items-end justify-center bg-black/30 p-3 sm:items-center" onClick={onClose}>
-      <div className="w-full max-w-md animate-rise rounded-2xl bg-canvas p-6 shadow-lifted" onClick={(e) => e.stopPropagation()}>
-        {children}
+    <Overlay>
+      <div className="fixed inset-0 z-50 flex animate-fade items-end justify-center bg-black/30 p-3 sm:items-center" onClick={onClose}>
+        <div className="max-h-[calc(100vh-1.5rem)] w-full max-w-md animate-rise overflow-y-auto rounded-2xl bg-canvas p-6 shadow-lifted" onClick={(e) => e.stopPropagation()}>
+          {children}
+        </div>
       </div>
-    </div>
+    </Overlay>
   )
+}
+
+/** Renders on document.body so `fixed` is relative to the viewport, not an animated (transformed) ancestor. */
+export function Overlay({ children }: { children: ReactNode }) {
+  return createPortal(children, document.body)
 }
 
 export function BellIcon({ className = '' }: { className?: string }) {

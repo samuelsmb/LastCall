@@ -1,10 +1,8 @@
-import type { Business, Category, Slot, State, TimeWindow, Want } from './types'
+import { NEIGHBOURHOODS } from './categories'
+import { lastCallPrice } from './pricing'
+import type { AutoReleaseRule, Business, Category, Slot, State, TimeWindow, Want } from './types'
 
-export function lastCallPrice(slot: Slot) {
-  const d = slot.discountPct ?? 0
-  if (d === 0) return slot.fullPrice
-  return Math.round((slot.fullPrice * (1 - d / 100)) / 5) * 5
-}
+export { lastCallPrice }
 
 export function savings(slot: Slot) {
   return slot.fullPrice - lastCallPrice(slot)
@@ -58,8 +56,16 @@ export function marketplace(state: State, now: number, f: MarketplaceFilters): S
 export function releaseTime(state: State, slot: Slot): number | null {
   const rule = state.rules[slot.businessId]
   if (!rule?.enabled) return null
+  if (rule.mode === 'full') return 0
   return slot.start - rule.leadMinutes * 60_000
 }
+
+/** The discount an Auto-release rule applies: 0 when it releases at full price. */
+export function ruleDiscount(rule: AutoReleaseRule) {
+  return rule.mode === 'full' ? 0 : rule.discountPct
+}
+
+export const DEFAULT_RULE: AutoReleaseRule = { enabled: false, mode: 'full', leadMinutes: 60, discountPct: 20 }
 
 export function dashboardStats(state: State, businessId: string) {
   const base = state.baselines[businessId] ?? { recovered: 0, released: 0, sold: 0 }
@@ -67,10 +73,14 @@ export function dashboardStats(state: State, businessId: string) {
   const sold = own.filter((s) => s.status === 'sold')
   const released = own.filter((s) => s.releasedAt)
   const recovered = base.recovered + sold.reduce((sum, s) => sum + lastCallPrice(s), 0)
+  const fee = sold.reduce((sum, s) => sum + (s.fee ?? 0), 0)
   const releasedCount = base.released + released.length
   const soldCount = base.sold + sold.length
   return {
     recovered,
+    fee,
+    net: recovered - fee,
+    introSpotsLeft: state.businesses.find((b) => b.id === businessId)?.introSpotsLeft ?? 0,
     released: releasedCount,
     sold: soldCount,
     live: own.filter((s) => s.status === 'released').length,
@@ -79,20 +89,26 @@ export function dashboardStats(state: State, businessId: string) {
 }
 
 const HINTS: [RegExp, Category][] = [
-  [/tyre|tire|car|wash|garage|oil|brake|wheel/i, 'car'],
-  [/dinner|dining|food|lunch|brunch|restaurant|eat|table|tasting/i, 'food'],
-  [/hair|nail|spa|facial|beauty|manicure|cut|glow/i, 'beauty'],
+  [/tyre|tire|car|garage|oil|brake|wheel|dekk/i, 'car'],
+  [/dinner|dining|food|lunch|restaurant|eat|table|tasting|menu/i, 'food'],
+  [/hair|nail|spa|facial|beauty|manicure|haircut|glow/i, 'beauty'],
   [/physio|back|dentist|teeth|massage|doctor|health|knee/i, 'health'],
   [/passport|licen[cs]e|driving test|id card|official|visa/i, 'official'],
-  [/bored|fun|kayak|escape|sauna|comedy|experience|date|surprise|adventure/i, 'experiences'],
+  [/bored|fun|escape|sauna|jazz|comedy|experience|date|surprise|adventure/i, 'experiences'],
 ]
 
-/** Fake "AI": reads a free-text Want and guesses Categories and a time window. */
-export function interpretWant(text: string): { categories: Category[]; window: TimeWindow | null } {
+/** Fake "AI": reads a free-text Want and guesses Categories, a time window and an area. */
+export function interpretWant(text: string): { categories: Category[]; window: TimeWindow | null; area: string | null } {
   const categories = HINTS.filter(([re]) => re.test(text)).map(([, c]) => c)
   let window: TimeWindow | null = null
   if (/\bnow\b|asap|right away|urgent/i.test(text)) window = 'now'
   else if (/today|tonight|this evening/i.test(text)) window = 'today'
   else if (/48|tomorrow|couple of days|two days|weekend|soon/i.test(text)) window = '48h'
-  return { categories: [...new Set(categories)], window }
+  const area = NEIGHBOURHOODS.find((n) => text.toLowerCase().includes(n.toLowerCase())) ?? null
+  return { categories: [...new Set(categories)], window, area }
+}
+
+/** Rough walking time, about 12 minutes per km. */
+export function walkMinutes(biz: Business) {
+  return Math.max(1, Math.round(biz.distanceKm * 12))
 }

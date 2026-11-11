@@ -8,7 +8,7 @@ status: open
 
 ## Destination
 
-A spec for a mocked, whimsical LastCall web demo (desktop + mobile view) set in Cooler Copenhagen, built from bricks that can be shown in any order in a 2-minute pitch. Done when every brick can be built without further questions.
+A spec for a mocked, whimsical LastCall web demo (desktop + mobile view) set in Oslo, built from bricks that can be shown in any order in a 2-minute pitch. Done when every brick can be built without further questions.
 
 ## Notes
 
@@ -23,11 +23,13 @@ A spec for a mocked, whimsical LastCall web demo (desktop + mobile view) set in 
   - A Last Call shows original price struck through, Last Call price, and a countdown to start.
   - Release is both manual (Business releases whenever) and automatic (Auto-release rule: hold for full-price customers, then release at a discount X time before start).
   - Customer/Business toggle in the app header, plus localStorage sync so two tabs side by side update live.
-  - Language English; setting is the fictional city **Cooler Copenhagen**.
+  - Language English; setting is **Oslo** (was Cooler Copenhagen until the 2026-11-11 iteration).
 
 ## Decisions so far
 
 <!-- one line per closed ticket -->
+
+- 2026-11-11 iteration (see "Iteration decisions" in [the spec](../issues/lastcall-demo-spec.md)): market is Oslo, NOK only (`550 kr`); all copy English with a single `TAGLINE` constant; Fine dining and Tyre change are the hero categories; discount is optional (full price = "Skip the queue"); Businesses pay 49 kr per Filled spot capped at 10%, first 10 spots free; dashboard shows recovered, fee and net; onboarding has a pricing step; LastCall complements a waitlist.
 
 ## Not yet specified
 

@@ -1,17 +1,20 @@
 import { useState } from 'react'
+import { alertLine } from '../components/AlertToasts'
 import { CATEGORIES, CATEGORY_META, WINDOW_META } from '../domain/categories'
 import { businessOf, interpretWant, isLive, matchesWant } from '../domain/selectors'
 import { addWant, markAlertSeen, removeWant, useAppState } from '../domain/store'
 import type { Category, TimeWindow } from '../domain/types'
-import { go, useNow, when } from '../lib'
+import { go, useNow } from '../lib'
 import { Button, Chip, Mascot, Segmented } from '../ui'
 
-export function Wants() {
+export function Wants({ initialText = '' }: { initialText?: string }) {
   const state = useAppState()
   const now = useNow()
-  const [label, setLabel] = useState('')
-  const [categories, setCategories] = useState<Category[]>([])
-  const [window, setWindow] = useState<TimeWindow | null>('48h')
+  const initial = interpretWant(initialText)
+  const [label, setLabel] = useState(initialText)
+  const [categories, setCategories] = useState<Category[]>(initial.categories)
+  const [window, setWindow] = useState<TimeWindow | null>(initial.window ?? '48h')
+  const [area, setArea] = useState<string | null>(initial.area)
   const [touched, setTouched] = useState(false)
 
   const guess = interpretWant(label)
@@ -20,6 +23,7 @@ export function Wants() {
     if (touched) return
     const g = interpretWant(text)
     setCategories(g.categories)
+    setArea(g.area)
     if (g.window) setWindow(g.window)
   }
 
@@ -32,10 +36,11 @@ export function Wants() {
   const save = () => {
     if (!canSave) return
     const fallback = categories.map((c) => CATEGORY_META[c].label).join(' or ')
-    addWant(label.trim() || `${fallback} ${WINDOW_META[window].hint}`, categories, window)
+    addWant(label.trim() || `${fallback} ${WINDOW_META[window].hint}`, categories, window, area ?? undefined)
     setLabel('')
     setCategories([])
     setWindow('48h')
+    setArea(null)
     setTouched(false)
   }
 
@@ -53,7 +58,7 @@ export function Wants() {
           <input
             value={label}
             onChange={(e) => onLabel(e.target.value)}
-            placeholder="e.g. Change my tyres in the next 48 hours"
+            placeholder="e.g. tyre change within 48h near Majorstuen"
             className="rounded border border-[#ddd] bg-canvas px-3 py-2.5 text-base outline-none placeholder:text-faint focus:ring-2 focus:ring-primary/30"
           />
           {label && !touched && (
@@ -63,6 +68,7 @@ export function Wants() {
                 <>
                   Detected {guess.categories.map((c) => CATEGORY_META[c].label).join(', ')}
                   {guess.window && `, ${WINDOW_META[guess.window].hint}`}
+                  {guess.area && `, near ${guess.area}`}
                 </>
               ) : (
                 <>Not sure yet. Pick a category below.</>
@@ -105,6 +111,7 @@ export function Wants() {
                       <p className="font-medium">{w.label}</p>
                       <p className="text-sm text-muted">
                         {w.categories.map((c) => CATEGORY_META[c].label).join(', ')} · {WINDOW_META[w.window].hint}
+                        {w.area && ` · near ${w.area}`}
                         {matches > 0 && <span className="text-primary"> · {matches} matching now</span>}
                       </p>
                     </div>
@@ -148,11 +155,9 @@ export function Wants() {
                   <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full" style={{ background: a.seen ? 'transparent' : 'var(--color-primary)' }} />
                   <span className="text-xl">{CATEGORY_META[biz.category].icon}</span>
                   <span className="min-w-0 flex-1">
-                    <span className="block font-medium">
-                      {biz.name}: {slot.title}
-                    </span>
+                    <span className="block font-medium">{alertLine(state, slot, now)}</span>
                     <span className="block text-sm text-muted">
-                      {when(slot.start, now)} · {biz.neighbourhood}
+                      {biz.neighbourhood}
                       {live ? '' : ' · no longer available'}
                     </span>
                     {want && <span className="block text-sm text-ink-2">Matched “{want.label}”</span>}

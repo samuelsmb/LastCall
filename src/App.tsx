@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { CITY, TAGLINE } from './brand'
 import { AlertToasts } from './components/AlertToasts'
 import { Header } from './components/Header'
 import { applyAutoRelease } from './domain/store'
@@ -20,14 +21,16 @@ export default function App() {
   }, [])
 
   const side = route.startsWith('/biz') ? 'business' : 'customer'
-  const [, first, second] = route.split('/')
+  const [path, query = ''] = route.split('?')
+  const [, first, second] = path.split('/')
+  const params = new URLSearchParams(query)
 
   let page
   if (first === 'lc' && second) page = <LastCallDetail id={second} />
   else if (first === 'booked' && second) page = <Booked id={second} />
-  else if (first === 'wants') page = <Wants />
+  else if (first === 'wants') page = <Wants initialText={params.get('q') ?? ''} />
   else if (first === 'biz' && second === 'register') page = <Register />
-  else if (first === 'biz') page = <BusinessHome />
+  else if (first === 'biz') page = <BusinessHome businessId={second} />
   else page = <Marketplace />
 
   return (
@@ -38,7 +41,7 @@ export default function App() {
       </main>
       {side === 'customer' && <AlertToasts />}
       <footer className="border-t border-hairline bg-paper px-6 py-8 text-center text-sm text-ink-2">
-        <span className="font-semibold">LastCall</span> · the cancellation economy · Cooler Copenhagen
+        <span className="font-semibold">LastCall</span> · {TAGLINE} · Made in {CITY}, coming to the rest of Norway next
       </footer>
     </div>
   )

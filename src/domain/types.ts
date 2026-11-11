@@ -12,6 +12,8 @@ export interface Business {
   address: string
   distanceKm: number
   tagline: string
+  /** Filled spots still free under the intro offer (starts at 10). */
+  introSpotsLeft: number
 }
 
 /** A booking in a Business's calendar. A released Slot is a Last Call. */
@@ -30,10 +32,19 @@ export interface Slot {
   soldAt?: number
   buyerName?: string
   perk?: string
+  /** Restaurant tables only: number of guests. fullPrice is the total for the table. */
+  guests?: number
+  /** Set when sold: LastCall's fee and how many intro spots it used. */
+  fee?: number
+  introSpotsUsed?: number
 }
+
+export type ReleaseMode = 'full' | 'discount'
 
 export interface AutoReleaseRule {
   enabled: boolean
+  /** full: release at once at full price ("Skip the queue"). discount: hold until leadMinutes before start, then release at discountPct off. */
+  mode: ReleaseMode
   leadMinutes: number
   discountPct: number
 }
@@ -43,6 +54,8 @@ export interface Want {
   label: string
   categories: Category[]
   window: TimeWindow
+  /** Neighbourhood the Customer mentioned; shown, not used for matching. */
+  area?: string
   createdAt: number
 }
 

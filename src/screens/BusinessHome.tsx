@@ -1,10 +1,12 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { CATEGORY_META } from '../domain/categories'
-import { dashboardStats, lastCallPrice, releaseTime } from '../domain/selectors'
+import { calculateFee, FEE_CAP_PCT, FEE_PER_SPOT, INTRO_SPOTS } from '../domain/pricing'
+import { dashboardStats, DEFAULT_RULE, lastCallPrice, releaseTime } from '../domain/selectors'
 import { cancelSlot, releaseSlot, setCurrentBusiness, setRule, useAppState, withdrawSlot } from '../domain/store'
-import type { Slot } from '../domain/types'
+import type { AutoReleaseRule, Business, ReleaseMode, Slot } from '../domain/types'
 import { clock, countdown, dayLabel, go, kr, useNow } from '../lib'
-import { Button, Modal } from '../ui'
+import { Button, Modal, Overlay, Segmented } from '../ui'
+import { WAITLIST_LINE } from './Register'
 
 const STATUS: Record<Slot['status'], { label: string; pill: string }> = {
   booked: { label: 'Booked', pill: 'bg-black/5 text-ink-2' },
@@ -14,15 +16,15 @@ const STATUS: Record<Slot['status'], { label: string; pill: string }> = {
   sold: { label: 'Sold via LastCall', pill: 'bg-green/10 text-[#13772a]' },
 }
 
-export function BusinessHome() {
+export function BusinessHome({ businessId }: { businessId?: string }) {
   const state = useAppState()
   const now = useNow()
   const [releasing, setReleasing] = useState<Slot | null>(null)
   const [toast, setToast] = useState<string | null>(null)
 
-  const biz = state.businesses.find((b) => b.id === state.currentBusinessId) ?? state.businesses[0]
+  const biz = state.businesses.find((b) => b.id === (businessId ?? state.currentBusinessId)) ?? state.businesses[0]
   const meta = CATEGORY_META[biz.category]
-  const rule = state.rules[biz.id] ?? { enabled: false, leadMinutes: 60, discountPct: 30 }
+  const rule = state.rules[biz.id] ?? DEFAULT_RULE
   const stats = dashboardStats(state, biz.id)
   const calendarBusinesses = state.businesses.filter((b) => state.slots.some((s) => s.businessId === b.id && s.customerName))
   const slots = state.slots.filter((s) => s.businessId === biz.id && s.customerName && s.start + s.durationMin * 60_000 > now).sort((a, b) => a.start - b.start)
@@ -38,6 +40,15 @@ export function BusinessHome() {
     setTimeout(() => setToast(null), 3500)
   }
 
+  // Celebrate sales that arrive from the Customer tab.
+  const soldIds = slots.filter((s) => s.status === 'sold').map((s) => s.id)
+  const seenSold = useRef<Set<string> | null>(null)
+  useEffect(() => {
+    const fresh = seenSold.current ? state.slots.filter((s) => s.businessId === biz.id && s.status === 'sold' && !seenSold.current!.has(s.id)) : []
+    seenSold.current = new Set(state.slots.filter((s) => s.status === 'sold').map((s) => s.id))
+    if (fresh.length) notify(`Empty slot filled. ${kr(lastCallPrice(fresh[0]))} saved.`)
+  }, [soldIds.join(), biz.id])
+
   return (
     <div className="flex flex-col gap-8">
       <section className="flex flex-col gap-4 sm:flex-row sm:items-center">
@@ -50,7 +61,13 @@ export function BusinessHome() {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {calendarBusinesses.length > 1 && (
-            <select value={biz.id} onChange={(e) => setCurrentBusiness(e.target.value)} className="cursor-pointer rounded-lg border border-hairline bg-canvas px-2.5 py-1.5 text-[15px] font-medium outline-none">
+            <select
+              value={biz.id}
+              onChange={(e) => {
+                setCurrentBusiness(e.target.value)
+                go(`/biz/${e.target.value}`)
+              }}
+              className="cursor-pointer rounded-lg border border-hairline bg-canvas px-2.5 py-1.5 text-[15px] font-medium outline-none">
               {calendarBusinesses.map((b) => (
                 <option key={b.id} value={b.id}>
                   {b.name}
@@ -64,19 +81,40 @@ export function BusinessHome() {
         </div>
       </section>
 
-      <section className="grid gap-4 sm:grid-cols-4">
-        <div className="rounded-xl border border-hairline bg-canvas p-5 sm:col-span-2">
-          <p className="eyebrow text-muted">Recovered this month</p>
-          <p key={stats.recovered} className="display-2 mt-2 animate-rise tabular-nums">
-            {kr(stats.recovered)}
-          </p>
-          <p className="mt-2 text-sm text-muted">{stats.recovered ? 'Revenue from cancellations that would otherwise be lost.' : 'Nothing yet. Your first Last Call is one cancellation away.'}</p>
+      <section className="flex flex-col gap-4">
+        <div className="grid gap-4 sm:grid-cols-4">
+          <div className="rounded-xl border border-hairline bg-canvas p-5 sm:col-span-2">
+            <p className="eyebrow text-muted">Revenue recovered</p>
+            <p key={stats.recovered} className="display-2 mt-2 animate-rise tabular-nums">
+              {kr(stats.recovered)}
+            </p>
+            <p className="mt-2 text-sm text-muted">{stats.recovered ? 'From cancellations that would otherwise be empty slots.' : 'Nothing yet. Your first Last Call is one cancellation away.'}</p>
+          </div>
+          <div className="rounded-xl border border-hairline bg-canvas p-5">
+            <p className="eyebrow text-muted">LastCall fee</p>
+            <p key={stats.fee} className="heading-2 mt-1 animate-rise tabular-nums">
+              {kr(stats.fee)}
+            </p>
+            {stats.introSpotsLeft > 0 && (
+              <p className="mt-2 text-sm text-muted">
+                Free spots left: <b className="font-semibold text-ink">{stats.introSpotsLeft}/{INTRO_SPOTS}</b>
+              </p>
+            )}
+          </div>
+          <div className="rounded-xl border border-hairline bg-canvas p-5">
+            <p className="eyebrow text-muted">Net recovered</p>
+            <p key={stats.net} className="heading-2 mt-1 animate-rise tabular-nums text-green">
+              {kr(stats.net)}
+            </p>
+            <p className="mt-2 text-sm text-muted">Recovered minus fee</p>
+          </div>
         </div>
-        <Stat label="Released" value={stats.released} />
-        <div className="grid gap-4">
+        <div className="grid grid-cols-3 gap-4">
+          <Stat label="Released" value={stats.released} compact />
           <Stat label="Sold" value={stats.sold} compact />
           <Stat label="Sell-through" value={`${stats.sellThrough}%`} compact />
         </div>
+        <p className="text-sm text-muted">You only pay when we fill a slot, and only if the customer shows up. Invoiced monthly.</p>
       </section>
 
       <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
@@ -118,21 +156,38 @@ export function BusinessHome() {
                 <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-soft transition-all ${rule.enabled ? 'left-[18px]' : 'left-0.5'}`} />
               </button>
             </div>
-            <p className={`text-[15px] leading-relaxed text-ink-2 ${rule.enabled ? '' : 'opacity-50'}`}>
-              Hold cancelled slots for full-price customers until{' '}
-              <select value={rule.leadMinutes} onChange={(e) => setRule(biz.id, { leadMinutes: Number(e.target.value) })} className="cursor-pointer rounded border border-hairline bg-paper px-1 font-medium outline-none">
-                {[30, 60, 120, 240].map((m) => (
-                  <option key={m} value={m}>
-                    {m < 60 ? `${m} min` : `${m / 60} hour${m === 60 ? '' : 's'}`}
-                  </option>
-                ))}
-              </select>{' '}
-              before they start, then release them at <b className="font-semibold">{rule.discountPct}% off</b>.
-            </p>
-            <input type="range" min={10} max={60} step={5} value={rule.discountPct} onChange={(e) => setRule(biz.id, { discountPct: Number(e.target.value) })} />
+            <Segmented
+              value={rule.mode}
+              onChange={(m) => m && setRule(biz.id, { mode: m })}
+              options={[
+                { value: 'full', label: 'Full price' },
+                { value: 'discount', label: 'Discount' },
+              ]}
+            />
+            {rule.mode === 'full' ? (
+              <p className={`text-[15px] leading-relaxed text-ink-2 ${rule.enabled ? '' : 'opacity-50'}`}>
+                Release cancelled slots straight away at <b className="font-semibold">full price</b>. Customers see them as <b className="font-semibold">Skip the queue</b>.
+              </p>
+            ) : (
+              <>
+                <p className={`text-[15px] leading-relaxed text-ink-2 ${rule.enabled ? '' : 'opacity-50'}`}>
+                  Hold cancelled slots for full-price customers until{' '}
+                  <select value={rule.leadMinutes} onChange={(e) => setRule(biz.id, { leadMinutes: Number(e.target.value) })} className="cursor-pointer rounded border border-hairline bg-paper px-1 font-medium outline-none">
+                    {[30, 60, 120, 240].map((m) => (
+                      <option key={m} value={m}>
+                        {m < 60 ? `${m} min` : `${m / 60} hour${m === 60 ? '' : 's'}`}
+                      </option>
+                    ))}
+                  </select>{' '}
+                  before they start, then release them at <b className="font-semibold">{rule.discountPct}% off</b>.
+                </p>
+                <input type="range" min={5} max={60} step={5} value={rule.discountPct} onChange={(e) => setRule(biz.id, { discountPct: Number(e.target.value) })} />
+              </>
+            )}
             <p className="rounded-lg bg-paper p-3 text-sm text-muted">
               {rule.enabled ? 'On: LastCall handles cancellations for you automatically.' : 'Off: you choose what to release and when.'}
             </p>
+            <p className="text-sm text-muted">{WAITLIST_LINE}</p>
           </div>
         </aside>
       </div>
@@ -140,7 +195,8 @@ export function BusinessHome() {
       {releasing && (
         <ReleaseDialog
           slot={releasing}
-          suggested={rule.discountPct}
+          rule={rule}
+          biz={biz}
           onClose={() => setReleasing(null)}
           onRelease={(d) => {
             releaseSlot(releasing.id, d)
@@ -151,10 +207,12 @@ export function BusinessHome() {
       )}
 
       {toast && (
-        <div className="fixed inset-x-3 bottom-6 z-50 mx-auto flex max-w-md animate-rise items-center gap-3 rounded-xl border border-hairline bg-canvas px-4 py-3 shadow-lifted">
-          <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-green text-sm text-white">✓</span>
-          <span className="text-[15px]">{toast}</span>
-        </div>
+        <Overlay>
+          <div className="fixed inset-x-3 bottom-6 z-50 mx-auto flex max-w-md animate-rise items-center gap-3 rounded-xl border border-hairline bg-canvas px-4 py-3 shadow-lifted">
+            <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-green text-sm text-white">✓</span>
+            <span className="text-[15px]">{toast}</span>
+          </div>
+        </Overlay>
       )}
     </div>
   )
@@ -180,6 +238,8 @@ function SlotRow({ slot, now, heldUntil, onCancel, onRelease, onWithdraw }: { sl
         <p className="font-medium">{slot.title}</p>
         <p className="text-sm text-muted">
           {slot.status === 'sold' ? `${slot.buyerName} via LastCall` : slot.status === 'booked' ? slot.customerName : `Was ${slot.customerName}`} · {kr(slot.fullPrice)}
+          {slot.guests && slot.guests > 1 ? ` (${kr(slot.fullPrice / slot.guests)} pp)` : ''}
+          {slot.status === 'sold' && ` · fee ${kr(slot.fee ?? 0)}${slot.introSpotsUsed ? ' (intro offer)' : ''}`}
         </p>
       </div>
       <div className="flex flex-wrap items-center gap-2">
@@ -213,8 +273,30 @@ function SlotRow({ slot, now, heldUntil, onCancel, onRelease, onWithdraw }: { sl
   )
 }
 
-function ReleaseDialog({ slot, suggested, onClose, onRelease }: { slot: Slot; suggested: number; onClose: () => void; onRelease: (discountPct: number) => void }) {
-  const [discount, setDiscount] = useState(suggested)
+function FeePreview({ slot, biz }: { slot: Slot; biz: Business }) {
+  const f = calculateFee(slot, biz)
+  const spots = `${f.spots} filled spot${f.spots === 1 ? '' : 's'}`
+  return (
+    <div className="rounded-xl border border-hairline p-4 text-sm text-ink-2">
+      <div className="flex justify-between">
+        <span>LastCall fee if it sells ({spots})</span>
+        <b className="font-semibold">{f.fee === 0 && f.standardFee > 0 ? <><s className="font-normal text-faint">{kr(f.standardFee)}</s> {kr(0)}</> : kr(f.fee)}</b>
+      </div>
+      <div className="mt-1 flex justify-between">
+        <span>You keep</span>
+        <b className="font-semibold text-green">{kr(f.price - f.fee)}</b>
+      </div>
+      <p className="mt-2 text-muted">
+        {f.introSpotsUsed > 0 ? `Intro offer: free. Uses ${f.introSpotsUsed} of your ${biz.introSpotsLeft} free spots left.` : `${FEE_PER_SPOT} kr per filled spot, never more than ${FEE_CAP_PCT}%.`} Only charged if the customer shows up.
+      </p>
+    </div>
+  )
+}
+
+function ReleaseDialog({ slot, biz, rule, onClose, onRelease }: { slot: Slot; biz: Business; rule: AutoReleaseRule; onClose: () => void; onRelease: (discountPct: number) => void }) {
+  const [mode, setMode] = useState<ReleaseMode>(rule.mode)
+  const [pct, setPct] = useState(rule.discountPct || 20)
+  const discount = mode === 'full' ? 0 : pct
   const price = lastCallPrice({ ...slot, discountPct: discount })
   return (
     <Modal onClose={onClose}>
@@ -225,26 +307,39 @@ function ReleaseDialog({ slot, suggested, onClose, onRelease }: { slot: Slot; su
             {slot.title} · {clock(slot.start)} · was booked by {slot.customerName}
           </p>
         </div>
-        <div className="rounded-xl bg-paper p-4">
-          <div className="flex items-center justify-between">
-            <span className="font-medium">Discount</span>
-            <span className="title">{discount}%</span>
-          </div>
-          <input className="mt-2 w-full" type="range" min={0} max={70} step={5} value={discount} onChange={(e) => setDiscount(Number(e.target.value))} />
-          <p className="mt-1 flex items-center gap-1.5 text-sm text-muted">
-            <span className="rounded bg-purple/40 px-1.5 text-xs text-purple-deep">✦ AI</span>
-            Suggested {suggested}% based on your Auto-release rule and demand nearby
-          </p>
+        <div className="flex flex-col gap-3 rounded-xl bg-paper p-4">
+          <Segmented
+            value={mode}
+            onChange={(m) => m && setMode(m)}
+            options={[
+              { value: 'full', label: 'Full price' },
+              { value: 'discount', label: 'Discount' },
+            ]}
+          />
+          {mode === 'full' ? (
+            <p className="text-sm text-muted">Customers see it as “Skip the queue”. No discount needed: you set the price.</p>
+          ) : (
+            <div>
+              <div className="flex items-center justify-between">
+                <span className="font-medium">Discount</span>
+                <span className="title">{pct}%</span>
+              </div>
+              <input className="mt-2 w-full" type="range" min={5} max={70} step={5} value={pct} onChange={(e) => setPct(Number(e.target.value))} />
+              <p className="mt-1 flex items-center gap-1.5 text-sm text-muted">
+                <span className="rounded bg-purple/40 px-1.5 text-xs text-purple-deep">✦ AI</span>
+                Suggested {rule.discountPct}% based on your Auto-release rule and demand nearby
+              </p>
+            </div>
+          )}
         </div>
         <div className="flex items-baseline justify-between">
-          <span className="text-muted">
-            <s>{kr(slot.fullPrice)}</s> → customers pay
-          </span>
+          <span className="text-muted">{discount > 0 ? <><s>{kr(slot.fullPrice)}</s> → customers pay</> : 'Customers pay'}</span>
           <span className="heading-1">{kr(price)}</span>
         </div>
         <p className="text-[15px] text-ink-2">
           You recover <b className="font-semibold">{kr(price)}</b> instead of <b className="font-semibold">{kr(0)}</b>.
         </p>
+        <FeePreview slot={{ ...slot, discountPct: discount }} biz={biz} />
         <div className="flex gap-2">
           <Button variant="utility" className="flex-1" onClick={onClose}>
             Cancel

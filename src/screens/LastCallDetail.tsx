@@ -39,7 +39,7 @@ export function LastCallDetail({ id }: { id: string }) {
             <p className="max-w-2xl text-ink-2">{slot.description}</p>
             <dl className="mt-4 grid gap-px overflow-hidden rounded-xl border border-hairline bg-hairline sm:grid-cols-2">
               <Info label="When" value={`${when(slot.start, now)} – ${clock(slot.start + slot.durationMin * 60_000)}`} />
-              <Info label="Duration" value={`${slot.durationMin} min`} />
+              <Info label="Duration" value={`${slot.durationMin} min${slot.guests ? ` · table for ${slot.guests}` : ''}`} />
               <Info label="Address" value={`${biz.address}, ${biz.neighbourhood}`} />
               <Info label="Distance" value={`${biz.distanceKm.toLocaleString('en-GB')} km away`} />
             </dl>
@@ -51,7 +51,7 @@ export function LastCallDetail({ id }: { id: string }) {
             <Countdown start={slot.start} />
             <div>
               <Price slot={slot} big />
-              {savings(slot) > 0 ? <p className="mt-1 font-medium text-green">You save {kr(savings(slot))}</p> : slot.perk && <p className="mt-1 font-medium text-green">{slot.perk}</p>}
+              {savings(slot) > 0 ? <p className="mt-1 font-medium text-green">You save {kr(savings(slot))}</p> : <p className="mt-1 font-medium text-green">{slot.perk ?? 'Skip the queue. Normally fully booked.'}</p>}
             </div>
 
             {available && !tooSlow ? (
@@ -61,7 +61,7 @@ export function LastCallDetail({ id }: { id: string }) {
                   <input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="Jane Jensen"
+                    placeholder="Kari Nordmann"
                     className="rounded border border-[#ddd] bg-canvas px-2.5 py-2 text-[15px] outline-none placeholder:text-faint focus:shadow-soft focus:ring-2 focus:ring-primary/30"
                   />
                 </label>
@@ -73,8 +73,8 @@ export function LastCallDetail({ id }: { id: string }) {
             ) : (
               <div className="flex flex-col items-center gap-2 rounded-xl bg-paper p-5 text-center">
                 <span className="text-3xl">🐢</span>
-                <p className="title">Someone else booked this one</p>
-                <p className="text-sm text-muted">Set up an alert to be first next time.</p>
+                <p className="title">Too slow!</p>
+                <p className="text-sm text-muted">Gone! We'll ping you when the next one drops.</p>
                 <div className="mt-2 flex gap-2">
                   <Button size="sm" variant="utility" onClick={() => go('/')}>
                     Browse more
