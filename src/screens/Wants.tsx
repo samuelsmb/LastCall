@@ -19,6 +19,18 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
   const [openWant, setOpenWant] = useState<string | null>(null)
 
   const guess = interpretWant(label)
+
+  // Varsler: lagrede varsler, pluss live treff på ønsker som ennå ikke har et varsel.
+  const alertSlotIds = new Set(state.alerts.map((a) => a.slotId))
+  const items = [
+    ...state.alerts.map((a) => ({ id: a.id, slotId: a.slotId, want: state.wants.find((w) => w.id === a.wantId), seen: a.seen, alertId: a.id as string | null })),
+    ...state.slots
+      .filter((s) => isLive(s, now) && !alertSlotIds.has(s.id))
+      .flatMap((s) => {
+        const w = state.wants.find((x) => matchesWant(state, s, x, now))
+        return w ? [{ id: `match-${s.id}`, slotId: s.id, want: w, seen: false, alertId: null as string | null }] : []
+      }),
+  ]
   const onLabel = (text: string) => {
     setLabel(text)
     if (touched) return
@@ -176,18 +188,18 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
 
       <section className="flex flex-col gap-3">
         <h2 className="heading-2">Varsler</h2>
-        {state.alerts.length === 0 && (
+        {items.length === 0 && (
           <div className="flex flex-col items-center gap-2 rounded-2xl bg-canvas px-6 py-12 text-center">
             <span className="text-4xl">📭</span>
             <p className="title">Ingen varsler ennå</p>
             <p className="text-sm text-muted">Når en bedrift frigir en Last Call som passer et av ønskene dine, dukker den opp her.</p>
           </div>
         )}
-        {state.alerts.length > 0 && (
+        {items.length > 0 && (
           <div className="overflow-hidden rounded-xl border border-hairline bg-canvas">
-            {state.alerts.map((a) => {
+            {items.map((a) => {
               const slot = state.slots.find((s) => s.id === a.slotId)
-              const want = state.wants.find((w) => w.id === a.wantId)
+              const want = a.want
               if (!slot) return null
               const biz = businessOf(state, slot)
               const live = isLive(slot, now)
@@ -195,7 +207,7 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
                 <button
                   key={a.id}
                   onClick={() => {
-                    markAlertSeen(a.id)
+                    if (a.alertId) markAlertSeen(a.alertId)
                     go(`/lc/${slot.id}`)
                   }}
                   className={`flex w-full cursor-pointer items-start gap-3 border-b border-hairline px-4 py-3 text-left transition last:border-b-0 hover:bg-paper ${live ? '' : 'opacity-50'}`}
