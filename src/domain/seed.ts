@@ -54,7 +54,7 @@ const businesses: Omit<Business, 'introSpotsLeft'>[] = [
   { id: 'bel-etage', name: 'Bel Etage', category: 'beauty', neighbourhood: 'Sentrum', address: 'Tollbugata 27', distanceKm: 0.8, tagline: 'Eksklusiv frisørsalong', image: 'img/frisor2.jpg' },
   { id: 'kok-langkaia', name: 'KOK Badstue', category: 'beauty', neighbourhood: 'Bjørvika', address: 'Langkaia', distanceKm: 1.3, tagline: 'Badstue og sjøbad ved fjorden', image: 'https://koknorge.no/wp-content/uploads/2023/12/Fellesskap.jpg' },
   { id: 'cellar-jazz', name: 'Herr Nilsen', category: 'experiences', neighbourhood: 'Sentrum', address: 'C.J. Hambros plass 5', distanceKm: 0.4, tagline: 'Live jazz hver kveld', image: 'img/herr-nilsen.jpg' },
-  { id: 'latter', name: 'Latter', category: 'experiences', neighbourhood: 'Aker Brygge', address: 'Stranden 3', distanceKm: 1.2, tagline: 'Oslos største standupscene' },
+  { id: 'latter', name: 'Latter', category: 'experiences', neighbourhood: 'Aker Brygge', address: 'Stranden 3', distanceKm: 1.2, tagline: 'Oslos største standupscene', image: 'https://latter.no/assets/Nettsidegrafikk/_1200x630_crop_center-center_82_none/Latter_Fasade_3840x2160.jpg' },
 ]
 
 /**
