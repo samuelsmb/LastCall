@@ -37,6 +37,20 @@ interface JevAnswer {
 
 const WHEN: Record<WantWindow, string> = { now: ' nå', today: ' i dag', '48h': ' de neste par dagene', any: '' }
 
+/** "setup an alert for comedy" → "Comedy", "Er det noe comedy i kveld?" → "Comedy i kveld". */
+function wantLabel(text: string) {
+  const topic = text
+    .trim()
+    .replace(/[?!.]+$/, '')
+    .replace(/^(please\s+|kan du\s+)?/i, '')
+    .replace(/^(set ?up|create|make|add|lag|sett opp|opprett|lav)\s+(an?|et|en)?\s*(alert|varsel|alarm|ønske|notification)\s+(for|om|on|about|til|when)\s+/i, '')
+    .replace(/^(varsle|varsl|notify|alert|tell)\s+(me|meg|mig)\s+((om|about|of|when|for|if|hvis|når)\s+)?/i, '')
+    .replace(/^(si|gi|giv)\s+(fra|beskjed|besked)\s+((om|når|hvis)\s+)?/i, '')
+    .replace(/^(er det noe|er der noget|finnes det|har dere|any|is there any|are there any)\s+/i, '')
+    .replace(/^(det kommer|det dukker opp|det blir|there is|there are|there's|noe|nogen|some)\s+/i, '')
+  return (topic || text).replace(/^./, (c) => c.toUpperCase()).slice(0, 48)
+}
+
 async function jev(state: unknown, questions: Record<string, unknown>): Promise<Record<string, JevAnswer>> {
   const res = await fetch(JEV_URL, {
     method: 'POST',
@@ -58,11 +72,11 @@ function turn(history: ModelMessage[], text: string, reply: string, slotIds: str
 }
 
 function saveWant(history: ModelMessage[], text: string, want: OfferedWant, tasteProfile: boolean): FastTurn {
-  const label = text.trim().replace(/^./, (c) => c.toUpperCase()).slice(0, 48)
+  const label = tasteProfile ? 'Ting du vil like' : wantLabel(want.text)
   addWant(label, want.categories, want.window)
   scheduleDemoRelease(want.text, want.categories, tasteProfile)
-  const what = tasteProfile ? 'ting du vil like' : want.categories.map((c) => CATEGORY_META[c].label.toLowerCase()).join(' og ')
-  return turn(history, text, `Ok! Jeg varsler deg om ${what}${WHEN[want.window]} når noe dukker opp.`)
+  const what = tasteProfile ? 'ting du vil like' : label.replace(/^./, (c) => c.toLowerCase())
+  return turn(history, text, `Ok! Jeg varsler deg om ${what} når noe dukker opp.`)
 }
 
 /**
@@ -70,7 +84,7 @@ function saveWant(history: ModelMessage[], text: string, want: OfferedWant, tast
  * is unsure or the message is not a find/recommend/alert request, so the LLM takes over.
  */
 export async function askFast(history: ModelMessage[], text: string, offered: OfferedWant | null): Promise<FastTurn | null> {
-  if (offered && SAYS_YES.test(text)) return saveWant(history, offered.text, offered, false)
+  if (offered && SAYS_YES.test(text)) return saveWant(history, text, offered, false)
 
   const now = Date.now()
   const state = getState()
