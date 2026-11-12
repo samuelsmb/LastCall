@@ -106,7 +106,6 @@ const lastCalls: LastCallSeed[] = [
   ['hanshaugen-hearth', 'Middag for 2', 'Et bord for to ble ledig for kort tid siden.', 110, 120, 1500, 25, 2],
   ['bristol-spa', 'Ansiktsbehandling', 'Ansiktsbehandling i ro og fred, ledig i kveld.', 150, 60, 1200, 30],
   ['kok-langkaia', 'Felles badstuøkt for 2', 'To plasser på neste økt ved Langkaia.', 100, 90, 700, 25, 2],
-  ['bel-etage', 'Dameklipp og føn', 'En time hos frisøren, ledig etter en avbestilling.', 90, 60, 1100, 25],
   ['adam-og-eva', 'Farge og klipp', 'Fargebehandling og klipp med god tid.', 180, 120, 2400, 30],
   ['bristol-spa', 'Massasje, 60 minutter', 'Avslappende helkroppsmassasje, ledig i ettermiddag.', 120, 60, 1500, 30],
   ['bristol-spa', 'Spa for 2 med basseng', 'To plasser i spaavdelingen med basseng og sauna.', 1400, 150, 1800, 25, 2],
