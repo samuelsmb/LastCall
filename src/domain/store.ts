@@ -152,22 +152,28 @@ const DEMO_RELEASE_DELAY = 5_000
 
 /**
  * Demo only: 5 seconds after a Want is saved, release the hidden demo Last Call that matches it,
- * so its Alert fires. Each one is released once per seed.
+ * so its Alert fires. If it is already out, it is released again with fresh Alerts, so the demo
+ * can be repeated without `?reset`.
  */
 export function scheduleDemoRelease(text: string, categories: Category[], tasteProfile = false) {
   const lower = text.toLowerCase()
+  const releasable = (id: string) => state.slots.find((s) => s.id === id && (s.status === 'cancelled' || s.status === 'released'))
   const match = DEMO_STOCK.find((d) => {
-    const slot = state.slots.find((s) => s.id === d.slotId && s.status === 'cancelled')
+    const slot = releasable(d.slotId)
     if (!slot || !categories.includes(businessOf(state, slot).category)) return false
     return tasteProfile ? d.tasteProfile : d.topics.some((t) => lower.includes(t))
   })
   if (!match) return
   setTimeout(() => {
     const now = Date.now()
-    if (!state.slots.some((s) => s.id === match.slotId && s.status === 'cancelled')) return
+    if (!releasable(match.slotId)) return
     // Starts 90 minutes from release, so it fits every Want window ("now" is within 2 hours).
     const start = Math.ceil((now + 90 * 60_000) / (5 * 60_000)) * (5 * 60_000)
-    const moved = { ...state, slots: state.slots.map((s) => (s.id === match.slotId ? { ...s, start } : s)) }
+    const moved = {
+      ...state,
+      slots: state.slots.map((s) => (s.id === match.slotId ? { ...s, start } : s)),
+      alerts: state.alerts.filter((a) => a.slotId !== match.slotId),
+    }
     commit(releaseInto(moved, match.slotId, match.discountPct, now))
   }, DEMO_RELEASE_DELAY)
 }
