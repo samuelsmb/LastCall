@@ -39,8 +39,6 @@ export function Booked({ id }: { id: string }) {
         </dl>
       </div>
 
-      <p className="text-sm text-muted">{biz.name} berget nettopp inntekt de ellers ville mistet.</p>
-
       <div className="flex flex-wrap justify-center gap-2">
         <Button variant="secondary" onClick={() => go('/')}>
           Tilbake til markedsplassen
