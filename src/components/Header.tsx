@@ -16,25 +16,17 @@ export function Header({ side, route }: { side: 'customer' | 'business'; route: 
         </a>
 
         <div className="ml-auto flex items-baseline gap-2 sm:gap-4">
-          <nav className="hidden items-baseline gap-1 sm:flex" aria-label="Hovedmeny">
-            {side === 'customer' ? (
-              <>
-                <a href="#/" className={link(route === '/' || route.startsWith('/lc') || route.startsWith('/booked'))}>
-                  Markedsplass
-                </a>
-                <a href="#/wants" className={link(route.startsWith('/wants'))}>
-                  Ønsker
-                  {unseen > 0 && <span className="ml-1.5 inline-block min-w-5 animate-twinkle rounded-full bg-pink px-1.5 text-center text-xs font-bold leading-5 text-white">{unseen}</span>}
-                </a>
-              </>
-            ) : (
-              <>
-                <a href="#/biz" className={link(route.startsWith('/biz'))}>
-                  Oversikt
-                </a>
-              </>
-            )}
-          </nav>
+          {side === 'customer' && (
+            <nav className="hidden items-baseline gap-1 sm:flex" aria-label="Hovedmeny">
+              <a href="#/" className={link(route === '/' || route.startsWith('/lc') || route.startsWith('/booked'))}>
+                Markedsplass
+              </a>
+              <a href="#/wants" className={link(route.startsWith('/wants'))}>
+                Ønsker
+                {unseen > 0 && <span className="ml-1.5 inline-block min-w-5 animate-twinkle rounded-full bg-pink px-1.5 text-center text-xs font-bold leading-5 text-white">{unseen}</span>}
+              </a>
+            </nav>
+          )}
 
           {side === 'customer' && (
             <a href="#/wants" className="relative grid h-9 w-9 place-items-center rounded-lg text-lg hover:bg-black/5 sm:hidden" aria-label="Ønsker">
