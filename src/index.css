@@ -3,6 +3,8 @@
 @theme {
   --color-primary: #0075de;
   --color-primary-active: #005bab;
+  --color-cta: #f9e321;
+  --color-cta-active: #efd20b;
   --color-night: #213183;
   --color-canvas: #ffffff;
   --color-paper: #f6f5f4;
