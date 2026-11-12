@@ -5,7 +5,7 @@ export const CATEGORIES: Category[] = ['food', 'car', 'beauty', 'health', 'offic
 /** Sticker colours are decoration only: bands, icon tiles and dots. Never actions. */
 export const CATEGORY_META: Record<Category, { label: string; icon: string; band: string; tint: string; text: string; dot: string }> = {
   food: { label: 'Restaurant', icon: '🍽️', band: 'bg-orange', tint: 'bg-orange/10', text: 'text-orange-deep', dot: 'bg-orange' },
-  car: { label: 'Dekkskift', icon: '🚗', band: 'bg-sky', tint: 'bg-sky/15', text: 'text-[#1d5d94]', dot: 'bg-sky' },
+  car: { label: 'Verksteder', icon: '🚗', band: 'bg-sky', tint: 'bg-sky/15', text: 'text-[#1d5d94]', dot: 'bg-sky' },
   beauty: { label: 'Skjønnhet og spa', icon: '💅', band: 'bg-pink', tint: 'bg-pink/10', text: 'text-[#9b1f6e]', dot: 'bg-pink' },
   health: { label: 'Helse', icon: '🩺', band: 'bg-teal', tint: 'bg-teal/10', text: 'text-[#1c6b68]', dot: 'bg-teal' },
   official: { label: 'Offentlig', icon: '🏛️', band: 'bg-purple', tint: 'bg-purple/30', text: 'text-purple-deep', dot: 'bg-purple' },
@@ -23,7 +23,7 @@ export const WANT_WINDOW_META: Record<WantWindow, { label: string; hint: string 
   any: { label: 'Når som helst', hint: 'når som helst' },
 }
 
-export const NEIGHBOURHOODS = ['Sentrum', 'Grünerløkka', 'Majorstuen', 'Frogner', 'Bjørvika', 'Bjerke', 'Storo', 'Gamle Oslo', 'Tøyen', 'Sagene', 'St. Hanshaugen']
+export const NEIGHBOURHOODS = ['Sentrum', 'Grünerløkka', 'Majorstuen', 'Frogner', 'Bjørvika', 'Alna', 'Rødtvet', 'Gamle Oslo', 'Tøyen', 'Sagene', 'St. Hanshaugen']
 
 /** Rough Oslo postcode ranges for our neighbourhoods; good enough to prefill, the Business can edit it. */
 const OSLO_POSTCODES: [from: number, to: number, neighbourhood: string][] = [
@@ -35,11 +35,11 @@ const OSLO_POSTCODES: [from: number, to: number, neighbourhood: string][] = [
   [250, 287, 'Frogner'],
   [301, 379, 'Majorstuen'],
   [440, 469, 'Sagene'],
-  [480, 489, 'Storo'],
   [550, 559, 'Grünerløkka'],
   [560, 569, 'Tøyen'],
   [570, 579, 'Grünerløkka'],
-  [580, 599, 'Bjerke'],
+  [660, 679, 'Alna'],
+  [950, 969, 'Rødtvet'],
   [650, 659, 'Gamle Oslo'],
 ]
 

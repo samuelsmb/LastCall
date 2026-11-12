@@ -1,5 +1,6 @@
 import { CATEGORY_META } from '../domain/categories'
 import { businessOf, lastCallPrice, savings } from '../domain/selectors'
+import { downloadIcs, googleCalendarUrl } from '../domain/calendar'
 import { useAppState } from '../domain/store'
 import { clock, dayLabel, go, kr, useNow, when } from '../lib'
 import { Button } from '../ui'
@@ -34,12 +35,23 @@ export function Booked({ id }: { id: string }) {
         <dl className="mt-5 grid grid-cols-2 gap-4 border-t border-hairline pt-5 text-[15px]">
           <Row label="Når" value={when(slot.start, now)} />
           <Row label="Hvor" value={`${biz.address}, ${biz.neighbourhood}`} />
-          <Row label="Du betaler" value={kr(lastCallPrice(slot))} />
+          {slot.regNumber && <Row label="Bil" value={slot.regNumber} />}
+          <Row label="Du betaler" value={`${biz.category === 'car' ? 'Fra ' : ''}${kr(lastCallPrice(slot))}`} />
           {savings(slot) > 0 ? <Row label="Du sparte" value={kr(savings(slot))} accent /> : <Row label="Bonus" value={slot.perk ?? 'Du hoppet over køen'} accent />}
         </dl>
       </div>
 
-      <p className="text-sm text-muted">{biz.name} berget nettopp inntekt de ellers ville mistet.</p>
+      <div className="flex w-full flex-col items-center gap-2">
+        <p className="eyebrow text-muted">📅 Legg til i kalender</p>
+        <div className="flex flex-wrap justify-center gap-2">
+          <a href={googleCalendarUrl(slot, biz)} target="_blank" rel="noreferrer" className="rounded-full border border-hairline bg-canvas px-4 py-2 font-medium shadow-soft transition hover:bg-black/5">
+            Google Kalender
+          </a>
+          <button type="button" onClick={() => downloadIcs(slot, biz)} className="cursor-pointer rounded-full border border-hairline bg-canvas px-4 py-2 font-medium shadow-soft transition hover:bg-black/5">
+            Apple / Outlook (.ics)
+          </button>
+        </div>
+      </div>
 
       <div className="flex flex-wrap justify-center gap-2">
         <Button variant="secondary" onClick={() => go('/')}>

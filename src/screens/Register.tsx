@@ -201,7 +201,7 @@ export function Register() {
           <Calculator />
 
           <div className="grid gap-2 sm:grid-cols-2">
-            <Example label="Dekkskift, 550 kr" fee={calculateFee({ fullPrice: 550 }, NO_INTRO).fee} />
+            <Example label="Dekkskift, 900 kr" fee={calculateFee({ fullPrice: 900 }, NO_INTRO).fee} />
             <Example label="Bord for 2, 4 000 kr" fee={calculateFee({ fullPrice: 4000, guests: 2 }, NO_INTRO).fee} />
           </div>
 
@@ -326,7 +326,7 @@ export function Register() {
           {detailsOpen && (
             <Step n={stepOffset + 1} title={found ? 'Sjekk detaljene' : 'Detaljene dine'}>
               <Field label="Bedriftsnavn">
-                <input value={name} onChange={(e) => setName(e.target.value)} placeholder="f.eks. Dekkproff Bjerke eller Theatercaféen" className={inputClass} />
+                <input value={name} onChange={(e) => setName(e.target.value)} placeholder="f.eks. Mekonomen eller Theatercaféen" className={inputClass} />
               </Field>
               <div className="grid gap-4 sm:grid-cols-2">
                 <Field label="Adresse">
@@ -602,7 +602,7 @@ function PreviewCard({ name, place, category, mode, image }: { name: string; pla
             {name.trim() || 'Bedriften din'} · {place.trim() || 'Stedet ditt'}
           </p>
           <div className="mt-2 border-t border-hairline pt-3">
-            <Price slot={slot} />
+            <Price slot={slot} from={cat === 'car'} />
           </div>
         </div>
       </div>
@@ -612,7 +612,7 @@ function PreviewCard({ name, place, category, mode, image }: { name: string; pla
 
 function Calculator() {
   const [perWeek, setPerWeek] = useState(5)
-  const [avg, setAvg] = useState(550)
+  const [avg, setAvg] = useState(900)
   const spots = perWeek * WEEKS_PER_MONTH
   const recover = Math.round(spots * avg)
   const cost = Math.round(spots * calculateFee({ fullPrice: avg }, NO_INTRO).fee)
@@ -631,8 +631,8 @@ function Calculator() {
       </div>
       <div className="flex flex-wrap items-center gap-2 text-[15px] text-muted">
         Eksempel:
-        <Chip active={perWeek === 5 && avg === 550} onClick={() => { setPerWeek(5); setAvg(550) }}>
-          🚗 Dekkskift, 550 kr
+        <Chip active={perWeek === 5 && avg === 900} onClick={() => { setPerWeek(5); setAvg(900) }}>
+          🚗 Dekkskift, 900 kr
         </Chip>
         <Chip active={perWeek === 3 && avg === 4000} onClick={() => { setPerWeek(3); setAvg(4000) }}>
           🍽️ Bord for 2, 4 000 kr
