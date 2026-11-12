@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { alertLine } from '../components/AlertToasts'
-import { CATEGORIES, CATEGORY_META, WANT_WINDOW_META } from '../domain/categories'
+import { CATEGORY_META, WANT_WINDOW_META } from '../domain/categories'
 import { businessOf, interpretWant, isLive, matchesWant } from '../domain/selectors'
 import { addWant, markAlertSeen, removeWant, useAppState } from '../domain/store'
 import type { Category, WantWindow } from '../domain/types'
 import { go, useNow } from '../lib'
-import { Button, Chip, Mascot, Segmented } from '../ui'
+import { Button, Mascot } from '../ui'
 
 export function Wants({ initialText = '' }: { initialText?: string }) {
   const state = useAppState()
@@ -40,11 +40,6 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
     if (g.window) setWindow(g.window)
   }
 
-  const toggle = (c: Category) => {
-    setTouched(true)
-    setCategories(categories.includes(c) ? categories.filter((x) => x !== c) : [...categories, c])
-  }
-
   const canSave = categories.length > 0 && window
   const save = () => {
     if (!canSave) return
@@ -74,17 +69,7 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
             placeholder="f.eks. dekkskift innen 48 timer nær Alna, eller restaurant i kveld"
             className="rounded border border-[#ddd] bg-canvas px-3 py-2.5 text-base outline-none placeholder:text-faint focus:ring-2 focus:ring-primary/30"
           />
-          {!label && (
-            <div className="flex flex-wrap items-center gap-2 text-[15px] text-muted">
-              Prøv:
-              {['Dekkskift innen 48 timer nær Alna', 'Restaurant i kveld i sentrum', 'Jeg liker restaurant i sentrum'].map((ex) => (
-                <Chip key={ex} active={false} onClick={() => onLabel(ex)}>
-                  {ex}
-                </Chip>
-              ))}
-            </div>
-          )}
-          {label && !touched && (
+          {label && (
             <p className="flex animate-fade items-center gap-2 text-[15px] text-ink-2">
               <span className="rounded bg-purple/40 px-1.5 text-purple-deep">✦ AI</span>
               {guess.categories.length ? (
@@ -94,26 +79,11 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
                   {guess.area && `, nær ${guess.area}`}
                 </>
               ) : (
-                <>Usikker ennå. Velg en kategori under.</>
+                <>Usikker ennå. Si hva du ønsker, f.eks. «restaurant i kveld».</>
               )}
             </p>
           )}
-          <div className="flex flex-wrap gap-2">
-            {CATEGORIES.map((c) => (
-              <Chip key={c} active={categories.includes(c)} onClick={() => toggle(c)}>
-                <span>{CATEGORY_META[c].icon}</span> {CATEGORY_META[c].label}
-              </Chip>
-            ))}
-          </div>
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <Segmented
-              value={window}
-              onChange={(w) => {
-                setTouched(true)
-                setWindow(w)
-              }}
-              options={(['now', 'today', '48h', 'any'] as WantWindow[]).map((w) => ({ value: w, label: WANT_WINDOW_META[w].label }))}
-            />
+          <div className="flex justify-end">
             <Button onClick={save} disabled={!canSave}>
               Lagre ønske
             </Button>
