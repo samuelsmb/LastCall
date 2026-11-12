@@ -48,8 +48,6 @@ export interface Slot {
   /** Set when sold: LastCall's fee and how many intro spots it used. */
   fee?: number
   introSpotsUsed?: number
-  /** Canceller bonus (% of the sold price) promised when the slot was cancelled; paid to the Canceller only if it sells. */
-  cancellerBonusPct?: number
 }
 
 export type ReleaseMode = 'full' | 'discount'
@@ -61,7 +59,6 @@ export interface AutoReleaseRule {
   leadMinutes: number
   discountPct: number
   /** Percent of the sold price the Canceller gets back if their cancelled slot sells on LastCall. 0 turns it off. */
-  cancellerBonusPct: number
 }
 
 export interface Want {

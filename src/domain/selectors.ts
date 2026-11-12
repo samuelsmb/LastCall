@@ -1,5 +1,5 @@
 import { NEIGHBOURHOODS } from './categories'
-import { cancellerBonus, lastCallPrice } from './pricing'
+import { lastCallPrice } from './pricing'
 import type { AutoReleaseRule, Business, Category, Slot, State, TimeWindow, Want, WantWindow } from './types'
 
 export { lastCallPrice }
@@ -77,7 +77,7 @@ export function ruleDiscount(rule: AutoReleaseRule) {
   return rule.mode === 'full' ? 0 : rule.discountPct
 }
 
-export const DEFAULT_RULE: AutoReleaseRule = { enabled: false, mode: 'full', leadMinutes: 60, discountPct: 20, cancellerBonusPct: 10 }
+export const DEFAULT_RULE: AutoReleaseRule = { enabled: false, mode: 'full', leadMinutes: 60, discountPct: 20 }
 
 export function dashboardStats(state: State, businessId: string) {
   const base = state.baselines[businessId] ?? { recovered: 0, released: 0, sold: 0 }
@@ -86,14 +86,12 @@ export function dashboardStats(state: State, businessId: string) {
   const released = own.filter((s) => s.releasedAt)
   const recovered = base.recovered + sold.reduce((sum, s) => sum + lastCallPrice(s), 0)
   const fee = sold.reduce((sum, s) => sum + (s.fee ?? 0), 0)
-  const bonus = sold.reduce((sum, s) => sum + cancellerBonus(s), 0)
   const releasedCount = base.released + released.length
   const soldCount = base.sold + sold.length
   return {
     recovered,
     fee,
-    bonus,
-    net: recovered - fee - bonus,
+    net: recovered - fee,
     introSpotsLeft: state.businesses.find((b) => b.id === businessId)?.introSpotsLeft ?? 0,
     released: releasedCount,
     sold: soldCount,
