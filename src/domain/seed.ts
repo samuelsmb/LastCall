@@ -41,9 +41,8 @@ export function uid(prefix = 'id') {
 }
 
 const businesses: Omit<Business, 'introSpotsLeft'>[] = [
-  { id: HERO_BUSINESS_ID, name: 'Mekonomen', category: 'car', neighbourhood: 'Alna', address: 'Smalvollveien', distanceKm: 5.8, tagline: 'Verksted for dekkskift og service', image: 'https://www.mekonomen.no/wp-content/uploads/2025/02/Bilverksted.jpg' },
+  { id: HERO_BUSINESS_ID, name: 'Mekonomen Stabekk Bilsenter', category: 'car', neighbourhood: 'Vøyenenga', address: 'Ringeriksveien 177', distanceKm: 17.0, tagline: 'Dekkskift og service', image: 'https://www.mekonomen.no/wp-content/uploads/2025/02/Bilverksted.jpg' },
   { id: 'wheel-of-fortune', name: 'Snap Drive', category: 'car', neighbourhood: 'Rødtvet', address: 'Kakkelovnskroken', distanceKm: 8.0, tagline: 'Dekkskift og bilservice', image: 'https://www.snapdrive.no/getfile.php/132642-1789757416/Bilder/Artikkelbilder/Artikler/H%C3%B8stklar%20bil.jpg%20%28content%29.webp' },
-  { id: 'stabekk-bilsenter', name: 'Mekonomen Stabekk Bilsenter', category: 'car', neighbourhood: 'Vøyenenga', address: 'Ringeriksveien 177', distanceKm: 17.0, tagline: 'Dekkskift og service', image: 'https://www.mekonomen.no/wp-content/uploads/2025/02/Bilverksted.jpg' },
   { id: RESTAURANT_ID, name: 'Theatercaféen', category: 'food', neighbourhood: 'Sentrum', address: 'Stortingsgata 24', distanceKm: 0.2, tagline: 'Klassisk wienerkafé siden 1900', image: 'img/theatercafeen.jpg' },
   { id: 'fjordbord', name: 'Katla', category: 'food', neighbourhood: 'Sentrum', address: 'Kristian Augusts gate', distanceKm: 0.6, tagline: 'Nordiske råvarer og smaker fra Asia og Latin-Amerika, tilberedt på åpen flamme', image: 'https://static1.squarespace.com/static/5ecb7d5ad83f90785cbcd987/t/5ecb8619a81cd4417d9828ad/1748945520074/Katla-restaurant-Atli-retter_lower_res.jpg?format=1500w' },
   { id: 'frogner-counter', name: 'Statholdergaarden', category: 'food', neighbourhood: 'Sentrum', address: 'Rådhusgata 11', distanceKm: 0.6, tagline: 'Gourmetrestaurant med Michelin-stjerne siden 1998', image: 'img/statholdergaarden.jpg' },
@@ -102,7 +101,7 @@ const lastCalls: LastCallSeed[] = [
   ['studio-johnny', 'Klipp og styling', 'Klipp og styling i morgen tidlig, frigitt etter en avbestilling.', 1290, 60, 1100, 20],
   ['bel-etage', 'Farge og føn', 'Fargebehandling og føn, ledig i morgen ettermiddag.', 1500, 120, 2400, 30],
   ['wheel-of-fortune', 'Dekkskift', 'Fire hjul byttet og lufttrykk sjekket. Kom innom om en liten stund.', 25, 30, 900, 15],
-  ['stabekk-bilsenter', 'Dekkskift', 'Sommer- eller vinterdekk byttet, ledig etter en avbestilling.', 40, 30, 900, 20],
+  [HERO_BUSINESS_ID, 'Dekkskift', 'Sommer- eller vinterdekk byttet, ledig etter en avbestilling.', 40, 30, 900, 20],
   ['fjordbord', 'Bord for 2', 'To plasser ved baren, ledig senere i kveld.', 480, 90, 1500, 20, 2],
   ['hanshaugen-hearth', 'Middag for 2', 'Et bord for to ble ledig for kort tid siden.', 110, 120, 1500, 25, 2],
   ['bristol-spa', 'Ansiktsbehandling', 'Ansiktsbehandling i ro og fred, ledig i kveld.', 150, 60, 1200, 30],
@@ -115,7 +114,7 @@ const lastCalls: LastCallSeed[] = [
   ['bristol-spa', 'Spa for 2 med basseng', 'To plasser i spaavdelingen med basseng og sauna.', 1400, 150, 1800, 25, 2],
   ['fjordbord', 'Bord for 2, i morgen', 'Bord for to hos Katla i morgen kveld.', 1860, 120, 2200, 15, 2],
   ['latter', 'Standup for 2', 'To plasser på kveldens show.', 240, 120, 640, 30, 2],
-  ['stabekk-bilsenter', 'Dekkskift og balansering', 'Hjulene byttes og balanseres mens du venter.', 120, 45, 1200, 20],
+  [HERO_BUSINESS_ID, 'Dekkskift og balansering', 'Hjulene byttes og balanseres mens du venter.', 120, 45, 1200, 20],
   ['cellar-jazz', 'To plasser på første rad i kveld', 'Plasser på første rad til kveldens konsert på en liten jazzklubb i kjelleren.', 420, 120, 590, 40],
 ]
 
