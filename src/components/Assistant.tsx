@@ -16,10 +16,9 @@ interface ChatMessage {
 }
 
 const SUGGESTIONS = ['Vis meg noe jeg vil like', 'Overrask meg i kveld', 'Middagsplaner i kveld', 'Hva skjer i dag?', 'Varsle meg om ting jeg vil like']
-const WANT_SUGGESTIONS = ['Varsle meg om ting jeg vil like', 'Varsle meg om middagsbord i kveld', 'Varsle meg om konserter denne uka']
 
 /** The Customer's chat helper: a bubble in the corner that opens a chat panel. */
-export function Assistant({ route }: { route: string }) {
+export function Assistant() {
   const state = useAppState()
   const now = useNow()
   const [open, setOpen] = useState(false)
@@ -27,7 +26,6 @@ export function Assistant({ route }: { route: string }) {
   const [history, setHistory] = useState<ModelMessage[]>([])
   const [input, setInput] = useState('')
   const [busy, setBusy] = useState<string | null>(null)
-  const [fast, setFast] = useState(false)
   const [offered, setOffered] = useState<OfferedWant | null>(null)
   const scroller = useRef<HTMLDivElement>(null)
 
@@ -47,14 +45,12 @@ export function Assistant({ route }: { route: string }) {
     setBusy('Tenker …')
     try {
       let turn: AssistantTurn | null = null
-      if (fast) {
-        const { askFast } = await import('../domain/fastAssistant')
-        const fastTurn = await askFast(history, trimmed, offered).catch((e) => (console.error(e), null))
-        setOffered(fastTurn?.offered ?? null)
-        turn = fastTurn
-        if (!turn) setBusy('Tenker grundigere …')
-      }
+      const { askFast } = await import('../domain/fastAssistant')
+      const fastTurn = await askFast(history, trimmed, offered).catch((e) => (console.error(e), null))
+      setOffered(fastTurn?.offered ?? null)
+      turn = fastTurn
       if (!turn) {
+        setBusy('Tenker grundigere …')
         const { askAssistant } = await import('../domain/assistant')
         turn = await askAssistant(history, trimmed)
       }
@@ -68,8 +64,6 @@ export function Assistant({ route }: { route: string }) {
     }
   }
 
-  const suggestions = route.startsWith('/wants') ? WANT_SUGGESTIONS : SUGGESTIONS
-
   return (
     <>
       {open && (
@@ -78,23 +72,9 @@ export function Assistant({ route }: { route: string }) {
             <p className="font-semibold">
               <span className="text-primary">✦</span> Assistent
             </p>
-            <div className="flex items-center gap-1">
-              <button
-                role="switch"
-                aria-checked={fast}
-                onClick={() => setFast((f) => !f)}
-                title="Raskere svar med mindre kontekst"
-                className={`flex cursor-pointer items-center gap-1.5 rounded-full border px-2.5 py-1 text-sm font-medium transition ${fast ? 'border-primary bg-primary/10 text-primary' : 'border-hairline text-ink-2 hover:bg-black/5'}`}
-              >
-                ⚡ Rask
-                <span className={`relative h-4 w-7 rounded-full transition ${fast ? 'bg-primary' : 'bg-black/15'}`}>
-                  <span className={`absolute top-0.5 h-3 w-3 rounded-full bg-white transition-all ${fast ? 'left-3.5' : 'left-0.5'}`} />
-                </span>
-              </button>
-              <button className="cursor-pointer rounded-md px-1.5 text-lg leading-none text-faint hover:bg-black/5 hover:text-ink" onClick={() => setOpen(false)} aria-label="Lukk">
-                ×
-              </button>
-            </div>
+            <button className="cursor-pointer rounded-md px-1.5 text-lg leading-none text-faint hover:bg-black/5 hover:text-ink" onClick={() => setOpen(false)} aria-label="Lukk">
+              ×
+            </button>
           </div>
 
           <div ref={scroller} className="flex flex-1 flex-col gap-3 overflow-y-auto p-4">
@@ -102,7 +82,7 @@ export function Assistant({ route }: { route: string }) {
               <>
                 <p className="text-ink-2">Hei! Jeg kan finne Last Calls, anbefale noe du vil like, eller varsle deg når noe dukker opp.</p>
                 <div className="flex flex-wrap gap-2">
-                  {suggestions.map((s) => (
+                  {SUGGESTIONS.map((s) => (
                     <button key={s} onClick={() => send(s)} className="cursor-pointer rounded-full border border-hairline px-3 py-1.5 text-sm hover:bg-black/5">
                       {s}
                     </button>

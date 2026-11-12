@@ -2,7 +2,7 @@ import { createOpenRouter } from '@openrouter/ai-sdk-provider'
 import { generateText, isStepCount, Output, tool, type ModelMessage } from 'ai'
 import { z } from 'zod'
 import { kr, when } from '../lib'
-import { CATEGORIES, CATEGORY_META, WANT_WINDOW_META } from './categories'
+import { CATEGORIES, CATEGORY_META, NEIGHBOURHOODS, WANT_WINDOW_META } from './categories'
 import { businessOf, inWindow, isLive, lastCallPrice } from './selectors'
 import { addWant, getState, scheduleDemoRelease } from './store'
 import { TASTE_PROFILE } from './tasteProfile'
@@ -38,6 +38,33 @@ Svaret ditt:
 - slotIds: id-ene til Last Calls du nevner (maks ${MAX_CARDS}), i prioritert rekkefølge. Kortene viser pris og tid, så ikke gjenta det i teksten.
 Finn aldri på Last Calls. Ber kunden om noe bestemt (f.eks. comedy) som ikke finnes i søket, si det tydelig først og spør om du skal varsle når det dukker opp. Et alternativ kan du nevne etterpå. Si aldri at du ikke kan sette opp varsler; du kan alltid tilby det.
 Kategorier: ${categories}.`
+}
+
+export interface WantGuess {
+  categories: Category[]
+  window: WantWindow | null
+  area: string | null
+}
+
+/** Reads a free-text Want with the model: guesses Categories, a time window and an area. */
+export async function interpretWantWithModel(text: string, signal?: AbortSignal): Promise<WantGuess> {
+  const categories = CATEGORIES.map((c) => `${c} (${CATEGORY_META[c].label})`).join(', ')
+  const result = await generateText({
+    model: openrouter(ASSISTANT_MODEL),
+    abortSignal: signal,
+    system: `Du tolker hva en kunde i Oslo ønsker å bli varslet om, for markedsplassen LastCall.
+Kategorier: ${categories}.
+Tidsvindu: now = innen 2 timer, today = i dag/i kveld, 48h = innen 48 timer/i morgen, any = når som helst. null hvis kunden ikke nevner tid.
+Bydeler: ${NEIGHBOURHOODS.join(', ')}. Velg bare en av disse, ellers null.
+Kunden kan skrive norsk, dansk, svensk eller engelsk. Velg alle kategorier som passer; tom liste hvis ingen passer.`,
+    prompt: text,
+    output: Output.object({
+      schema: z.object({ categories: z.array(categoryEnum), window: windowEnum.nullable(), area: z.string().nullable() }),
+    }),
+  })
+  const { output } = result
+  const area = NEIGHBOURHOODS.find((n) => n.toLowerCase() === output.area?.toLowerCase()) ?? null
+  return { categories: [...new Set(output.categories)], window: output.window, area }
 }
 
 export interface AssistantTurn {

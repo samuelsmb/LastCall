@@ -41,7 +41,7 @@ export default function App() {
         {page}
       </main>
       {side === 'customer' && <AlertToasts />}
-      {side === 'customer' && <Assistant route={route} />}
+      {side === 'customer' && <Assistant />}
       <footer className="border-t border-hairline bg-paper px-6 py-8 text-center text-sm text-ink-2">
         <span className="font-semibold">LastCall</span> · Laget i {CITY}, snart i resten av Norge
       </footer>
