@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { alertLine } from '../components/AlertToasts'
 import { CATEGORIES, CATEGORY_META, WANT_WINDOW_META } from '../domain/categories'
 import { businessOf, interpretWant, isLive, matchesWant } from '../domain/selectors'
@@ -30,6 +30,21 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
         return w ? [{ id: `match-${s.id}`, slotId: s.id, want: w, seen: false, alertId: null as string | null }] : []
       }),
   ]
+
+  // Nye varsler dukker opp ett og ett med litt forsinkelse, som om de ble funnet etter at ønsket ble lagret.
+  const [shown, setShown] = useState(() => new Set(items.map((i) => i.id)))
+  const scheduled = useRef(new Set<string>())
+  const itemKey = items.map((i) => i.id).join('|')
+  useEffect(() => {
+    const fresh = items.filter((i) => !shown.has(i.id) && !scheduled.current.has(i.id))
+    fresh.forEach((i, n) => {
+      scheduled.current.add(i.id)
+      setTimeout(() => setShown((s) => new Set(s).add(i.id)), 900 + n * 700)
+    })
+  }, [itemKey])
+  const visible = items.filter((i) => shown.has(i.id))
+  const pending = items.length - visible.length
+
   const onLabel = (text: string) => {
     setLabel(text)
     if (touched) return
@@ -148,9 +163,9 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
             <p className="text-sm text-muted">Når en bedrift frigir en Last Call som passer et av ønskene dine, dukker den opp her.</p>
           </div>
         )}
-        {items.length > 0 && (
+        {visible.length > 0 && (
           <div className="overflow-hidden rounded-xl border border-hairline bg-canvas">
-            {items.map((a) => {
+            {visible.map((a) => {
               const slot = state.slots.find((s) => s.id === a.slotId)
               const want = a.want
               if (!slot) return null
@@ -163,7 +178,7 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
                     if (a.alertId) markAlertSeen(a.alertId)
                     go(`/lc/${slot.id}`)
                   }}
-                  className={`flex w-full cursor-pointer items-start gap-3 border-b border-hairline px-4 py-3 text-left transition last:border-b-0 hover:bg-paper ${live ? '' : 'opacity-50'}`}
+                  className={`flex w-full animate-rise cursor-pointer items-start gap-3 border-b border-hairline px-4 py-3 text-left transition last:border-b-0 hover:bg-paper ${live ? '' : 'opacity-50'}`}
                 >
                   <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full" style={{ background: a.seen ? 'transparent' : 'var(--color-primary)' }} />
                   <span className="text-xl">{CATEGORY_META[biz.category].icon}</span>
@@ -179,6 +194,12 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
               )
             })}
           </div>
+        )}
+        {pending > 0 && (
+          <p className="flex animate-fade items-center gap-2 text-sm text-muted">
+            <span className="h-2 w-2 animate-twinkle rounded-full bg-primary" />
+            Leter etter treff …
+          </p>
         )}
       </section>
     </div>
