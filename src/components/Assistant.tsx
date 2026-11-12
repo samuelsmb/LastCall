@@ -28,6 +28,17 @@ export function Assistant() {
   const [busy, setBusy] = useState<string | null>(null)
   const [offered, setOffered] = useState<OfferedWant | null>(null)
   const scroller = useRef<HTMLDivElement>(null)
+  const session = useRef(0)
+
+  useEffect(() => {
+    if (open) return
+    session.current++
+    setChat([])
+    setHistory([])
+    setInput('')
+    setBusy(null)
+    setOffered(null)
+  }, [open])
 
   useEffect(() => {
     scroller.current?.scrollTo({ top: scroller.current.scrollHeight, behavior: 'smooth' })
@@ -43,24 +54,29 @@ export function Assistant() {
       return
     }
     setBusy('Tenker …')
+    const current = session.current
+    const stale = () => current !== session.current
     try {
       let turn: AssistantTurn | null = null
       const { askFast } = await import('../domain/fastAssistant')
       const fastTurn = await askFast(history, trimmed, offered).catch((e) => (console.error(e), null))
+      if (stale()) return
       setOffered(fastTurn?.offered ?? null)
       turn = fastTurn
       if (!turn) {
         setBusy('Tenker grundigere …')
         const { askAssistant } = await import('../domain/assistant')
         turn = await askAssistant(history, trimmed)
+        if (stale()) return
       }
       setHistory(turn.messages)
       setChat((c) => [...c, { role: 'assistant', text: turn.reply, slotIds: turn.slotIds }])
     } catch (e) {
       console.error(e)
+      if (stale()) return
       setChat((c) => [...c, { role: 'assistant', text: 'Beklager, noe gikk galt. Prøv igjen om litt.' }])
     } finally {
-      setBusy(null)
+      if (!stale()) setBusy(null)
     }
   }
 
