@@ -154,8 +154,9 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
           <input
             value={label}
             onChange={(e) => onLabel(e.target.value)}
-            placeholder="f.eks. dekkskift innen 48 timer nær Alna, eller restaurant i kveld"
-            className="rounded border border-[#ddd] bg-canvas px-3 py-2.5 text-base outline-none placeholder:text-faint focus:ring-2 focus:ring-primary/30"
+            disabled={categories.length === 0}
+            placeholder={categories.length ? 'f.eks. dekkskift innen 48 timer nær Alna, eller restaurant i kveld' : 'Velg en kategori først'}
+            className="rounded border border-[#ddd] bg-canvas px-3 py-2.5 text-base outline-none placeholder:text-faint focus:ring-2 focus:ring-primary/30 disabled:cursor-not-allowed disabled:bg-paper"
           />
           {label.trim() && !touched && guess && (
             <p className="flex animate-fade items-center gap-2 text-[15px] text-ink-2">
