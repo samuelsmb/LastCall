@@ -1,5 +1,5 @@
 import { INTRO_SPOTS } from './pricing'
-import type { Business, Category, Slot, State } from './types'
+import type { Baseline, Business, Category, Slot, State } from './types'
 
 export const HERO_BUSINESS_ID = 'teds-garage'
 export const RESTAURANT_ID = 'restaurant-lokka'
@@ -56,6 +56,28 @@ const businesses: Omit<Business, 'introSpotsLeft'>[] = [
   { id: 'cellar-jazz', name: 'Herr Nilsen', category: 'experiences', neighbourhood: 'Sentrum', address: 'C.J. Hambros plass 5', distanceKm: 0.4, tagline: 'Live jazz hver kveld', image: 'img/herr-nilsen.jpg' },
   { id: 'latter', name: 'Latter', category: 'experiences', neighbourhood: 'Aker Brygge', address: 'Stranden 3', distanceKm: 1.2, tagline: 'Oslos største standupscene' },
 ]
+
+/**
+ * Month-to-date history per Business, so dashboards don't start at 0 kr. Sized to each trade:
+ * restaurants sell fewer but pricier tables, salons and garages many smaller appointments,
+ * experiences cheap tickets with high sell-through. Fees are 49 kr per spot, capped at 10%.
+ */
+const BASELINES: Record<string, Baseline> = {
+  [HERO_BUSINESS_ID]: { recovered: 26_450, released: 27, sold: 23, fee: 1_127 },
+  'wheel-of-fortune': { recovered: 13_900, released: 19, sold: 14, fee: 686 },
+  [RESTAURANT_ID]: { recovered: 31_280, released: 21, sold: 17, fee: 2_058 },
+  fjordbord: { recovered: 27_060, released: 15, sold: 11, fee: 1_470 },
+  'frogner-counter': { recovered: 25_800, released: 6, sold: 6, fee: 588 },
+  'hanshaugen-hearth': { recovered: 14_220, released: 13, sold: 9, fee: 1_078 },
+  'hope-posthallen': { recovered: 25_650, released: 24, sold: 19, fee: 931 },
+  'bristol-spa': { recovered: 13_500, released: 16, sold: 12, fee: 588 },
+  'adam-og-eva': { recovered: 10_080, released: 22, sold: 16, fee: 784 },
+  'studio-johnny': { recovered: 11_960, released: 18, sold: 13, fee: 637 },
+  'bel-etage': { recovered: 14_400, released: 13, sold: 8, fee: 392 },
+  'kok-langkaia': { recovered: 19_740, released: 25, sold: 21, fee: 1_715 },
+  'cellar-jazz': { recovered: 9_620, released: 34, sold: 26, fee: 962 },
+  latter: { recovered: 8_460, released: 22, sold: 18, fee: 846 },
+}
 
 type LastCallSeed = [businessId: string, title: string, description: string, minutesFromNow: number, durationMin: number, fullPrice: number, discountPct: number, guests?: number, perk?: string]
 
@@ -209,7 +231,7 @@ export function createSeed(now: number): State {
       [HERO_BUSINESS_ID]: { enabled: true, mode: 'full', leadMinutes: 60, discountPct: 20 },
       [RESTAURANT_ID]: { enabled: true, mode: 'discount', leadMinutes: 120, discountPct: 20 },
     },
-    baselines: {},
+    baselines: { ...BASELINES },
     wants: [],
     alerts: [],
     currentBusinessId: HERO_BUSINESS_ID,

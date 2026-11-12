@@ -1,9 +1,9 @@
-import { CATEGORY_META } from '../domain/categories'
+import { Bell } from 'lucide-react'
 import { businessOf, lastCallPrice, walkMinutes } from '../domain/selectors'
 import { dismissAlertToast, markAlertSeen, useAppState } from '../domain/store'
 import type { Slot, State } from '../domain/types'
 import { go, kr, useNow, when } from '../lib'
-import { Button } from '../ui'
+import { Button, CategoryIcon } from '../ui'
 
 const RECENT = 15 * 60_000
 
@@ -32,9 +32,9 @@ export function AlertToasts() {
         return (
           <div key={a.id} className="animate-rise rounded-2xl border border-hairline bg-canvas p-4 shadow-lifted">
             <div className="flex items-start gap-3">
-              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-hairline text-xl">{CATEGORY_META[biz.category].icon}</span>
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-hairline "><CategoryIcon category={biz.category} className="h-5 w-5" /></span>
               <div className="min-w-0 flex-1">
-                <p className="eyebrow text-primary">🔔 Noen avbestilte</p>
+                <p className="eyebrow inline-flex items-center gap-1 text-primary"><Bell className="h-3.5 w-3.5" aria-hidden /> Noen avbestilte</p>
                 <p className="mt-0.5 font-semibold leading-snug">{alertLine(state, slot, now)}</p>
                 {want && <p className="mt-2 text-sm text-ink-2">Matcher ønsket ditt «{want.label}»</p>}
               </div>

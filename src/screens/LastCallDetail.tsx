@@ -1,3 +1,4 @@
+import { ArrowLeft, Check, Star } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
 import { businessOf, savings } from '../domain/selectors'
 import { bookSlot, toggleFollow, useAppState } from '../domain/store'
@@ -29,18 +30,19 @@ export function LastCallDetail({ id }: { id: string }) {
   return (
     <div className="flex flex-col gap-6">
       <a href="#/" className="self-start rounded-md px-2 py-1 text-[15px] text-muted hover:bg-black/5 hover:text-ink">
-        ← Tilbake til markedsplassen
+        <ArrowLeft className="mr-1 inline h-4 w-4 align-[-3px]" aria-hidden />Tilbake til markedsplassen
       </a>
       <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
         <article className="overflow-hidden rounded-2xl border border-hairline bg-canvas">
-          <Band category={biz.category} image={biz.image} className="h-48" iconSize="h-20 w-20 text-5xl">
+          <Band category={biz.category} image={biz.image} className="h-48" iconSize="h-20 w-20">
             <DiscountSticker slot={slot} className="absolute right-5 top-5" />
           </Band>
           <div className="flex flex-col gap-3 px-6 pb-8 pt-14 sm:px-8">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <CategoryBadge category={biz.category} />
               <Button size="sm" variant={following ? 'utility' : 'secondary'} onClick={() => toggleFollow(biz.id)} aria-pressed={following}>
-                {following ? `✓ Følger ${biz.name}` : `☆ Følg ${biz.name}`}
+                {following ? <Check className="mr-1 inline h-4 w-4 align-[-3px]" aria-hidden /> : <Star className="mr-1 inline h-4 w-4 align-[-3px]" aria-hidden />}
+                {following ? `Følger ${biz.name}` : `Følg ${biz.name}`}
               </Button>
             </div>
             {following && <p className="-mt-1 text-sm text-muted">Vi varsler deg når {biz.name} frigir en ny Last Call, når som helst.</p>}

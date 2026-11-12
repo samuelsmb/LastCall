@@ -1,3 +1,4 @@
+import { ArrowRight, Bell, SearchX } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { LastCallCard } from '../components/LastCallCard'
 import { HeroSlideshow } from '../components/HeroSlideshow'
@@ -7,7 +8,7 @@ import { CITY } from '../brand'
 import { useAppState } from '../domain/store'
 import type { Category, TimeWindow } from '../domain/types'
 import { go, useNow } from '../lib'
-import { Button, Chip, Segmented } from '../ui'
+import { Button, CategoryIcon, Chip, Segmented } from '../ui'
 
 export function Marketplace() {
   const state = useAppState()
@@ -62,14 +63,14 @@ export function Marketplace() {
           onClick={() => go('/wants')}
           className="-mt-4 flex w-full cursor-pointer items-center gap-3 rounded-2xl border border-pink/40 bg-pink/10 px-5 py-4 text-left transition hover:bg-pink/20"
         >
-          <span className="animate-twinkle text-2xl">🔔</span>
+          <Bell className="h-6 w-6 shrink-0 animate-twinkle text-pink" aria-hidden />
           <span className="min-w-0 flex-1">
             <span className="block font-semibold">
               {wantMatches.length} {wantMatches.length === 1 ? 'Last Call passer' : 'Last Calls passer'} ønskene dine nå
             </span>
             <span className="block text-sm text-ink-2">Noe du har ønsket deg har blitt ledig. Se hva som passer.</span>
           </span>
-          <span className="font-semibold text-primary">Se treff →</span>
+          <span className="font-semibold text-primary">Se treff <ArrowRight className="inline h-4 w-4 align-[-3px]" aria-hidden /></span>
         </button>
       )}
 
@@ -81,7 +82,7 @@ export function Marketplace() {
           </Chip>
           {CATEGORIES.map((c) => (
             <Chip key={c} active={categories.includes(c)} onClick={() => toggle(c)}>
-              <span>{CATEGORY_META[c].icon}</span> {CATEGORY_META[c].label}
+              <CategoryIcon category={c} /> {CATEGORY_META[c].label}
             </Chip>
           ))}
         </div>
@@ -113,7 +114,7 @@ export function Marketplace() {
         </div>
       ) : (
         <div className="flex flex-col items-center gap-3 rounded-2xl bg-canvas px-6 py-16 text-center">
-          <span className="text-5xl">🔍</span>
+          <SearchX className="h-12 w-12 text-faint" aria-hidden />
           <h3 className="heading-2">Ingenting passer akkurat nå</h3>
           <p className="max-w-md text-muted">Prøv et videre filter, eller opprett et ønske så gir vi beskjed så snart noe åpner seg.</p>
           <div className="mt-3 flex flex-wrap justify-center gap-2">

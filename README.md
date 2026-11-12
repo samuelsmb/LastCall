@@ -35,9 +35,9 @@ Start with `?reset` once, then use two tabs: **Customer** (left) and **Business*
 | 1 | Customer | `#/wants?q=dekkskift%20innen%2048%20timer%20n%C3%A6r%20Alna` | The fake AI has already read "dekkskift innen 48 timer nær Alna" and picked Dekkskift, Neste 48 t, Alna. Click **Lagre ønske**. |
 | 2 | Business | `#/biz/teds-garage` | Mekonomen, Auto-release on at full price. Click **Simuler avbestilling** on **tomorrow 14:00, Tyre change**. It goes live at once as "Skip the queue". |
 | 3 | Customer | `#/lc/demo-teds-tyre` → `#/booked/demo-teds-tyre` | The Alert pops up: "Someone cancelled. Tyre change at Mekonomen tomorrow 14:00, 15 min away. 900 kr." Open it, book. The ticket says "You skipped the queue". |
-| 4 | Business | `#/biz/teds-garage` | "Empty slot filled. 900 kr saved." Revenue recovered 900 kr, fee 0 kr (free spots left 9/10), net 900 kr. |
+| 4 | Business | `#/biz/teds-garage` | "Empty slot filled. 900 kr saved." Revenue recovered goes from 26,450 kr to 27,350 kr (month-to-date history plus 900 kr), fee stays 1,127 kr (free spots left 9/10), net 26,223 kr. |
 | 5 | Business | `#/biz/restaurant-lokka` | Theatercaféen, Auto-release 2 hours before at 20% off. **Simuler avbestilling** on **19:30, Table for 2** (850 kr pp). It is held until 17:30; click **Frigi nå** (20% preselected, fee preview shows 98 kr waived by the Intro offer). |
-| 5b | Customer | `#/lc/demo-lokka-table` | Book the table: 680 kr pp, 1,360 kr total. The Business dashboard shows 1,360 kr recovered, fee 0 kr, free spots left 8/10 (a table for 2 uses 2). |
+| 5b | Customer | `#/lc/demo-lokka-table` | Book the table: 680 kr pp, 1,360 kr total. The Business dashboard goes from 31,280 kr to 32,640 kr recovered, fee stays 2,058 kr, free spots left 8/10 (a table for 2 uses 2). |
 | 6 | Third tab | `#/lc/demo-teds-tyre` | Open before step 3 and try to book after: "Too slow! Gone! We'll ping you when the next one drops." |
 
 Notes: if it's later than about 18:45, the Theatercaféen table is seeded for tomorrow 19:30 instead of tonight. If it's within 2 hours of 19:30, the cancellation releases straight away without "Release now".

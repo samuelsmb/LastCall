@@ -85,10 +85,12 @@ export interface Alert {
   dismissed?: boolean
 }
 
+/** Month-to-date history before this session, added on top of what happens in the demo. */
 export interface Baseline {
   recovered: number
   released: number
   sold: number
+  fee: number
 }
 
 export interface State {

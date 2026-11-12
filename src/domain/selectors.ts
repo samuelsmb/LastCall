@@ -80,12 +80,12 @@ export function ruleDiscount(rule: AutoReleaseRule) {
 export const DEFAULT_RULE: AutoReleaseRule = { enabled: false, mode: 'full', leadMinutes: 60, discountPct: 20 }
 
 export function dashboardStats(state: State, businessId: string) {
-  const base = state.baselines[businessId] ?? { recovered: 0, released: 0, sold: 0 }
+  const base = state.baselines[businessId] ?? { recovered: 0, released: 0, sold: 0, fee: 0 }
   const own = state.slots.filter((s) => s.businessId === businessId)
   const sold = own.filter((s) => s.status === 'sold')
   const released = own.filter((s) => s.releasedAt)
   const recovered = base.recovered + sold.reduce((sum, s) => sum + lastCallPrice(s), 0)
-  const fee = sold.reduce((sum, s) => sum + (s.fee ?? 0), 0)
+  const fee = base.fee + sold.reduce((sum, s) => sum + (s.fee ?? 0), 0)
   const releasedCount = base.released + released.length
   const soldCount = base.sold + sold.length
   return {

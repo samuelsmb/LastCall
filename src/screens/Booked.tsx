@@ -1,10 +1,10 @@
-import { CATEGORY_META } from '../domain/categories'
+import { CalendarPlus, Check } from 'lucide-react'
 import { businessOf, lastCallPrice, savings } from '../domain/selectors'
 import { openInCalendarApp, googleCalendarUrl } from '../domain/calendar'
 import { useAppState } from '../domain/store'
 import { clock, dayLabel, go, kr, useNow, when } from '../lib'
 import type { ReactNode } from 'react'
-import { Button, PinIcon } from '../ui'
+import { Button, CategoryIcon, PinIcon } from '../ui'
 import { Gone } from './LastCallDetail'
 
 export function Booked({ id }: { id: string }) {
@@ -19,7 +19,7 @@ export function Booked({ id }: { id: string }) {
 
   return (
     <div className="mx-auto flex max-w-lg flex-col items-center gap-6 py-8 text-center">
-      <span className="grid h-16 w-16 animate-rise place-items-center rounded-full bg-green text-3xl text-white">✓</span>
+      <span className="grid h-16 w-16 animate-rise place-items-center rounded-full bg-green text-white"><Check className="h-8 w-8" aria-hidden /></span>
       <div>
         <h1 className="display-2">Den er din{first}.</h1>
         <p className="mt-3 text-lg text-muted">Vi sees {seeYou}.</p>
@@ -27,7 +27,7 @@ export function Booked({ id }: { id: string }) {
 
       <div className="w-full rounded-2xl border border-hairline bg-canvas p-6 text-left shadow-soft">
         <div className="flex items-center gap-3">
-          <span className="grid h-12 w-12 place-items-center rounded-xl border border-hairline text-2xl">{CATEGORY_META[biz.category].icon}</span>
+          <span className="grid h-12 w-12 place-items-center rounded-xl border border-hairline "><CategoryIcon category={biz.category} className="h-6 w-6" /></span>
           <div>
             <p className="heading-3">{slot.title}</p>
             <p className="text-[15px] text-muted">{biz.name}</p>
@@ -51,7 +51,7 @@ export function Booked({ id }: { id: string }) {
       </div>
 
       <div className="flex w-full flex-col items-center gap-2">
-        <p className="eyebrow text-muted">📅 Legg til i kalender</p>
+        <p className="eyebrow inline-flex items-center gap-1.5 text-muted"><CalendarPlus className="h-4 w-4" aria-hidden /> Legg til i kalender</p>
         <div className="flex flex-wrap justify-center gap-2">
           <a href={googleCalendarUrl(slot, biz)} target="_blank" rel="noreferrer" className="rounded-full border border-hairline bg-canvas px-4 py-2 font-medium shadow-soft transition hover:bg-black/5">
             Google Kalender
