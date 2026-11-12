@@ -17,23 +17,9 @@ export function googleCalendarUrl(slot: Slot, biz: Business) {
   return `https://calendar.google.com/calendar/render?${q}`
 }
 
+// webcal:// åpner standard kalenderapp (Apple Kalender, Outlook) i stedet for å laste ned en fil.
 export function openInCalendarApp(slot: Slot, biz: Business) {
   const d = details(slot, biz)
-  const ics = [
-    'BEGIN:VCALENDAR',
-    'VERSION:2.0',
-    'PRODID:-//LastCall//NB',
-    'BEGIN:VEVENT',
-    `UID:${slot.id}@lastcall`,
-    `DTSTAMP:${stamp(Date.now())}`,
-    `DTSTART:${d.start}`,
-    `DTEND:${d.end}`,
-    `SUMMARY:${d.title}`,
-    `LOCATION:${d.where}`,
-    'DESCRIPTION:Bestilt via LastCall',
-    'END:VEVENT',
-    'END:VCALENDAR',
-  ].join('\r\n')
-  // Uten download-attributt åpner Safari/iOS kalenderappen direkte; andre nettlesere laster ned filen.
-  window.location.href = `data:text/calendar;charset=utf-8,${encodeURIComponent(ics)}`
+  const q = new URLSearchParams({ id: slot.id, start: String(slot.start), dur: String(slot.durationMin), title: d.title, where: d.where })
+  window.location.href = `webcal://${window.location.host}/api/event?${q}`
 }
