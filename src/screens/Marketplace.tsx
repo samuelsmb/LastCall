@@ -1,18 +1,12 @@
 import { useMemo, useState } from 'react'
 import { LastCallCard } from '../components/LastCallCard'
 import { CATEGORIES, CATEGORY_META, WINDOW_META } from '../domain/categories'
-import { businessOf, isLive, marketplace, matchesWant, type SortKey } from '../domain/selectors'
+import { businessOf, isLive, marketplace, matchesWant, SORTS, type SortKey } from '../domain/selectors'
 import { CITY } from '../brand'
 import { useAppState } from '../domain/store'
 import type { Category, TimeWindow } from '../domain/types'
 import { go, useNow } from '../lib'
 import { Button, Chip, Mascot, Segmented } from '../ui'
-
-const SORTS: { value: SortKey; label: string }[] = [
-  { value: 'soonest', label: 'Snarest' },
-  { value: 'discount', label: 'Størst rabatt' },
-  { value: 'nearest', label: 'Nærmest' },
-]
 
 // «Overrask meg» foreslår ikke dekkskift, helse eller offentlige timer.
 const SURPRISE_EXCLUDED: Category[] = ['car', 'health', 'official']
