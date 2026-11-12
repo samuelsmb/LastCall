@@ -191,6 +191,10 @@ export function markAlertSeen(alertId: string) {
   commit({ ...state, alerts: state.alerts.map((a) => (a.id === alertId ? { ...a, seen: true } : a)) })
 }
 
+export function dismissAlertToast(alertId: string) {
+  commit({ ...state, alerts: state.alerts.map((a) => (a.id === alertId ? { ...a, dismissed: true } : a)) })
+}
+
 export function setCurrentBusiness(businessId: string) {
   commit({ ...state, currentBusinessId: businessId })
 }

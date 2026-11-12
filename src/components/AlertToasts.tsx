@@ -1,7 +1,6 @@
-import { useState } from 'react'
 import { CATEGORY_META } from '../domain/categories'
 import { businessOf, lastCallPrice, walkMinutes } from '../domain/selectors'
-import { markAlertSeen, useAppState } from '../domain/store'
+import { dismissAlertToast, markAlertSeen, useAppState } from '../domain/store'
 import type { Slot, State } from '../domain/types'
 import { go, kr, useNow, when } from '../lib'
 import { Button } from '../ui'
@@ -19,9 +18,8 @@ export function alertLine(state: State, slot: Slot, now: number) {
 export function AlertToasts() {
   const state = useAppState()
   const now = useNow()
-  const [dismissed, setDismissed] = useState<Set<string>>(new Set())
 
-  const toasts = state.alerts.filter((a) => !a.seen && !dismissed.has(a.id) && now - a.createdAt < RECENT).slice(0, 3)
+  const toasts = state.alerts.filter((a) => !a.seen && !a.dismissed && now - a.createdAt < RECENT).slice(0, 3)
   if (!toasts.length) return null
 
   return (
@@ -40,7 +38,7 @@ export function AlertToasts() {
                 <p className="mt-0.5 font-semibold leading-snug">{alertLine(state, slot, now)}</p>
                 {want && <p className="mt-2 text-sm text-ink-2">Matcher ønsket ditt «{want.label}»</p>}
               </div>
-              <button className="cursor-pointer rounded-md px-1.5 text-lg leading-none text-faint hover:bg-black/5 hover:text-ink" onClick={() => setDismissed(new Set(dismissed).add(a.id))} aria-label="Lukk">
+              <button className="cursor-pointer rounded-md px-1.5 text-lg leading-none text-faint hover:bg-black/5 hover:text-ink" onClick={() => dismissAlertToast(a.id)} aria-label="Lukk">
                 ×
               </button>
             </div>

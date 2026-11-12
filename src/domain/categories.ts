@@ -1,4 +1,4 @@
-import type { Category, TimeWindow, WantWindow } from './types'
+import type { Category, NamedWantWindow, TimeWindow, WantWindow } from './types'
 
 export const CATEGORIES: Category[] = ['food', 'car', 'beauty', 'experiences']
 
@@ -16,9 +16,16 @@ export const WINDOW_META: Record<TimeWindow, { label: string; hint: string }> = 
   '48h': { label: 'Neste 48 t', hint: 'innen 48 timer' },
 }
 
-export const WANT_WINDOW_META: Record<WantWindow, { label: string; hint: string }> = {
+export const WANT_WINDOW_META: Record<NamedWantWindow, { label: string; hint: string }> = {
   ...WINDOW_META,
   any: { label: 'Når som helst', hint: 'når som helst' },
+}
+
+/** "innen 12 timer", "før midnatt" … for any Want window, including custom hours. */
+export function wantWindowHint(window: WantWindow) {
+  if (window in WANT_WINDOW_META) return WANT_WINDOW_META[window as NamedWantWindow].hint
+  const hours = parseFloat(window)
+  return hours % 24 === 0 && hours > 24 ? `innen ${hours / 24} dager` : `innen ${hours} ${hours === 1 ? 'time' : 'timer'}`
 }
 
 export const NEIGHBOURHOODS = ['Sentrum', 'Grünerløkka', 'Majorstuen', 'Frogner', 'Bjørvika', 'Alna', 'Rødtvet', 'Gamle Oslo', 'Tøyen', 'Sagene', 'St. Hanshaugen']

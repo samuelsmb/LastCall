@@ -3,7 +3,9 @@ export type Category = 'food' | 'beauty' | 'car' | 'experiences'
 export type TimeWindow = 'now' | 'today' | '48h'
 
 /** A Want can also wait for any time: a standing interest rather than a need right now. */
-export type WantWindow = TimeWindow | 'any'
+export type NamedWantWindow = TimeWindow | 'any'
+/** A named window, or "within N hours" written as e.g. '12h'. */
+export type WantWindow = NamedWantWindow | `${number}h`
 
 export type SlotStatus = 'booked' | 'cancelled' | 'held' | 'released' | 'sold'
 
@@ -79,6 +81,8 @@ export interface Alert {
   slotId: string
   createdAt: number
   seen: boolean
+  /** The Customer closed its pop-up; it still counts as unread. */
+  dismissed?: boolean
 }
 
 export interface Baseline {
