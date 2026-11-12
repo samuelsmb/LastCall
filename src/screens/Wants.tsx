@@ -50,7 +50,7 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
         <section className="flex flex-col gap-5 rounded-2xl border border-hairline bg-canvas p-6 sm:p-8">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h1 className="heading-1">Hva trenger du?</h1>
+              <h1 className="heading-1">Hva ønsker du?</h1>
               <p className="mt-2 text-muted">Si fra, så varsler vi deg i det øyeblikket en passende Last Call frigis.</p>
             </div>
             <Mascot className="hidden text-6xl sm:inline-block" />
