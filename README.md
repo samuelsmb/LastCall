@@ -60,6 +60,5 @@ Bilder av bedriftene ligger i `public/img/`. Bedrifter uten bilde får en farget
 
 - Theatercaféen: Larry Lamsa, [CC BY 2.0](https://creativecommons.org/licenses/by/2.0/), via Wikimedia Commons
 - Statholdergaarden (og Statholderens Mat & Vinkjeller): Kjetil r, [CC BY-SA 2.5](https://creativecommons.org/licenses/by-sa/2.5/), via Wikimedia Commons
-- Maaemo: Ulflarsen, [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/), via Wikimedia Commons
 - Herr Nilsen: Vidariv, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/), via Wikimedia Commons
 - Mekonomen og Snap Drive: bilder hentet fra bedriftenes nettsider, kun til demobruk
