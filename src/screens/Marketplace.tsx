@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { LastCallCard } from '../components/LastCallCard'
 import { CATEGORIES, CATEGORY_META, WINDOW_META } from '../domain/categories'
-import { businessOf, marketplace, type SortKey } from '../domain/selectors'
+import { businessOf, isLive, marketplace, matchesWant, type SortKey } from '../domain/selectors'
 import { CITY } from '../brand'
 import { useAppState } from '../domain/store'
 import type { Category, TimeWindow } from '../domain/types'
@@ -36,6 +36,11 @@ export function Marketplace() {
   const [sort, setSort] = useState<SortKey>('soonest')
 
   const list = useMemo(() => marketplace(state, now, { categories, window, sort }), [state, now, categories, window, sort])
+
+  const wantMatches = useMemo(
+    () => state.slots.filter((s) => isLive(s, now) && state.wants.some((w) => matchesWant(state, s, w, now))),
+    [state, now],
+  )
 
   const toggle = (c: Category) => setCategories(categories.includes(c) ? categories.filter((x) => x !== c) : [...categories, c])
 
@@ -76,6 +81,23 @@ export function Marketplace() {
           </div>
         </div>
       </section>
+
+      {wantMatches.length > 0 && (
+        <button
+          type="button"
+          onClick={() => go('/wants')}
+          className="-mt-4 flex w-full cursor-pointer items-center gap-3 rounded-2xl border border-pink/40 bg-pink/10 px-5 py-4 text-left transition hover:bg-pink/20"
+        >
+          <span className="animate-twinkle text-2xl">🔔</span>
+          <span className="min-w-0 flex-1">
+            <span className="block font-semibold">
+              {wantMatches.length} {wantMatches.length === 1 ? 'Last Call passer' : 'Last Calls passer'} ønskene dine nå
+            </span>
+            <span className="block text-sm text-ink-2">Noe du har ønsket deg har blitt ledig. Se hva som passer.</span>
+          </span>
+          <span className="font-semibold text-primary">Se treff →</span>
+        </button>
+      )}
 
       <section className="flex flex-col gap-4">
         <h2 className="heading-1">Ledig nå</h2>
