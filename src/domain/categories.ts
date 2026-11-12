@@ -1,6 +1,6 @@
 import type { Category, TimeWindow, WantWindow } from './types'
 
-export const CATEGORIES: Category[] = ['food', 'car', 'beauty', 'health', 'official', 'experiences']
+export const CATEGORIES: Category[] = ['food', 'car', 'beauty', 'health', 'experiences']
 
 /** Sticker colours are decoration only: bands, icon tiles and dots. Never actions. */
 export const CATEGORY_META: Record<Category, { label: string; icon: string; band: string; tint: string; text: string; dot: string }> = {
@@ -8,7 +8,6 @@ export const CATEGORY_META: Record<Category, { label: string; icon: string; band
   car: { label: 'Verksted', icon: '🚗', band: 'bg-sky', tint: 'bg-sky/15', text: 'text-[#1d5d94]', dot: 'bg-sky' },
   beauty: { label: 'Skjønnhet', icon: '💅', band: 'bg-pink', tint: 'bg-pink/10', text: 'text-[#9b1f6e]', dot: 'bg-pink' },
   health: { label: 'Helse', icon: '🩺', band: 'bg-teal', tint: 'bg-teal/10', text: 'text-[#1c6b68]', dot: 'bg-teal' },
-  official: { label: 'Offentlig', icon: '🏛️', band: 'bg-purple', tint: 'bg-purple/30', text: 'text-purple-deep', dot: 'bg-purple' },
   experiences: { label: 'Opplevelse', icon: '🎟️', band: 'bg-green', tint: 'bg-green/10', text: 'text-[#13772a]', dot: 'bg-green' },
 }
 

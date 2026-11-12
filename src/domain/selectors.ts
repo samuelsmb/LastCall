@@ -107,7 +107,6 @@ const HINTS: [RegExp, Category][] = [
   [/dinner|dining|food|lunch|restaurant|eat|table|tasting|menu|middag|\bmat\b|lunsj|spise|bord|smaksmeny|meny/i, 'food'],
   [/hair|nail|spa|facial|beauty|manicure|haircut|glow|hår|frisør|klipp|negl|ansikt|skjønnhet/i, 'beauty'],
   [/physio|back|dentist|teeth|massage|doctor|health|knee|fysio|tann|rygg|lege|helse|kne/i, 'health'],
-  [/passport|licen[cs]e|driving test|id card|official|visa|pass\b|førerkort|førerprøve|ID-kort|politi/i, 'official'],
   [/bored|fun|escape|sauna|badstu|jazz|comedy|experience|opplevelse|date|surprise|overrask|adventure|kjedet|moro/i, 'experiences'],
 ]
 

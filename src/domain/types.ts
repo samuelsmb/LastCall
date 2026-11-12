@@ -1,4 +1,4 @@
-export type Category = 'food' | 'beauty' | 'car' | 'health' | 'official' | 'experiences'
+export type Category = 'food' | 'beauty' | 'car' | 'health' | 'experiences'
 
 export type TimeWindow = 'now' | 'today' | '48h'
 

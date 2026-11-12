@@ -108,7 +108,6 @@ export const TEMPLATES: Record<Category, [title: string, price: number, guests?:
   beauty: [['Klipp og farge', 2200], ['Ansiktsbehandling', 1200], ['Manikyr', 650]],
   car: [['Dekkskift', 900], ['Dekkskift og balansering', 1100], ['Servicesjekk', 2500]],
   health: [['Fysioterapi', 850], ['Massasje, 60 min', 1100], ['Kontroll', 1100]],
-  official: [['Fornying av førerkort', 500], ['Førerprøve', 1300]],
   experiences: [['Guidet tur', 450], ['Workshopplass', 650], ['Smaksopplevelse', 750]],
 }
 

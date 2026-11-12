@@ -132,7 +132,6 @@ const NACE_CATEGORIES: [string, Category][] = [
   ['95.31', 'car'],
   ['45.2', 'car'],
   ['86', 'health'],
-  ['84', 'official'],
   ['59.14', 'experiences'],
   ['79', 'experiences'],
   ['90', 'experiences'],

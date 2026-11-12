@@ -9,7 +9,7 @@ import { go, useNow } from '../lib'
 import { Button, Chip, Mascot, Segmented } from '../ui'
 
 // «Overrask meg» foreslår ikke dekkskift, helse eller offentlige timer.
-const SURPRISE_EXCLUDED: Category[] = ['car', 'health', 'official']
+const SURPRISE_EXCLUDED: Category[] = ['car', 'health']
 
 const STARS = [
   ['8%', '20%', 'bg-purple', 'h-2 w-2'],
