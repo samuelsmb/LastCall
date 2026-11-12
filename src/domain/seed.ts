@@ -44,7 +44,6 @@ const businesses: Omit<Business, 'introSpotsLeft'>[] = [
   { id: 'studio-johnny', name: 'Studio Johnny', category: 'beauty', neighbourhood: 'Sentrum', address: 'Jernbanetorget 1', distanceKm: 0.5, tagline: 'Frisørsalong med kreativ touch', image: 'img/frisor1.jpg' },
   { id: 'bel-etage', name: 'Bel Etage', category: 'beauty', neighbourhood: 'Sentrum', address: 'Tollbugata 27', distanceKm: 0.8, tagline: 'Eksklusiv frisørsalong', image: 'img/frisor2.jpg' },
   { id: 'kok-langkaia', name: 'KOK Badstue', category: 'beauty', neighbourhood: 'Bjørvika', address: 'Langkaia', distanceKm: 1.3, tagline: 'Badstue og sjøbad ved fjorden', image: 'https://koknorge.no/wp-content/uploads/2023/12/Fellesskap.jpg' },
-  { id: 'passport-office', name: 'Pass- og ID-kontoret', category: 'official', neighbourhood: 'Gamle Oslo', address: 'Grønlandsleiret 44', distanceKm: 1.5, tagline: 'Pass og nasjonale ID-kort', image: 'img/pass.jpg' },
   { id: 'cellar-jazz', name: 'Herr Nilsen', category: 'experiences', neighbourhood: 'Sentrum', address: 'C.J. Hambros plass 5', distanceKm: 0.4, tagline: 'Live jazz hver kveld', image: 'img/herr-nilsen.jpg' },
 ]
 
@@ -72,7 +71,6 @@ const lastCalls: LastCallSeed[] = [
   ['adam-og-eva', 'Klipp', 'Klipp hos en erfaren frisør, ledig etter en avbestilling i dag.', 75, 45, 800, 25],
   ['studio-johnny', 'Klipp og styling', 'Klipp og styling i morgen tidlig, frigitt etter en avbestilling.', 1290, 60, 1100, 20],
   ['bel-etage', 'Farge og føn', 'Fargebehandling og føn, ledig i morgen ettermiddag.', 1500, 120, 2400, 30],
-  ['passport-office', 'Passtime', 'Passtimer har vanligvis seks ukers ventetid. Denne er i dag.', 230, 20, 0, 0, undefined, 'Hopp over 6 ukers ventetid'],
   ['cellar-jazz', 'To plasser på første rad i kveld', 'Plasser på første rad til kveldens konsert på en liten jazzklubb i kjelleren.', 420, 120, 590, 40],
 ]
 
@@ -110,7 +108,7 @@ export const TEMPLATES: Record<Category, [title: string, price: number, guests?:
   beauty: [['Klipp og farge', 2200], ['Ansiktsbehandling', 1200], ['Manikyr', 650]],
   car: [['Dekkskift', 900], ['Dekkskift og balansering', 1100], ['Servicesjekk', 2500]],
   health: [['Fysioterapi', 850], ['Massasje, 60 min', 1100], ['Kontroll', 1100]],
-  official: [['Passtime', 650], ['Fornying av ID-kort', 300], ['Førerprøve', 1300]],
+  official: [['Fornying av førerkort', 500], ['Førerprøve', 1300]],
   experiences: [['Guidet tur', 450], ['Workshopplass', 650], ['Smaksopplevelse', 750]],
 }
 
@@ -120,7 +118,7 @@ const CUSTOMER_NAMES = ['Mette K.', 'Lars B.', 'Sigrid L.', 'Magnus E.', 'Ingrid
 export function generateCalendar(businessId: string, category: Category, now: number): Slot[] {
   const offsets = [50, 110, 200, 320, 1380, 1500, 1680, 2700]
   return offsets.map((m, i) => {
-    const [title, fullPrice, guests] = TEMPLATES[category][i % 3]
+    const [title, fullPrice, guests] = TEMPLATES[category][i % TEMPLATES[category].length]
     return {
       id: uid('slot'),
       businessId,
