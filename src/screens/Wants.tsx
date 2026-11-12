@@ -128,9 +128,9 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
                         type="button"
                         onClick={() => setOpenWant(open ? null : w.id)}
                         aria-expanded={open}
-                        className="inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-sm font-semibold text-white shadow-soft transition hover:bg-primary-active"
+                        className="inline-flex cursor-pointer items-center gap-1.5 text-sm font-semibold text-primary hover:underline"
                       >
-                        <span className="h-2 w-2 animate-twinkle rounded-full bg-white" />
+                        <span className="h-2 w-2 animate-twinkle rounded-full bg-primary" />
                         {matches} passer nå
                         <span aria-hidden>{open ? '▴' : '▾'}</span>
                       </button>
