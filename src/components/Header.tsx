@@ -1,3 +1,4 @@
+import { Bell } from 'lucide-react'
 import { useAppState } from '../domain/store'
 
 export function Header({ side, route }: { side: 'customer' | 'business'; route: string }) {
@@ -37,7 +38,7 @@ export function Header({ side, route }: { side: 'customer' | 'business'; route: 
 
           {side === 'customer' && (
             <a href="#/wants" className="relative grid h-9 w-9 place-items-center rounded-lg text-lg hover:bg-black/5 sm:hidden" aria-label="Ønsker">
-              🔔
+              <Bell className="h-5 w-5" aria-hidden />
               {unseen > 0 && <span className="absolute -right-0.5 -top-0.5 min-w-4 animate-twinkle rounded-full bg-pink px-1 text-center text-[11px] font-bold leading-4 text-white">{unseen}</span>}
             </a>
           )}

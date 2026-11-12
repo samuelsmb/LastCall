@@ -6,7 +6,7 @@ import { businessOf, interpretWant, isLive, matchesWant, slotComparator, SORTS, 
 import { addWant, markAlertSeen, removeWant, useAppState } from '../domain/store'
 import type { Category, WantWindow } from '../domain/types'
 import { go, useNow } from '../lib'
-import { Button, Chip, Mascot, PinIcon } from '../ui'
+import { Button, CategoryIcon, Chip, Mascot, PinIcon } from '../ui'
 
 const hasModelKey = Boolean(import.meta.env.VITE_OPENROUTER_KEY)
 
@@ -169,7 +169,7 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
           <div className="flex flex-wrap gap-2">
             {CATEGORIES.map((c) => (
               <Chip key={c} active={categories.includes(c)} onClick={() => toggle(c)}>
-                <span>{CATEGORY_META[c].icon}</span> {CATEGORY_META[c].label}
+                <CategoryIcon category={c} /> {CATEGORY_META[c].label}
               </Chip>
             ))}
           </div>
@@ -192,7 +192,7 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
                 return (
                   <div key={w.id} className="border-b border-hairline last:border-b-0">
                   <div className="flex items-center gap-3 px-4 py-3">
-                    <span className="text-xl">{CATEGORY_META[w.categories[0]].icon}</span>
+                    <CategoryIcon category={w.categories[0]} className="h-5 w-5" />
                     <div className="min-w-0 flex-1">
                       <p className="font-medium">{w.label}</p>
                       <p className="text-sm text-muted">
@@ -259,7 +259,7 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
                   className={`flex w-full animate-rise cursor-pointer items-start gap-3 border-b border-hairline px-4 py-3 text-left transition last:border-b-0 hover:bg-paper ${live ? '' : 'opacity-50'}`}
                 >
                   <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full" style={{ background: a.seen ? 'transparent' : 'var(--color-primary)' }} />
-                  <span className="text-xl">{CATEGORY_META[biz.category].icon}</span>
+                  <CategoryIcon category={biz.category} className="h-5 w-5" />
                   <span className="min-w-0 flex-1">
                     <span className="block font-medium">{alertLine(state, slot, now)}</span>
                     <span className="block text-sm text-muted">
