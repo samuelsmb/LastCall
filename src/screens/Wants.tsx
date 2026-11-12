@@ -144,6 +144,13 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
             </div>
             <Mascot className="hidden text-6xl sm:inline-block" />
           </div>
+          <div className="flex flex-wrap gap-2">
+            {CATEGORIES.map((c) => (
+              <Chip key={c} active={categories.includes(c)} onClick={() => toggle(c)}>
+                <CategoryIcon category={c} /> {CATEGORY_META[c].label}
+              </Chip>
+            ))}
+          </div>
           <input
             value={label}
             onChange={(e) => onLabel(e.target.value)}
@@ -166,13 +173,6 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
               )}
             </p>
           )}
-          <div className="flex flex-wrap gap-2">
-            {CATEGORIES.map((c) => (
-              <Chip key={c} active={categories.includes(c)} onClick={() => toggle(c)}>
-                <CategoryIcon category={c} /> {CATEGORY_META[c].label}
-              </Chip>
-            ))}
-          </div>
           <div className="flex justify-end">
             <Button onClick={save} disabled={!canSave}>
               {saving ? 'Tolker …' : 'Lagre ønske'}
