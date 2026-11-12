@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { CITY } from './brand'
 import { AlertToasts } from './components/AlertToasts'
+import { Assistant } from './components/Assistant'
 import { Header } from './components/Header'
 import { HomepageFooter } from './components/HomepageFooter'
 import { applyAutoRelease } from './domain/store'
@@ -41,6 +42,7 @@ export default function App() {
         {page}
       </main>
       {side === 'customer' && <AlertToasts />}
+      {side === 'customer' && <Assistant />}
       {path === '/' ? (
         <HomepageFooter />
       ) : (

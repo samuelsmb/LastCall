@@ -1,10 +1,10 @@
 import { useSyncExternalStore } from 'react'
 import { calculateFee, INTRO_SPOTS } from './pricing'
-import { createSeed, generateCalendar, uid } from './seed'
-import { DEFAULT_RULE, matchesWant, releaseTime, ruleDiscount } from './selectors'
+import { createSeed, DEMO_STOCK, generateCalendar, uid } from './seed'
+import { businessOf, DEFAULT_RULE, matchesWant, releaseTime, ruleDiscount } from './selectors'
 import type { AutoReleaseRule, Category, ReleaseMode, State, WantWindow } from './types'
 
-const KEY = 'lastcall-demo-v12-nb'
+const KEY = 'lastcall-demo-v24-nb'
 const MAX_AGE = 6 * 3_600_000
 
 function load(): State {
@@ -77,16 +77,13 @@ export function cancelSlot(slotId: string) {
   const slot = state.slots.find((s) => s.id === slotId)
   if (!slot || slot.status !== 'booked') return
   const rule = state.rules[slot.businessId]
-  // The Canceller bonus is promised now, at the rule's current percent, and paid only if the slot sells.
-  const cancellerBonusPct = rule?.cancellerBonusPct ?? 0
-  const promised = { ...state, slots: state.slots.map((s) => (s.id === slotId ? { ...s, cancellerBonusPct } : s)) }
-  const at = releaseTime(promised, slot)
+  const at = releaseTime(state, slot)
   if (rule?.enabled && at !== null && now >= at) {
-    commit(releaseInto(promised, slotId, ruleDiscount(rule), now))
+    commit(releaseInto(state, slotId, ruleDiscount(rule), now))
     return
   }
   const status = rule?.enabled ? 'held' : 'cancelled'
-  commit({ ...promised, slots: promised.slots.map((s) => (s.id === slotId ? { ...s, status } : s)) })
+  commit({ ...state, slots: state.slots.map((s) => (s.id === slotId ? { ...s, status } : s)) })
 }
 
 export function releaseSlot(slotId: string, discountPct: number) {
@@ -102,7 +99,7 @@ export function withdrawSlot(slotId: string) {
   })
 }
 
-export function bookSlot(slotId: string, buyerName: string): boolean {
+export function bookSlot(slotId: string, buyerName: string, regNumber?: string): boolean {
   const slot = state.slots.find((s) => s.id === slotId)
   if (!slot || slot.status !== 'released' || slot.start <= Date.now()) return false
   const biz = state.businesses.find((b) => b.id === slot.businessId)!
@@ -110,7 +107,7 @@ export function bookSlot(slotId: string, buyerName: string): boolean {
   commit({
     ...state,
     businesses: state.businesses.map((b) => (b.id === biz.id ? { ...b, introSpotsLeft: Math.max(0, b.introSpotsLeft - introSpotsUsed) } : b)),
-    slots: state.slots.map((s) => (s.id === slotId ? { ...s, status: 'sold', buyerName, soldAt: Date.now(), fee, introSpotsUsed } : s)),
+    slots: state.slots.map((s) => (s.id === slotId ? { ...s, status: 'sold', buyerName, regNumber, soldAt: Date.now(), fee, introSpotsUsed } : s)),
   })
   return true
 }
@@ -145,6 +142,37 @@ export function applyAutoRelease(now: number) {
 
 export function addWant(label: string, categories: Category[], window: WantWindow, area?: string, businessId?: string) {
   commit({ ...state, wants: [{ id: uid('want'), label, categories, window, area, businessId, createdAt: Date.now() }, ...state.wants] })
+  scheduleDemoRelease(label, categories)
+}
+
+const DEMO_RELEASE_DELAY = 5_000
+
+/**
+ * Demo only: 5 seconds after a Want is saved, release the hidden demo Last Call that matches it,
+ * so its Alert fires. If it is already out, it is released again with fresh Alerts, so the demo
+ * can be repeated without `?reset`.
+ */
+export function scheduleDemoRelease(text: string, categories: Category[], tasteProfile = false) {
+  const lower = text.toLowerCase()
+  const releasable = (id: string) => state.slots.find((s) => s.id === id && (s.status === 'cancelled' || s.status === 'released'))
+  const match = DEMO_STOCK.find((d) => {
+    const slot = releasable(d.slotId)
+    if (!slot || !categories.includes(businessOf(state, slot).category)) return false
+    return tasteProfile ? d.tasteProfile : d.topics.some((t) => lower.includes(t))
+  })
+  if (!match) return
+  setTimeout(() => {
+    const now = Date.now()
+    if (!releasable(match.slotId)) return
+    // Starts 90 minutes from release, so it fits every Want window ("now" is within 2 hours).
+    const start = Math.ceil((now + 90 * 60_000) / (5 * 60_000)) * (5 * 60_000)
+    const moved = {
+      ...state,
+      slots: state.slots.map((s) => (s.id === match.slotId ? { ...s, start } : s)),
+      alerts: state.alerts.filter((a) => a.slotId !== match.slotId),
+    }
+    commit(releaseInto(moved, match.slotId, match.discountPct, now))
+  }, DEMO_RELEASE_DELAY)
 }
 
 /** Follow or unfollow a Business: an open-ended Want for its Last Calls only. */

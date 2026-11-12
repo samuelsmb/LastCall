@@ -1,5 +1,5 @@
 import { NEIGHBOURHOODS } from './categories'
-import { cancellerBonus, lastCallPrice } from './pricing'
+import { lastCallPrice } from './pricing'
 import type { AutoReleaseRule, Business, Category, Slot, State, TimeWindow, Want, WantWindow } from './types'
 
 export { lastCallPrice }
@@ -47,12 +47,22 @@ export function marketplace(state: State, now: number, f: MarketplaceFilters): S
     if (f.window && !inWindow(s.start, f.window, now)) return false
     return true
   })
+  return list.sort(slotComparator(state, f.sort))
+}
+
+export const SORTS: { value: SortKey; label: string }[] = [
+  { value: 'soonest', label: 'Snarest' },
+  { value: 'discount', label: 'Størst rabatt' },
+  { value: 'nearest', label: 'Nærmest' },
+]
+
+export function slotComparator(state: State, sort: SortKey): (a: Slot, b: Slot) => number {
   const by: Record<SortKey, (a: Slot, b: Slot) => number> = {
     soonest: (a, b) => a.start - b.start,
     discount: (a, b) => (b.discountPct ?? 0) - (a.discountPct ?? 0) || a.start - b.start,
     nearest: (a, b) => businessOf(state, a).distanceKm - businessOf(state, b).distanceKm || a.start - b.start,
   }
-  return list.sort(by[f.sort])
+  return by[sort]
 }
 
 export function releaseTime(state: State, slot: Slot): number | null {
@@ -67,23 +77,21 @@ export function ruleDiscount(rule: AutoReleaseRule) {
   return rule.mode === 'full' ? 0 : rule.discountPct
 }
 
-export const DEFAULT_RULE: AutoReleaseRule = { enabled: false, mode: 'full', leadMinutes: 60, discountPct: 20, cancellerBonusPct: 10 }
+export const DEFAULT_RULE: AutoReleaseRule = { enabled: false, mode: 'full', leadMinutes: 60, discountPct: 20 }
 
 export function dashboardStats(state: State, businessId: string) {
-  const base = state.baselines[businessId] ?? { recovered: 0, released: 0, sold: 0 }
+  const base = state.baselines[businessId] ?? { recovered: 0, released: 0, sold: 0, fee: 0 }
   const own = state.slots.filter((s) => s.businessId === businessId)
   const sold = own.filter((s) => s.status === 'sold')
   const released = own.filter((s) => s.releasedAt)
   const recovered = base.recovered + sold.reduce((sum, s) => sum + lastCallPrice(s), 0)
-  const fee = sold.reduce((sum, s) => sum + (s.fee ?? 0), 0)
-  const bonus = sold.reduce((sum, s) => sum + cancellerBonus(s), 0)
+  const fee = base.fee + sold.reduce((sum, s) => sum + (s.fee ?? 0), 0)
   const releasedCount = base.released + released.length
   const soldCount = base.sold + sold.length
   return {
     recovered,
     fee,
-    bonus,
-    net: recovered - fee - bonus,
+    net: recovered - fee,
     introSpotsLeft: state.businesses.find((b) => b.id === businessId)?.introSpotsLeft ?? 0,
     released: releasedCount,
     sold: soldCount,
@@ -95,10 +103,8 @@ export function dashboardStats(state: State, businessId: string) {
 const HINTS: [RegExp, Category][] = [
   [/tyre|tire|car|garage|oil|brake|wheel|dekk|\bbil|verksted|olje|bremse|hjul|punktering/i, 'car'],
   [/dinner|dining|food|lunch|restaurant|eat|table|tasting|menu|middag|\bmat\b|lunsj|spise|bord|smaksmeny|meny/i, 'food'],
-  [/hair|nail|spa|facial|beauty|manicure|haircut|glow|hår|frisør|klipp|negl|ansikt|skjønnhet/i, 'beauty'],
-  [/physio|back|dentist|teeth|massage|doctor|health|knee|fysio|tann|rygg|lege|helse|kne/i, 'health'],
-  [/passport|licen[cs]e|driving test|id card|official|visa|pass\b|førerkort|førerprøve|ID-kort|politi/i, 'official'],
-  [/bored|fun|escape|sauna|badstu|jazz|comedy|experience|opplevelse|date|surprise|overrask|adventure|kjedet|moro/i, 'experiences'],
+  [/hair|nail|spa|massage|massasje|facial|beauty|manicure|haircut|glow|hår|frisør|klipp|negl|ansikt|skjønnhet/i, 'beauty'],
+  [/bored|fun|escape|sauna|badstu|jazz|comedy|stand-?up|humor|komikk|komiker|experience|opplevelse|date|surprise|overrask|adventure|kjedet|moro/i, 'experiences'],
 ]
 
 /** Fake "AI": reads a free-text Want and guesses Categories, a time window and an area. */

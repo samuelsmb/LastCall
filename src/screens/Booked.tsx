@@ -1,8 +1,10 @@
-import { CATEGORY_META } from '../domain/categories'
+import { CalendarPlus, Check } from 'lucide-react'
 import { businessOf, lastCallPrice, savings } from '../domain/selectors'
+import { openInCalendarApp, googleCalendarUrl } from '../domain/calendar'
 import { useAppState } from '../domain/store'
 import { clock, dayLabel, go, kr, useNow, when } from '../lib'
-import { Button } from '../ui'
+import type { ReactNode } from 'react'
+import { Button, CategoryIcon, PinIcon } from '../ui'
 import { Gone } from './LastCallDetail'
 
 export function Booked({ id }: { id: string }) {
@@ -17,7 +19,7 @@ export function Booked({ id }: { id: string }) {
 
   return (
     <div className="mx-auto flex max-w-lg flex-col items-center gap-6 py-8 text-center">
-      <span className="grid h-16 w-16 animate-rise place-items-center rounded-full bg-green text-3xl text-white">✓</span>
+      <span className="grid h-16 w-16 animate-rise place-items-center rounded-full bg-green text-white"><Check className="h-8 w-8" aria-hidden /></span>
       <div>
         <h1 className="display-2">Den er din{first}.</h1>
         <p className="mt-3 text-lg text-muted">Vi sees {seeYou}.</p>
@@ -25,7 +27,7 @@ export function Booked({ id }: { id: string }) {
 
       <div className="w-full rounded-2xl border border-hairline bg-canvas p-6 text-left shadow-soft">
         <div className="flex items-center gap-3">
-          <span className="grid h-12 w-12 place-items-center rounded-xl border border-hairline text-2xl">{CATEGORY_META[biz.category].icon}</span>
+          <span className="grid h-12 w-12 place-items-center rounded-xl border border-hairline "><CategoryIcon category={biz.category} className="h-6 w-6" /></span>
           <div>
             <p className="heading-3">{slot.title}</p>
             <p className="text-[15px] text-muted">{biz.name}</p>
@@ -33,25 +35,44 @@ export function Booked({ id }: { id: string }) {
         </div>
         <dl className="mt-5 grid grid-cols-2 gap-4 border-t border-hairline pt-5 text-[15px]">
           <Row label="Når" value={when(slot.start, now)} />
-          <Row label="Hvor" value={`${biz.address}, ${biz.neighbourhood}`} />
-          <Row label="Du betaler" value={kr(lastCallPrice(slot))} />
+          <Row
+            label="Hvor"
+            value={
+              <span className="inline-flex items-center gap-1.5">
+                <PinIcon className="h-4 w-4 text-primary" />
+                {biz.address}, {biz.neighbourhood}
+              </span>
+            }
+          />
+          {slot.regNumber && <Row label="Bil" value={slot.regNumber} />}
+          <Row label="Du betaler" value={`${biz.category === 'car' ? 'Fra ' : ''}${kr(lastCallPrice(slot))}`} />
           {savings(slot) > 0 ? <Row label="Du sparte" value={kr(savings(slot))} accent /> : <Row label="Bonus" value={slot.perk ?? 'Du hoppet over køen'} accent />}
         </dl>
       </div>
 
-      <p className="text-sm text-muted">{biz.name} berget nettopp inntekt de ellers ville mistet.</p>
+      <div className="flex w-full flex-col items-center gap-2">
+        <p className="eyebrow inline-flex items-center gap-1.5 text-muted"><CalendarPlus className="h-4 w-4" aria-hidden /> Legg til i kalender</p>
+        <div className="flex flex-wrap justify-center gap-2">
+          <a href={googleCalendarUrl(slot, biz)} target="_blank" rel="noreferrer" className="rounded-full border border-hairline bg-canvas px-4 py-2 font-medium shadow-soft transition hover:bg-black/5">
+            Google Kalender
+          </a>
+          <button type="button" onClick={() => openInCalendarApp(slot, biz)} className="cursor-pointer rounded-full border border-hairline bg-canvas px-4 py-2 font-medium shadow-soft transition hover:bg-black/5">
+            Apple / Outlook
+          </button>
+        </div>
+      </div>
 
       <div className="flex flex-wrap justify-center gap-2">
         <Button variant="secondary" onClick={() => go('/')}>
           Tilbake til markedsplassen
         </Button>
-        <Button onClick={() => go('/wants')}>Opprett et varsel</Button>
+        <Button onClick={() => go('/wants')}>Opprett et ønske</Button>
       </div>
     </div>
   )
 }
 
-function Row({ label, value, accent = false }: { label: string; value: string; accent?: boolean }) {
+function Row({ label, value, accent = false }: { label: string; value: ReactNode; accent?: boolean }) {
   return (
     <div>
       <dt className="eyebrow text-faint">{label}</dt>

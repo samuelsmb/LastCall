@@ -1,3 +1,4 @@
+import { ArrowLeft, ArrowRight, CalendarDays, Check, ClipboardList, Mail, PenLine } from 'lucide-react'
 import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
 import { categoryFromIndustry, cleanOrgNumber, formatOrgNumber, isValidOrgNumber, listUnits, lookupOrg, searchOrgs, type OrgHit, type OrgInfo, type OrgStatus, type OrgUnit } from '../domain/brreg'
 import { CITY } from '../brand'
@@ -9,7 +10,7 @@ import { fetchSiteImage } from '../domain/siteImage'
 import { registerBusiness, useAppState } from '../domain/store'
 import type { Category, ReleaseMode, Slot } from '../domain/types'
 import { go, kr } from '../lib'
-import { Band, Button, CategoryBadge, Chip, DiscountSticker, Price, Segmented, SiteImage } from '../ui'
+import { Band, Button, CategoryBadge, CategoryIcon, Chip, DiscountSticker, Price, Segmented, SiteImage } from '../ui'
 
 export const WAITLIST_LINE = 'Har du allerede en venteliste? Flott. LastCall trår først inn når ventelisten din ikke klarer å fylle timen.'
 
@@ -23,10 +24,10 @@ const FAQ: [string, string][] = [
 ]
 
 const CALENDARS = [
-  { id: 'google', label: 'Google Kalender', icon: '📅' },
-  { id: 'outlook', label: 'Outlook', icon: '📨' },
-  { id: 'booking', label: 'Bookingsystem', icon: '🗂️' },
-  { id: 'manual', label: 'Manuelt, jeg legger inn timer', icon: '✍️' },
+  { id: 'google', label: 'Google Kalender', icon: CalendarDays },
+  { id: 'outlook', label: 'Outlook', icon: Mail },
+  { id: 'booking', label: 'Bookingsystem', icon: ClipboardList },
+  { id: 'manual', label: 'Manuelt, jeg legger inn timer', icon: PenLine },
 ] as const
 
 type CalendarId = (typeof CALENDARS)[number]['id']
@@ -167,7 +168,7 @@ export function Register() {
   if (step === 'done') {
     return (
       <div className="mx-auto flex max-w-lg flex-col items-center gap-5 py-14 text-center">
-        <span className="grid h-16 w-16 animate-rise place-items-center rounded-full bg-green text-3xl text-white">✓</span>
+        <span className="grid h-16 w-16 animate-rise place-items-center rounded-full bg-green text-white"><Check className="h-8 w-8" aria-hidden /></span>
         <h1 className="display-2">Du er live på LastCall</h1>
         <p className="text-lg text-muted">
           {calendar === 'manual' ? 'Legg inn timene dine, så følger vi med på avbestillinger.' : `Vi har synkronisert ${calendarLabel}.`} Neste gang noen avbestiller hos {name}, kan den ledige timen fylles med ett klikk. De første 10 fylte plassene er gratis.
@@ -191,7 +192,7 @@ export function Register() {
           <ul className="flex flex-col gap-2 text-[17px]">
             {['0 kr for å bli med, ingen månedsavgift', '49 kr per fylte plass, aldri mer enn 10 %', 'De første 10 er gratis'].map((t) => (
               <li key={t} className="flex items-center gap-3">
-                <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-green text-sm text-white">✓</span>
+                <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-green text-white"><Check className="h-4 w-4" aria-hidden /></span>
                 {t}
               </li>
             ))}
@@ -201,12 +202,12 @@ export function Register() {
           <Calculator />
 
           <div className="grid gap-2 sm:grid-cols-2">
-            <Example label="Dekkskift, 550 kr" fee={calculateFee({ fullPrice: 550 }, NO_INTRO).fee} />
+            <Example label="Dekkskift, 900 kr" fee={calculateFee({ fullPrice: 900 }, NO_INTRO).fee} />
             <Example label="Bord for 2, 4 000 kr" fee={calculateFee({ fullPrice: 4000, guests: 2 }, NO_INTRO).fee} />
           </div>
 
           <div className="flex flex-col gap-2">
-            <span className="eyebrow text-muted">Standard frigivelsesmodus</span>
+            <span className="eyebrow text-muted">Standard for Last Call-rabatt</span>
             <Segmented
               value={mode}
               onChange={(m) => m && setMode(m)}
@@ -216,9 +217,6 @@ export function Register() {
               ]}
             />
             <p className="text-sm text-muted">{mode === 'full' ? 'Avbestilte timer legges ut med en gang til vanlig pris.' : 'Avbestilte timer holdes tilbake for kunder som betaler full pris, og frigis så med rabatt før de starter.'} Du kan endre dette når som helst.</p>
-            <p className="text-sm text-muted">
-              🎁 Kunden som avbestiller får {DEFAULT_RULE.cancellerBonusPct} % av salgsprisen tilbake hvis timen blir solgt videre, så flere sier ifra i stedet for å bare ikke møte opp. Du velger prosenten, eller slår det av, i oversikten.
-            </p>
           </div>
 
           <p className="rounded-lg bg-paper p-3 text-[15px] text-ink-2">{WAITLIST_LINE}</p>
@@ -248,7 +246,7 @@ export function Register() {
   return (
     <div className="flex flex-col gap-8">
       <a href="#/biz" className="self-start rounded-md px-2 py-1 text-[15px] text-muted hover:bg-black/5 hover:text-ink">
-        ← Tilbake til oversikten
+        <ArrowLeft className="mr-1 inline h-4 w-4 align-[-3px]" aria-hidden />Tilbake til oversikten
       </a>
       <div className="mx-auto -mt-4 max-w-2xl text-center">
         <span className="eyebrow inline-block rounded-full bg-canvas px-2.5 py-1 text-primary shadow-soft">For bedrifter · Steg 1 av 2</span>
@@ -282,7 +280,7 @@ export function Register() {
                     {found.industry && <span className="text-muted">{found.industry}</span>}
                     <span className="text-sm text-faint">Org.nr. {formatOrgNumber(found.orgNumber)} · Brønnøysundregistrene</span>
                   </div>
-                  {!blocked && <span className="shrink-0 text-sm font-medium text-green">✓ Funnet</span>}
+                  {!blocked && <span className="inline-flex shrink-0 items-center gap-1 text-sm font-medium text-green"><Check className="h-4 w-4" aria-hidden /> Funnet</span>}
                 </div>
               )}
               {found && found.status !== 'ok' && <p className="rounded-lg bg-orange/10 p-4 text-[15px] text-orange-deep">{STATUS_NOTICE[found.status]}</p>}
@@ -311,7 +309,7 @@ export function Register() {
                         >
                           <span className="font-medium">
                             {u.name}
-                            {active && <span className="ml-2 text-green">✓</span>}
+                            {active && <Check className="ml-2 inline h-4 w-4 text-green" aria-hidden />}
                           </span>
                           <span className="text-muted">{[u.address, `${u.postcode} ${u.place}`.trim()].filter(Boolean).join(', ')}</span>
                         </button>
@@ -326,7 +324,7 @@ export function Register() {
           {detailsOpen && (
             <Step n={stepOffset + 1} title={found ? 'Sjekk detaljene' : 'Detaljene dine'}>
               <Field label="Bedriftsnavn">
-                <input value={name} onChange={(e) => setName(e.target.value)} placeholder="f.eks. Dekkproff Bjerke eller Theatercaféen" className={inputClass} />
+                <input value={name} onChange={(e) => setName(e.target.value)} placeholder="f.eks. Mekonomen eller Theatercaféen" className={inputClass} />
               </Field>
               <div className="grid gap-4 sm:grid-cols-2">
                 <Field label="Adresse">
@@ -368,7 +366,7 @@ export function Register() {
                 <div className="flex flex-wrap gap-2">
                   {CATEGORIES.map((c) => (
                     <Chip key={c} active={category === c} onClick={() => setCategory(c)}>
-                      <span>{CATEGORY_META[c].icon}</span> {CATEGORY_META[c].label}
+                      <CategoryIcon category={c} /> {CATEGORY_META[c].label}
                     </Chip>
                   ))}
                 </div>
@@ -388,9 +386,13 @@ export function Register() {
                       onClick={() => chooseCalendar(c.id)}
                       className={`flex cursor-pointer items-center gap-3 rounded-lg border px-4 py-3 text-left text-[15px] font-medium transition ${active ? 'border-ink bg-paper' : 'border-hairline hover:bg-paper'}`}
                     >
-                      <span className="text-lg">{c.icon}</span>
+                      <c.icon className="h-5 w-5 shrink-0" aria-hidden />
                       <span className="flex-1">{c.label}</span>
-                      {active && <span className={`text-sm ${connecting ? 'text-muted' : 'text-green'}`}>{connecting ? 'Kobler til…' : c.id === 'manual' ? '✓' : '✓ Koblet til'}</span>}
+                      {active && (
+                        <span className={`inline-flex items-center gap-1 text-sm ${connecting ? 'text-muted' : 'text-green'}`}>
+                          {connecting ? 'Kobler til…' : <><Check className="h-4 w-4" aria-hidden />{c.id !== 'manual' && ' Koblet til'}</>}
+                        </span>
+                      )}
                     </button>
                   )
                 })}
@@ -602,7 +604,7 @@ function PreviewCard({ name, place, category, mode, image }: { name: string; pla
             {name.trim() || 'Bedriften din'} · {place.trim() || 'Stedet ditt'}
           </p>
           <div className="mt-2 border-t border-hairline pt-3">
-            <Price slot={slot} />
+            <Price slot={slot} from={cat === 'car'} />
           </div>
         </div>
       </div>
@@ -612,7 +614,7 @@ function PreviewCard({ name, place, category, mode, image }: { name: string; pla
 
 function Calculator() {
   const [perWeek, setPerWeek] = useState(5)
-  const [avg, setAvg] = useState(550)
+  const [avg, setAvg] = useState(900)
   const spots = perWeek * WEEKS_PER_MONTH
   const recover = Math.round(spots * avg)
   const cost = Math.round(spots * calculateFee({ fullPrice: avg }, NO_INTRO).fee)
@@ -631,11 +633,11 @@ function Calculator() {
       </div>
       <div className="flex flex-wrap items-center gap-2 text-[15px] text-muted">
         Eksempel:
-        <Chip active={perWeek === 5 && avg === 550} onClick={() => { setPerWeek(5); setAvg(550) }}>
-          🚗 Dekkskift, 550 kr
+        <Chip active={perWeek === 5 && avg === 900} onClick={() => { setPerWeek(5); setAvg(900) }}>
+          <CategoryIcon category="car" /> Dekkskift, 900 kr
         </Chip>
         <Chip active={perWeek === 3 && avg === 4000} onClick={() => { setPerWeek(3); setAvg(4000) }}>
-          🍽️ Bord for 2, 4 000 kr
+          <CategoryIcon category="food" /> Bord for 2, 4 000 kr
         </Chip>
       </div>
       <p className="text-[15px] text-ink-2">
@@ -648,7 +650,7 @@ function Calculator() {
 function Example({ label, fee }: { label: string; fee: number }) {
   return (
     <div className="rounded-lg border border-hairline p-3 text-[15px]">
-      {label} → du betaler <b className="font-semibold">{kr(fee)}</b>
+      {label} <ArrowRight className="inline h-4 w-4 align-[-3px]" aria-hidden /> du betaler <b className="font-semibold">{kr(fee)}</b>
     </div>
   )
 }

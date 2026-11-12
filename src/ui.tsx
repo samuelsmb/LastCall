@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ButtonHTMLAttributes, type ReactNode } from 'react'
+import { Clock, MapPin } from 'lucide-react'
 import { createPortal } from 'react-dom'
 import { CATEGORY_META } from './domain/categories'
 import { lastCallPrice } from './domain/selectors'
@@ -74,23 +75,24 @@ export function Countdown({ start, className = '' }: { start: number; className?
   const urgent = ms < 3_600_000
   return (
     <span className={`inline-flex items-center gap-1.5 text-sm font-medium tabular-nums ${urgent ? 'text-orange' : 'text-muted'} ${className}`}>
-      <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.6">
-        <circle cx="8" cy="8" r="6.5" />
-        <path d="M8 4.5V8l2.5 1.5" strokeLinecap="round" />
-      </svg>
+      <Clock className="h-3.5 w-3.5" aria-hidden />
       {ms > 0 ? `Starter om ${countdown(ms)}` : 'Startet'}
     </span>
   )
 }
 
-export function Price({ slot, big = false }: { slot: Slot; big?: boolean }) {
+/** `from`: the final price can vary (e.g. workshops), so show "Fra X kr". */
+export function Price({ slot, big = false, from = false }: { slot: Slot; big?: boolean; from?: boolean }) {
   const price = lastCallPrice(slot)
   const discounted = (slot.discountPct ?? 0) > 0
   const guests = slot.guests ?? 0
   return (
     <span className="inline-flex flex-col">
       <span className="inline-flex items-baseline gap-2">
-        <span className={big ? 'heading-1' : 'title'}>{kr(guests > 1 ? price / guests : price)}</span>
+        <span className={big ? 'heading-1' : 'title'}>
+          {from && 'Fra '}
+          {kr(guests > 1 ? price / guests : price)}
+        </span>
         {guests > 1 && <span className={`text-muted ${big ? 'text-base' : 'text-sm'}`}>per person</span>}
         {discounted && <s className={`text-faint ${big ? 'text-base' : 'text-sm'}`}>{kr(guests > 1 ? slot.fullPrice / guests : slot.fullPrice)}</s>}
       </span>
@@ -109,7 +111,7 @@ export function DiscountSticker({ slot, className = '' }: { slot: Slot; classNam
 }
 
 /** Colour-blocked illustration band with a page-icon tile, the Notion way. */
-export function Band({ category, image, className = '', iconSize = 'h-14 w-14 text-3xl', children }: { category: Category; image?: string; className?: string; iconSize?: string; children?: ReactNode }) {
+export function Band({ category, image, className = '', iconSize = 'h-14 w-14', children }: { category: Category; image?: string; className?: string; iconSize?: string; children?: ReactNode }) {
   const m = CATEGORY_META[category]
   return (
     <div className={`relative ${className}`}>
@@ -124,7 +126,7 @@ export function Band({ category, image, className = '', iconSize = 'h-14 w-14 te
         )}
       </div>
       <span className={`absolute bottom-0 left-5 z-10 grid translate-y-1/2 place-items-center rounded-xl border border-hairline bg-canvas shadow-soft transition duration-300 group-hover:-rotate-6 ${iconSize}`}>
-        {m.icon}
+        <m.icon className="h-1/2 w-1/2" aria-hidden />
       </span>
       {children}
     </div>
@@ -224,4 +226,13 @@ export function Mascot({ className = '' }: { className?: string }) {
       🔔
     </span>
   )
+}
+
+export function PinIcon({ className = 'h-4 w-4' }: { className?: string }) {
+  return <MapPin className={`inline-block shrink-0 ${className}`} aria-hidden />
+}
+
+export function CategoryIcon({ category, className = 'h-4 w-4' }: { category: Category; className?: string }) {
+  const Icon = CATEGORY_META[category].icon
+  return <Icon className={`inline-block shrink-0 ${className}`} aria-hidden />
 }
