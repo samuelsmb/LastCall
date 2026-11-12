@@ -72,7 +72,7 @@ export function LastCallDetail({ id }: { id: string }) {
           <div className="flex flex-col gap-5 rounded-2xl border border-hairline bg-canvas p-6 shadow-soft">
             <Countdown start={slot.start} />
             <div>
-              <Price slot={slot} big />
+              <Price slot={slot} big from={biz.category === 'car'} />
               {savings(slot) > 0 ? <p className="mt-1 font-medium text-green">Du sparer {kr(savings(slot))}</p> : <p className="mt-1 font-medium text-green">{slot.perk ?? 'Hopp over køen. Vanligvis fullbooket.'}</p>}
             </div>
 

@@ -26,7 +26,7 @@ export function LastCallCard({ state, slot, now }: { state: State; slot: Slot; n
         </p>
         <p className="text-[15px] text-muted">{when(slot.start, now)}</p>
         <div className="mt-auto flex flex-wrap items-end justify-between gap-2 border-t border-hairline pt-3">
-          <Price slot={slot} />
+          <Price slot={slot} from={biz.category === 'car'} />
           <Countdown start={slot.start} />
         </div>
       </div>

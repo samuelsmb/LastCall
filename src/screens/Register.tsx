@@ -602,7 +602,7 @@ function PreviewCard({ name, place, category, mode, image }: { name: string; pla
             {name.trim() || 'Bedriften din'} · {place.trim() || 'Stedet ditt'}
           </p>
           <div className="mt-2 border-t border-hairline pt-3">
-            <Price slot={slot} />
+            <Price slot={slot} from={cat === 'car'} />
           </div>
         </div>
       </div>

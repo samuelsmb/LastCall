@@ -36,7 +36,7 @@ export function Booked({ id }: { id: string }) {
           <Row label="Når" value={when(slot.start, now)} />
           <Row label="Hvor" value={`${biz.address}, ${biz.neighbourhood}`} />
           {slot.regNumber && <Row label="Bil" value={slot.regNumber} />}
-          <Row label="Du betaler" value={kr(lastCallPrice(slot))} />
+          <Row label="Du betaler" value={`${biz.category === 'car' ? 'Fra ' : ''}${kr(lastCallPrice(slot))}`} />
           {savings(slot) > 0 ? <Row label="Du sparte" value={kr(savings(slot))} accent /> : <Row label="Bonus" value={slot.perk ?? 'Du hoppet over køen'} accent />}
         </dl>
       </div>
