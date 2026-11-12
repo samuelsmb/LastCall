@@ -32,18 +32,17 @@ export function uid(prefix = 'id') {
 }
 
 const businesses: Omit<Business, 'introSpotsLeft'>[] = [
-  { id: HERO_BUSINESS_ID, name: 'Dekkproff Bjerke', category: 'car', neighbourhood: 'Bjerke', address: 'Refstadveien 27', distanceKm: 5.1, tagline: 'Hjulskift uten timebestilling', image: 'img/dekkproff.jpg' },
-  { id: 'dekkdoktoren', name: 'Vianor Storo', category: 'car', neighbourhood: 'Storo', address: 'Storo', distanceKm: 4.3, tagline: 'Dekkverksted og dekkhotell', image: 'https://ntgroup.studio.crasman.cloud/pub/web/Landing%20page%20images/B2C/2026/Vianor_B2C_Website_Carousel_550x350px_tire_change.jpg?c=system_640x' },
-  { id: 'wheel-of-fortune', name: 'Snap Drive', category: 'car', neighbourhood: 'Oslo', address: 'Oslo', distanceKm: 3.0, tagline: 'Dekkskift og bilservice', image: 'https://www.snapdrive.no/getfile.php/132642-1789757416/Bilder/Artikkelbilder/Artikler/H%C3%B8stklar%20bil.jpg%20%28content%29.webp' },
+  { id: HERO_BUSINESS_ID, name: 'Mekonomen', category: 'car', neighbourhood: 'Alna', address: 'Smalvollveien', distanceKm: 5.8, tagline: 'Verksted for dekkskift og service', image: 'https://www.mekonomen.no/wp-content/uploads/2025/02/Bilverksted.jpg' },
+  { id: 'wheel-of-fortune', name: 'Snap Drive', category: 'car', neighbourhood: 'Rødtvet', address: 'Kakkelovnskroken', distanceKm: 8.0, tagline: 'Dekkskift og bilservice', image: 'https://www.snapdrive.no/getfile.php/132642-1789757416/Bilder/Artikkelbilder/Artikler/H%C3%B8stklar%20bil.jpg%20%28content%29.webp' },
   { id: RESTAURANT_ID, name: 'Theatercaféen', category: 'food', neighbourhood: 'Sentrum', address: 'Stortingsgata 24', distanceKm: 0.2, tagline: 'Klassisk wienerkafé siden 1900', image: 'img/theatercafeen.jpg' },
-  { id: 'fjordbord', name: 'Maaemo', category: 'food', neighbourhood: 'Bjørvika', address: 'Schweigaards gate 15B', distanceKm: 1.3, tagline: 'Norsk gourmetrestaurant med tre Michelin-stjerner', image: 'img/maaemo.jpg' },
+  { id: 'fjordbord', name: 'Katla', category: 'food', neighbourhood: 'Sentrum', address: 'Kristian Augusts gate', distanceKm: 0.6, tagline: 'Nordiske råvarer og smaker fra Asia og Latin-Amerika, tilberedt på åpen flamme', image: 'https://static1.squarespace.com/static/5ecb7d5ad83f90785cbcd987/t/5ecb8619a81cd4417d9828ad/1748945520074/Katla-restaurant-Atli-retter_lower_res.jpg?format=1500w' },
   { id: 'frogner-counter', name: 'Statholdergaarden', category: 'food', neighbourhood: 'Sentrum', address: 'Rådhusgata 11', distanceKm: 0.6, tagline: 'Gourmetrestaurant med Michelin-stjerne siden 1998', image: 'img/statholdergaarden.jpg' },
   { id: 'hanshaugen-hearth', name: 'Statholderens Mat & Vinkjeller', category: 'food', neighbourhood: 'Sentrum', address: 'Rådhusgata 11', distanceKm: 0.6, tagline: 'Moderne bistro med sesongmenyer', image: 'img/statholdergaarden.jpg' },
-  { id: 'hope-posthallen', name: 'Hope Posthallen', category: 'beauty', neighbourhood: 'Sentrum', address: 'Prinsens gate 10', distanceKm: 0.5, tagline: 'Frisør i hjertet av byen' },
-  { id: 'bristol-spa', name: 'Bristol Spa', category: 'beauty', neighbourhood: 'Sentrum', address: 'Kristian IVs gate 7', distanceKm: 0.2, tagline: 'Spa med basseng, sauna og massasje på Hotel Bristol' },
+  { id: 'hope-posthallen', name: 'Hope Posthallen', category: 'beauty', neighbourhood: 'Sentrum', address: 'Prinsens gate 10', distanceKm: 0.5, tagline: 'Frisør i hjertet av byen', image: 'img/posthallen.jpg' },
+  { id: 'bristol-spa', name: 'Bristol Spa', category: 'beauty', neighbourhood: 'Sentrum', address: 'Kristian IVs gate 7', distanceKm: 0.2, tagline: 'Spa med basseng, sauna og massasje på Hotel Bristol', image: 'img/massasje.jpg' },
   { id: 'adam-og-eva', name: 'Adam og Eva', category: 'beauty', neighbourhood: 'Sentrum', address: 'Schweigaards gate 14', distanceKm: 1.1, tagline: 'Frisørsalong i Oslo sentrum', image: 'https://adamogeva.no/wp-content/uploads/2024/10/Salong-2-scaled.jpg' },
-  { id: 'studio-johnny', name: 'Studio Johnny', category: 'beauty', neighbourhood: 'Sentrum', address: 'Jernbanetorget 1', distanceKm: 0.5, tagline: 'Frisørsalong med kreativ touch' },
-  { id: 'bel-etage', name: 'Bel Etage', category: 'beauty', neighbourhood: 'Sentrum', address: 'Tollbugata 27', distanceKm: 0.8, tagline: 'Eksklusiv frisørsalong' },
+  { id: 'studio-johnny', name: 'Studio Johnny', category: 'beauty', neighbourhood: 'Sentrum', address: 'Jernbanetorget 1', distanceKm: 0.5, tagline: 'Frisørsalong med kreativ touch', image: 'img/frisor1.jpg' },
+  { id: 'bel-etage', name: 'Bel Etage', category: 'beauty', neighbourhood: 'Sentrum', address: 'Tollbugata 27', distanceKm: 0.8, tagline: 'Eksklusiv frisørsalong', image: 'img/frisor2.jpg' },
   { id: 'kok-langkaia', name: 'KOK Badstue', category: 'beauty', neighbourhood: 'Bjørvika', address: 'Langkaia', distanceKm: 1.3, tagline: 'Badstue og sjøbad ved fjorden', image: 'https://koknorge.no/wp-content/uploads/2023/12/Fellesskap.jpg' },
   { id: 'cellar-jazz', name: 'Herr Nilsen', category: 'experiences', neighbourhood: 'Sentrum', address: 'C.J. Hambros plass 5', distanceKm: 0.4, tagline: 'Live jazz hver kveld', image: 'img/herr-nilsen.jpg' },
 ]
@@ -51,31 +50,27 @@ const businesses: Omit<Business, 'introSpotsLeft'>[] = [
 type LastCallSeed = [businessId: string, title: string, description: string, minutesFromNow: number, durationMin: number, fullPrice: number, discountPct: number, guests?: number, perk?: string]
 
 const lastCalls: LastCallSeed[] = [
-  [RESTAURANT_ID, 'Smaksmeny, bord for 2', 'Et bord for to ble ledig. Tolv retter fra et av de vanskeligste bordene å få tak i i sentrum.', 200, 180, 3900, 20, 2],
-  ['fjordbord', 'Smaksmeny, bord for 4', 'Et bord for fire ble ledig etter en avbestilling.', 300, 150, 6000, 25, 4],
-  ['frogner-counter', 'Kjøkkenbord for 2', 'To av åtte plasser ved kjøkkenbenken, vanligvis fullbooket i ukevis. Full pris, men du kommer inn.', 1560, 180, 7000, 0, 2],
-  ['hanshaugen-hearth', 'Smaksmeny, bord for 2', 'Et bord for to ble ledig i kveld. Sesongmeny i den uformelle bistroen under Statholdergaarden.', 420, 150, 3300, 15, 2],
-  [RESTAURANT_ID, 'Sen bordtid, bord for 4', 'Et sent bord for fire i morgen kveld.', 1500, 150, 6400, 20, 4],
-  ['dekkdoktoren', 'Dekkskift', 'Fire hjul byttet og lufttrykk sjekket. Verkstedene er ofte fullbooket i dekksesongen.', 95, 30, 550, 0],
-  ['wheel-of-fortune', 'Dekkskift og balansering', 'Hjulene byttes og balanseres mens du venter. Kaffe inkludert.', 200, 45, 700, 0],
-  ['dekkdoktoren', 'Dekkskift', 'Fire hjul byttet. Ta med ditt eget sett eller hent fra dekkhotellet.', 1380, 30, 450, 10],
-  ['wheel-of-fortune', 'Dekkskift', 'Hjul byttet, mutrene strammet, ferdig på en halvtime.', 1700, 30, 600, 0],
-  [RESTAURANT_ID, 'Smaksmeny, bord for 2', 'Et bord for to i morgen kveld, frigitt etter en avbestilling.', 1580, 180, 3900, 0, 2, 'Hopp over køen'],
-  ['fjordbord', 'Smaksmeny, bord for 2', 'To plasser ledig i kveld.', 160, 120, 2900, 20, 2],
-  ['frogner-counter', 'Kjøkkenbord for 2, sen bordtid', 'Sen bordtid ved kjøkkenbenken i morgen. Seks retter servert foran deg.', 1620, 150, 6200, 10, 2],
-  ['hanshaugen-hearth', 'Bord for 4', 'Et bord for fire, ledig i morgen kveld.', 1440, 150, 6000, 20, 4],
-  ['dekkdoktoren', 'Dekkskift, vinterdekk', 'Bytt til vinterdekk før første snø. Fire hjul, ferdig på en halvtime.', 40, 30, 550, 15],
-  ['wheel-of-fortune', 'Dekkskift, SUV og varebil', 'Større hjul, samme raske service. Hjulene balanseres og mutrene strammes.', 150, 45, 850, 10],
-  ['dekkdoktoren', 'Dekkskift med hjulvask', 'Dekkskift og vask av felgene mens du venter.', 1450, 40, 650, 20],
-  ['wheel-of-fortune', 'Dekkskift, i morgen tidlig', 'Første time i morgen, før jobb.', 1260, 30, 550, 0],
-  ['kok-langkaia', 'Privat badstu for 6', 'To timer i badstu ved fjorden, kun for gruppen din, med sjøbad mellom øktene.', 240, 120, 1800, 30],
-  ['kok-langkaia', 'Felles badstuøkt for 2', 'To plasser på kveldens felles badstuøkt ved Langkaia.', 1500, 90, 560, 20, 2],
-  ['hope-posthallen', 'Klipp og føn', 'En time hos en frisør, ledig etter en avbestilling i siste liten.', 55, 60, 890, 30],
-  ['hope-posthallen', 'Farge og klipp', 'Farge og klipp i morgen formiddag, frigitt etter en avbestilling.', 1380, 120, 1900, 20],
-  ['bristol-spa', 'Massasje, 60 minutter', 'En time med massasje og tilgang til basseng og sauna, ledig i kveld.', 180, 90, 1300, 25],
-  ['adam-og-eva', 'Klipp', 'Klipp hos en erfaren frisør, ledig etter en avbestilling i dag.', 75, 45, 750, 25],
-  ['studio-johnny', 'Klipp og styling', 'Klipp og styling i morgen tidlig, frigitt etter en avbestilling.', 1290, 60, 950, 20],
-  ['bel-etage', 'Farge og føn', 'Fargebehandling og føn, ledig i morgen ettermiddag.', 1500, 120, 1800, 30],
+  [RESTAURANT_ID, 'Middag, bord for 2', 'Et bord for to ble ledig. Klassisk wienerkjøkken i et av byens mest kjente kafélokaler.', 200, 120, 1600, 20, 2],
+  ['fjordbord', 'Smaksmeny, bord for 4', 'Et bord for fire ble ledig etter en avbestilling.', 300, 150, 4400, 25, 4],
+  ['frogner-counter', 'Kjøkkenbord for 2', 'To av åtte plasser ved kjøkkenbenken, vanligvis fullbooket i ukevis. Full pris, men du kommer inn.', 1560, 180, 4800, 0, 2],
+  ['hanshaugen-hearth', 'Smaksmeny, bord for 2', 'Et bord for to ble ledig i kveld. Sesongmeny i den uformelle bistroen under Statholdergaarden.', 420, 150, 1600, 15, 2],
+  [RESTAURANT_ID, 'Sen bordtid, bord for 4', 'Et sent bord for fire i morgen kveld.', 1500, 150, 3200, 20, 4],
+  ['wheel-of-fortune', 'Dekkskift og balansering', 'Hjulene byttes og balanseres mens du venter. Kaffe inkludert.', 200, 45, 1100, 0],
+  ['wheel-of-fortune', 'Dekkskift', 'Hjul byttet, mutrene strammet, ferdig på en halvtime.', 1700, 30, 850, 0],
+  [RESTAURANT_ID, 'Middag, bord for 2', 'Et bord for to i morgen kveld, frigitt etter en avbestilling.', 1580, 120, 1700, 0, 2, 'Hopp over køen'],
+  ['fjordbord', 'Smaksmeny, bord for 2', 'To plasser ledig i kveld.', 160, 120, 2200, 20, 2],
+  ['frogner-counter', 'Kjøkkenbord for 2, sen bordtid', 'Sen bordtid ved kjøkkenbenken i morgen. Seks retter servert foran deg.', 1620, 150, 3900, 10, 2],
+  ['hanshaugen-hearth', 'Bord for 4', 'Et bord for fire, ledig i morgen kveld.', 1440, 150, 3200, 20, 4],
+  ['wheel-of-fortune', 'Dekkskift, SUV og varebil', 'Større hjul, samme raske service. Hjulene balanseres og mutrene strammes.', 150, 45, 1300, 10],
+  ['wheel-of-fortune', 'Dekkskift, i morgen tidlig', 'Første time i morgen, før jobb.', 1260, 30, 800, 0],
+  ['kok-langkaia', 'Privat badstu for 6', 'To timer i badstu ved fjorden, kun for gruppen din, med sjøbad mellom øktene.', 240, 120, 2800, 30],
+  ['kok-langkaia', 'Felles badstuøkt for 2', 'To plasser på kveldens felles badstuøkt ved Langkaia.', 1500, 90, 700, 20, 2],
+  ['hope-posthallen', 'Klipp og føn', 'En time hos en frisør, ledig etter en avbestilling i siste liten.', 55, 60, 1100, 30],
+  ['hope-posthallen', 'Farge og klipp', 'Farge og klipp i morgen formiddag, frigitt etter en avbestilling.', 1380, 120, 2600, 20],
+  ['bristol-spa', 'Massasje, 60 minutter', 'En time med massasje og tilgang til basseng og sauna, ledig i kveld.', 180, 90, 1500, 25],
+  ['adam-og-eva', 'Klipp', 'Klipp hos en erfaren frisør, ledig etter en avbestilling i dag.', 75, 45, 800, 25],
+  ['studio-johnny', 'Klipp og styling', 'Klipp og styling i morgen tidlig, frigitt etter en avbestilling.', 1290, 60, 1100, 20],
+  ['bel-etage', 'Farge og føn', 'Fargebehandling og føn, ledig i morgen ettermiddag.', 1500, 120, 2400, 30],
   ['cellar-jazz', 'To plasser på første rad i kveld', 'Plasser på første rad til kveldens konsert på en liten jazzklubb i kjelleren.', 420, 120, 590, 40],
 ]
 
@@ -83,15 +78,15 @@ type CalendarSeed = { title: string; description: string; start: number; duratio
 
 function tedsCalendar(now: number): CalendarSeed[] {
   return [
-    { title: 'Dekkskift', description: 'Fire hjul byttet og lufttrykk sjekket.', start: at(now, 45, 15), durationMin: 30, fullPrice: 550, status: 'booked', customerName: 'Ingrid H.' },
-    { title: 'Dekkskift og balansering', description: 'Fire hjul byttet og balansert mens du venter.', start: at(now, 90, 15), durationMin: 45, fullPrice: 700, status: 'booked', customerName: 'Lars B.' },
-    { title: 'Full service', description: 'Olje, filtre, bremser, væsker og full kontroll.', start: at(now, 165, 15), durationMin: 120, fullPrice: 2900, status: 'released', customerName: 'Anders B.', discountPct: 0 },
-    { title: 'Punktering', description: 'Rask reparasjon av punktering.', start: at(now, 240, 15), durationMin: 30, fullPrice: 450, status: 'booked', customerName: 'Sigrid L.' },
-    { title: 'Dekkskift', description: 'Fire hjul byttet og lufttrykk sjekket.', start: at(now, 360, 15), durationMin: 30, fullPrice: 550, status: 'booked', customerName: 'Magnus E.' },
-    { id: DEMO_TYRE_SLOT, title: 'Dekkskift', description: 'Fire hjul byttet og lufttrykk sjekket, ferdig på en halvtime.', start: onDay(now, 1, 14), durationMin: 30, fullPrice: 550, status: 'booked', customerName: 'Mette K.' },
-    { title: 'Bremsekontroll', description: 'Klosser, skiver og bremsevæske kontrollert.', start: onDay(now, 1, 10, 30), durationMin: 45, fullPrice: 650, status: 'booked', customerName: 'Oliver N.' },
-    { title: 'Dekkskift', description: 'Fire hjul byttet og lufttrykk sjekket.', start: onDay(now, 1, 16), durationMin: 30, fullPrice: 550, status: 'booked', customerName: 'Sofie H.' },
-    { title: 'Henting fra dekkhotell', description: 'Hent dekkene dine fra lageret og få dem montert.', start: onDay(now, 2, 9), durationMin: 30, fullPrice: 600, status: 'booked', customerName: 'Emil R.' },
+    { title: 'Dekkskift', description: 'Fire hjul byttet og lufttrykk sjekket.', start: at(now, 45, 15), durationMin: 30, fullPrice: 900, status: 'booked', customerName: 'Ingrid H.' },
+    { title: 'Dekkskift og balansering', description: 'Fire hjul byttet og balansert mens du venter.', start: at(now, 90, 15), durationMin: 45, fullPrice: 1100, status: 'booked', customerName: 'Lars B.' },
+    { title: 'Full service', description: 'Olje, filtre, bremser, væsker og full kontroll.', start: at(now, 165, 15), durationMin: 120, fullPrice: 3900, status: 'released', customerName: 'Anders B.', discountPct: 0 },
+    { title: 'Punktering', description: 'Rask reparasjon av punktering.', start: at(now, 240, 15), durationMin: 30, fullPrice: 650, status: 'booked', customerName: 'Sigrid L.' },
+    { title: 'Dekkskift', description: 'Fire hjul byttet og lufttrykk sjekket.', start: at(now, 360, 15), durationMin: 30, fullPrice: 900, status: 'booked', customerName: 'Magnus E.' },
+    { id: DEMO_TYRE_SLOT, title: 'Dekkskift', description: 'Fire hjul byttet og lufttrykk sjekket, ferdig på en halvtime.', start: onDay(now, 1, 14), durationMin: 30, fullPrice: 900, status: 'booked', customerName: 'Mette K.' },
+    { title: 'Bremsekontroll', description: 'Klosser, skiver og bremsevæske kontrollert.', start: onDay(now, 1, 10, 30), durationMin: 45, fullPrice: 590, status: 'booked', customerName: 'Oliver N.' },
+    { title: 'Dekkskift', description: 'Fire hjul byttet og lufttrykk sjekket.', start: onDay(now, 1, 16), durationMin: 30, fullPrice: 900, status: 'booked', customerName: 'Sofie H.' },
+    { title: 'Henting fra dekkhotell', description: 'Hent dekkene dine fra lageret og få dem montert.', start: onDay(now, 2, 9), durationMin: 30, fullPrice: 900, status: 'booked', customerName: 'Emil R.' },
   ]
 }
 
@@ -100,19 +95,19 @@ function lokkaCalendar(now: number): CalendarSeed[] {
   const tonight = onDay(now, 0, 19, 30)
   const tableStart = tonight - now > 45 * MIN ? tonight : onDay(now, 1, 19, 30)
   return [
-    { title: 'Bord for 4', description: 'Smaksmeny, fire gjester.', start: at(now, 120, 15), durationMin: 180, fullPrice: 7800, status: 'booked', customerName: 'Nora V.', guests: 4 },
-    { id: DEMO_TABLE_SLOT, title: 'Bord for 2', description: 'Nordisk smaksmeny med tolv retter for to.', start: tableStart, durationMin: 180, fullPrice: 4000, status: 'booked', customerName: 'Henrik S.', guests: 2 },
-    { title: 'Bord for 2', description: 'Smaksmeny, to gjester.', start: tableStart + 60 * MIN, durationMin: 180, fullPrice: 4000, status: 'booked', customerName: 'Maja T.', guests: 2 },
-    { title: 'Bord for 4', description: 'Smaksmeny, fire gjester.', start: onDay(now, 1, 18), durationMin: 180, fullPrice: 7800, status: 'booked', customerName: 'Erik P.', guests: 4 },
-    { title: 'Bord for 2', description: 'Smaksmeny, to gjester.', start: onDay(now, 1, 20), durationMin: 180, fullPrice: 3900, status: 'booked', customerName: 'Kari N.', guests: 2 },
+    { title: 'Bord for 4', description: 'Middag, fire gjester.', start: at(now, 120, 15), durationMin: 120, fullPrice: 3400, status: 'booked', customerName: 'Nora V.', guests: 4 },
+    { id: DEMO_TABLE_SLOT, title: 'Bord for 2', description: 'Middag for to i det klassiske kaféhuset.', start: tableStart, durationMin: 120, fullPrice: 1700, status: 'booked', customerName: 'Henrik S.', guests: 2 },
+    { title: 'Bord for 2', description: 'Middag, to gjester.', start: tableStart + 60 * MIN, durationMin: 120, fullPrice: 1700, status: 'booked', customerName: 'Maja T.', guests: 2 },
+    { title: 'Bord for 4', description: 'Middag, fire gjester.', start: onDay(now, 1, 18), durationMin: 120, fullPrice: 3400, status: 'booked', customerName: 'Erik P.', guests: 4 },
+    { title: 'Bord for 2', description: 'Middag, to gjester.', start: onDay(now, 1, 20), durationMin: 120, fullPrice: 1600, status: 'booked', customerName: 'Kari N.', guests: 2 },
   ]
 }
 
 export const TEMPLATES: Record<Category, [title: string, price: number, guests?: number][]> = {
-  food: [['Bord for 2', 3600, 2], ['Bord for 4', 7000, 4], ['Bord for 2', 3000, 2]],
-  beauty: [['Klipp og farge', 1600], ['Ansiktsbehandling', 1100], ['Manikyr', 550]],
-  car: [['Dekkskift', 550], ['Dekkskift og balansering', 700], ['Servicesjekk', 1800]],
-  health: [['Fysioterapi', 750], ['Massasje, 60 min', 900], ['Kontroll', 1100]],
+  food: [['Bord for 2', 1800, 2], ['Bord for 4', 3400, 4], ['Bord for 2', 1500, 2]],
+  beauty: [['Klipp og farge', 2200], ['Ansiktsbehandling', 1200], ['Manikyr', 650]],
+  car: [['Dekkskift', 900], ['Dekkskift og balansering', 1100], ['Servicesjekk', 2500]],
+  health: [['Fysioterapi', 850], ['Massasje, 60 min', 1100], ['Kontroll', 1100]],
   official: [['Fornying av førerkort', 500], ['Førerprøve', 1300]],
   experiences: [['Guidet tur', 450], ['Workshopplass', 650], ['Smaksopplevelse', 750]],
 }

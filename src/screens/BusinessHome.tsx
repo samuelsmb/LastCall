@@ -257,7 +257,7 @@ function SlotRow({ slot, now, heldUntil, onCancel, onRelease, onWithdraw }: { sl
       <div className="min-w-0 flex-1">
         <p className="font-medium">{slot.title}</p>
         <p className="text-sm text-muted">
-          {slot.status === 'sold' ? `${slot.buyerName} via LastCall` : slot.status === 'booked' ? slot.customerName : `Var ${slot.customerName}`} · {kr(slot.fullPrice)}
+          {slot.status === 'sold' ? `${slot.buyerName}${slot.regNumber ? ` (${slot.regNumber})` : ''} via LastCall` : slot.status === 'booked' ? slot.customerName : `Var ${slot.customerName}`} · {kr(slot.fullPrice)}
           {slot.guests && slot.guests > 1 ? ` (${kr(slot.fullPrice / slot.guests)} per pers.)` : ''}
           {slot.status === 'sold' && ` · gebyr ${kr(slot.fee ?? 0)}${slot.introSpotsUsed ? ' (introtilbud)' : ''}`}
         </p>

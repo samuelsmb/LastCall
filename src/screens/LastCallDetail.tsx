@@ -8,6 +8,7 @@ export function LastCallDetail({ id }: { id: string }) {
   const state = useAppState()
   const now = useNow()
   const [name, setName] = useState('')
+  const [reg, setReg] = useState('')
   const [tooSlow, setTooSlow] = useState(false)
   const slot = state.slots.find((s) => s.id === id)
 
@@ -16,8 +17,12 @@ export function LastCallDetail({ id }: { id: string }) {
   const available = slot.status === 'released' && slot.start > now
   const following = state.wants.some((w) => w.businessId === biz.id)
 
+  const isCar = biz.category === 'car'
+  const regOk = /^[A-ZÆØÅ]{2}\s?\d{4,5}$/.test(reg.trim().toUpperCase())
+
   const book = () => {
-    if (bookSlot(slot.id, name.trim() || 'Gjest')) go(`/booked/${slot.id}`)
+    if (isCar && !regOk) return
+    if (bookSlot(slot.id, name.trim() || 'Gjest', isCar ? reg.trim().toUpperCase() : undefined)) go(`/booked/${slot.id}`)
     else setTooSlow(true)
   }
 
@@ -67,7 +72,7 @@ export function LastCallDetail({ id }: { id: string }) {
           <div className="flex flex-col gap-5 rounded-2xl border border-hairline bg-canvas p-6 shadow-soft">
             <Countdown start={slot.start} />
             <div>
-              <Price slot={slot} big />
+              <Price slot={slot} big from={biz.category === 'car'} />
               {savings(slot) > 0 ? <p className="mt-1 font-medium text-green">Du sparer {kr(savings(slot))}</p> : <p className="mt-1 font-medium text-green">{slot.perk ?? 'Hopp over køen. Vanligvis fullbooket.'}</p>}
             </div>
 
@@ -82,7 +87,19 @@ export function LastCallDetail({ id }: { id: string }) {
                     className="rounded border border-[#ddd] bg-canvas px-2.5 py-2 text-[15px] outline-none placeholder:text-faint focus:shadow-soft focus:ring-2 focus:ring-primary/30"
                   />
                 </label>
-                <Button size="lg" onClick={book}>
+                {isCar && (
+                  <label className="flex flex-col gap-1.5">
+                    <span className="eyebrow text-muted">Registreringsnummer</span>
+                    <input
+                      value={reg}
+                      onChange={(e) => setReg(e.target.value.toUpperCase())}
+                      placeholder="AB 12345"
+                      maxLength={8}
+                      className="rounded border border-[#ddd] bg-canvas px-2.5 py-2 text-[15px] font-semibold uppercase tracking-wider outline-none placeholder:font-normal placeholder:text-faint focus:shadow-soft focus:ring-2 focus:ring-primary/30"
+                    />
+                  </label>
+                )}
+                <Button size="lg" onClick={book} disabled={isCar && !regOk}>
                   Bestill nå
                 </Button>
                 <p className="text-center text-sm text-faint">Ingen betaling nødvendig i denne demoen.</p>

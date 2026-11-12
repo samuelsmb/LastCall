@@ -40,6 +40,8 @@ export interface Slot {
   releasedAt?: number
   soldAt?: number
   buyerName?: string
+  /** Car Last Calls only: the Customer's registration number. */
+  regNumber?: string
   perk?: string
   /** Restaurant tables only: number of guests. fullPrice is the total for the table. */
   guests?: number

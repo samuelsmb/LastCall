@@ -9,7 +9,7 @@ export function Header({ side, route }: { side: 'customer' | 'business'; route: 
   return (
     <header className="sticky top-0 z-40 border-b border-hairline bg-canvas/90 backdrop-blur">
       <div className="mx-auto flex max-w-[1200px] items-center gap-4 px-4 py-3 sm:px-6">
-        <a href={side === 'business' ? '#/biz' : '#/'} className="flex items-center gap-2">
+        <a href="#/" onClick={() => window.scrollTo({ top: 0 })} className="flex items-center gap-2">
           <span className="grid h-8 w-8 place-items-center rounded-lg border border-hairline bg-canvas text-lg shadow-soft">🔔</span>
           <span className="text-lg font-bold tracking-[-0.4px]">LastCall</span>
         </a>
@@ -22,6 +22,7 @@ export function Header({ side, route }: { side: 'customer' | 'business'; route: 
               </a>
               <a href="#/wants" className={link(route.startsWith('/wants'))}>
                 Ønsker
+                {unseen > 0 && <span className="ml-1.5 inline-block min-w-5 animate-twinkle rounded-full bg-pink px-1.5 text-center text-xs font-bold leading-5 text-white">{unseen}</span>}
               </a>
             </>
           ) : (
@@ -37,6 +38,7 @@ export function Header({ side, route }: { side: 'customer' | 'business'; route: 
           {side === 'customer' && (
             <a href="#/wants" className="relative grid h-9 w-9 place-items-center rounded-lg text-lg hover:bg-black/5 sm:hidden" aria-label="Ønsker">
               🔔
+              {unseen > 0 && <span className="absolute -right-0.5 -top-0.5 min-w-4 animate-twinkle rounded-full bg-pink px-1 text-center text-[11px] font-bold leading-4 text-white">{unseen}</span>}
             </a>
           )}
           {side === 'customer' && unseen > 0 && (

@@ -4,7 +4,7 @@ import { createSeed, generateCalendar, uid } from './seed'
 import { DEFAULT_RULE, matchesWant, releaseTime, ruleDiscount } from './selectors'
 import type { AutoReleaseRule, Category, ReleaseMode, State, WantWindow } from './types'
 
-const KEY = 'lastcall-demo-v12-nb'
+const KEY = 'lastcall-demo-v17-nb'
 const MAX_AGE = 6 * 3_600_000
 
 function load(): State {
@@ -102,7 +102,7 @@ export function withdrawSlot(slotId: string) {
   })
 }
 
-export function bookSlot(slotId: string, buyerName: string): boolean {
+export function bookSlot(slotId: string, buyerName: string, regNumber?: string): boolean {
   const slot = state.slots.find((s) => s.id === slotId)
   if (!slot || slot.status !== 'released' || slot.start <= Date.now()) return false
   const biz = state.businesses.find((b) => b.id === slot.businessId)!
@@ -110,7 +110,7 @@ export function bookSlot(slotId: string, buyerName: string): boolean {
   commit({
     ...state,
     businesses: state.businesses.map((b) => (b.id === biz.id ? { ...b, introSpotsLeft: Math.max(0, b.introSpotsLeft - introSpotsUsed) } : b)),
-    slots: state.slots.map((s) => (s.id === slotId ? { ...s, status: 'sold', buyerName, soldAt: Date.now(), fee, introSpotsUsed } : s)),
+    slots: state.slots.map((s) => (s.id === slotId ? { ...s, status: 'sold', buyerName, regNumber, soldAt: Date.now(), fee, introSpotsUsed } : s)),
   })
   return true
 }
