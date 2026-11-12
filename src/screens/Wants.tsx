@@ -17,7 +17,6 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
   const [area, setArea] = useState<string | null>(initial.area)
   const [touched, setTouched] = useState(false)
 
-  const guess = interpretWant(label)
 
   // Varsler: lagrede varsler, pluss live treff på ønsker som ennå ikke har et varsel.
   const alertSlotIds = new Set(state.alerts.map((a) => a.slotId))
@@ -88,20 +87,6 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
             placeholder="f.eks. dekkskift innen 48 timer nær Alna, eller restaurant i kveld"
             className="rounded border border-[#ddd] bg-canvas px-3 py-2.5 text-base outline-none placeholder:text-faint focus:ring-2 focus:ring-primary/30"
           />
-          {label && (
-            <p className="flex animate-fade items-center gap-2 text-[15px] text-ink-2">
-              <span className="rounded bg-purple/40 px-1.5 text-purple-deep">✦ AI</span>
-              {guess.categories.length ? (
-                <>
-                  Gjenkjente {guess.categories.map((c) => CATEGORY_META[c].label).join(', ')}
-                  {guess.window && `, ${WANT_WINDOW_META[guess.window].hint}`}
-                  {guess.area && `, nær ${guess.area}`}
-                </>
-              ) : (
-                <>Usikker ennå. Velg en kategori under, eller si hva du ønsker.</>
-              )}
-            </p>
-          )}
           <div className="flex flex-wrap gap-2">
             {CATEGORIES.map((c) => (
               <Chip key={c} active={categories.includes(c)} onClick={() => toggle(c)}>
