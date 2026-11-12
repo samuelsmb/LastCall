@@ -7,6 +7,8 @@ export const RESTAURANT_ID = 'restaurant-lokka'
 /** Fixed ids so every demo step has a stable hash URL. */
 export const DEMO_TYRE_SLOT = 'demo-teds-tyre'
 export const DEMO_TABLE_SLOT = 'demo-lokka-table'
+/** Cancelled but not yet released; the Assistant releases it after saving a Taste-profile Want. */
+export const DEMO_JAZZ_SLOT = 'demo-jazz-concert'
 
 const MIN = 60_000
 
@@ -172,6 +174,18 @@ export function createSeed(now: number): State {
   }
 
   slots.push(...calendarSlots(HERO_BUSINESS_ID, tedsCalendar(now), now), ...calendarSlots(RESTAURANT_ID, lokkaCalendar(now), now))
+  slots.push({
+    id: DEMO_JAZZ_SLOT,
+    businessId: 'cellar-jazz',
+    title: 'Jazzkveld, to plasser ved scenen',
+    description: 'Et nytt trio-prosjekt spiller sin første konsert. To plasser rett ved scenen ble ledige.',
+    start: at(now, 300),
+    durationMin: 120,
+    fullPrice: 640,
+    guests: 2,
+    status: 'cancelled',
+    customerName: 'Jonas A.',
+  })
 
   return {
     version: 1,
