@@ -59,7 +59,13 @@ export function Marketplace() {
               Fullbooka bord og verksteder i {CITY}, ledige i det øyeblikket noen avbestiller. Hopp over køen, noen ganger til lavere pris. Rimelig i siste liten.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Button onClick={surprise}>Overrask meg</Button>
+              <button
+                type="button"
+                onClick={surprise}
+                className="surprise-btn inline-flex items-center gap-2 rounded-full px-6 py-3 text-[17px] font-bold text-purple-deep"
+              >
+                <span aria-hidden>🎁</span> Overrask meg <span aria-hidden>✨</span>
+              </button>
               <Button variant="secondary" onClick={() => go('/wants')}>
                 Opprett et varsel
               </Button>
