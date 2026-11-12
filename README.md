@@ -17,7 +17,7 @@ Open the URL Vite prints (usually http://localhost:5173). There is no backend: e
 
 The Assistant (the ✦ bubble on Customer screens) calls OpenRouter straight from the browser. Put `VITE_OPENROUTER_KEY=sk-or-...` in a `.env` file (gitignored). The Pages build reads it from the `OPENROUTER_KEY` repo secret. The key ends up in the public bundle, so use a key with a low credit limit. Without a key, the rest of the app works and the Assistant says it isn't set up.
 
-**Assistant demo:** open the bubble and tap "Varsle meg om ting jeg vil like". The Assistant saves a Want from the Taste profile, and 5 seconds later a hidden jazz Last Call at Herr Nilsen is released, so the Alert pops up. Add `?reset` to the URL to run it again.
+**Assistant demo:** open the bubble and type "Jeg har lyst til å gå på en comedyklubb i kveld". There is none, so the Assistant offers to alert you. Say "ja", and 5 seconds later a hidden standup Last Call at Latter is released and the Alert pops up. "Varsle meg om ting jeg vil like" does the same with a hidden jazz Last Call. Saving "standup i kveld" in the Wants form works too. The hidden Last Calls live in `DEMO_STOCK` in `src/domain/seed.ts`, and each is released once: add `?reset` to the URL to run it again.
 
 - Open two tabs side by side (one Customer, one Business): they sync live.
 - Add `?reset` before the hash to start from a fresh catalogue, e.g. `http://localhost:5173/?reset#/`. Data also reseeds itself after 6 hours.

@@ -3,15 +3,15 @@ import { generateText, isStepCount, Output, tool, type ModelMessage } from 'ai'
 import { z } from 'zod'
 import { kr, when } from '../lib'
 import { CATEGORIES, CATEGORY_META, WANT_WINDOW_META } from './categories'
-import { DEMO_JAZZ_SLOT } from './seed'
 import { businessOf, inWindow, isLive, lastCallPrice } from './selectors'
-import { addWant, getState, releaseSlot } from './store'
+import { addWant, getState, scheduleDemoRelease } from './store'
 import { TASTE_PROFILE } from './tasteProfile'
 import type { Category, WantWindow } from './types'
 
 export const ASSISTANT_MODEL = 'openai/gpt-4o-mini'
 const MAX_CARDS = 3
-const DEMO_RELEASE_DELAY = 5_000
+/** Norwegian, Danish and English ways of asking for an Alert, or saying yes to one. */
+const ASKS_FOR_ALERT = /varsl|varsel|ønske|si fra|gi beskjed|giv besked|besked|notify|alert|let me know|^\s*(ja|jo|gjerne|yes|ok|okay|sure)\b/i
 
 const openrouter = createOpenRouter({
   apiKey: import.meta.env.VITE_OPENROUTER_KEY,
@@ -36,7 +36,7 @@ Du kan:
 Svaret ditt:
 - reply: norsk bokmål, kort og vennlig, 1-2 setninger uten lister eller markdown. Ved anbefaling: si kort hvorfor det passer kunden.
 - slotIds: id-ene til Last Calls du nevner (maks ${MAX_CARDS}), i prioritert rekkefølge. Kortene viser pris og tid, så ikke gjenta det i teksten.
-Finn aldri på Last Calls. Finnes det ingen treff, si det og tilby å sette opp et varsel.
+Finn aldri på Last Calls. Ber kunden om noe bestemt (f.eks. comedy) som ikke finnes i søket, si det tydelig først og spør om du skal varsle når det dukker opp. Et alternativ kan du nevne etterpå.
 Kategorier: ${categories}.`
 }
 
@@ -94,13 +94,13 @@ export async function askAssistant(history: ModelMessage[], text: string): Promi
         categories: z.array(categoryEnum).min(1).describe('Ved fromTasteProfile brukes profilens kategorier i stedet.'),
         window: windowEnum,
         area: z.string().optional().describe('Bydel i Oslo, hvis kunden nevnte en'),
-        fromTasteProfile: z.boolean().describe('true når kunden vil varsles om ting hun liker'),
+        fromTasteProfile: z.boolean().describe('true bare når kunden vil varsles om "ting jeg vil like" uten å nevne noe bestemt. false for alt konkret, som comedy, dekkskift eller middag.'),
       }),
       execute: async ({ label, categories, window, area, fromTasteProfile }) => {
         const cats = fromTasteProfile ? TASTE_PROFILE.categories : categories
         const win = fromTasteProfile ? 'any' : window
         addWant(label, cats, win, area)
-        if (fromTasteProfile) setTimeout(() => releaseSlot(DEMO_JAZZ_SLOT, 30), DEMO_RELEASE_DELAY)
+        if (fromTasteProfile) scheduleDemoRelease(label, cats, true)
         return { saved: true, label, categories: cats, window: WANT_WINDOW_META[win].hint }
       },
     }),
@@ -112,6 +112,8 @@ export async function askAssistant(history: ModelMessage[], text: string): Promi
     system: system(now),
     messages,
     tools,
+    // The model saves Wants on its own when asked nicely not to, so it only gets the tool when the Customer asks.
+    activeTools: ASKS_FOR_ALERT.test(text) ? undefined : ['searchLastCalls', 'getTasteProfile'],
     output: Output.object({ schema: z.object({ reply: z.string(), slotIds: z.array(z.string()) }) }),
     stopWhen: isStepCount(6),
   })

@@ -98,7 +98,7 @@ const HINTS: [RegExp, Category][] = [
   [/hair|nail|spa|facial|beauty|manicure|haircut|glow|hår|frisør|klipp|negl|ansikt|skjønnhet/i, 'beauty'],
   [/physio|back|dentist|teeth|massage|doctor|health|knee|fysio|tann|rygg|lege|helse|kne/i, 'health'],
   [/passport|licen[cs]e|driving test|id card|official|visa|pass\b|førerkort|førerprøve|ID-kort|politi/i, 'official'],
-  [/bored|fun|escape|sauna|badstu|jazz|comedy|experience|opplevelse|date|surprise|overrask|adventure|kjedet|moro/i, 'experiences'],
+  [/bored|fun|escape|sauna|badstu|jazz|comedy|stand-?up|humor|komikk|komiker|experience|opplevelse|date|surprise|overrask|adventure|kjedet|moro/i, 'experiences'],
 ]
 
 /** Fake "AI": reads a free-text Want and guesses Categories, a time window and an area. */
