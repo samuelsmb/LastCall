@@ -206,7 +206,7 @@ export function Register() {
           </div>
 
           <div className="flex flex-col gap-2">
-            <span className="eyebrow text-muted">Standard frigivelsesmodus</span>
+            <span className="eyebrow text-muted">Standard for Last Call-rabatt</span>
             <Segmented
               value={mode}
               onChange={(m) => m && setMode(m)}

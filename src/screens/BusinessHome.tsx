@@ -147,12 +147,12 @@ export function BusinessHome({ businessId }: { businessId?: string }) {
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-2">
                 <span className="grid h-8 w-8 place-items-center rounded-lg bg-purple/40 text-base">⚡</span>
-                <h2 className="title">Auto-frigivelse</h2>
+                <h2 className="title">Last Call-rabatt</h2>
               </div>
               <button
                 onClick={() => setRule(biz.id, { enabled: !rule.enabled })}
                 className={`relative h-6 w-10 cursor-pointer rounded-full transition ${rule.enabled ? 'bg-primary' : 'bg-black/15'}`}
-                aria-label="Slå Auto-frigivelse av/på"
+                aria-label="Slå Last Call-rabatt av/på"
               >
                 <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-soft transition-all ${rule.enabled ? 'left-[18px]' : 'left-0.5'}`} />
               </button>
@@ -331,7 +331,7 @@ function ReleaseDialog({ slot, biz, rule, onClose, onRelease }: { slot: Slot; bi
               <input className="mt-2 w-full" type="range" min={5} max={70} step={5} value={pct} onChange={(e) => setPct(Number(e.target.value))} />
               <p className="mt-1 flex items-center gap-1.5 text-sm text-muted">
                 <span className="rounded bg-purple/40 px-1.5 text-xs text-purple-deep">✦ AI</span>
-                Foreslått {rule.discountPct} % basert på Auto-frigivelsesregelen din og etterspørsel i nærheten
+                Foreslått {rule.discountPct} % basert på Last Call-rabatten din og etterspørsel i nærheten
               </p>
             </div>
           )}
