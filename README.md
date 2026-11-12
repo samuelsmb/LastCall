@@ -61,4 +61,9 @@ Bilder av bedriftene ligger i `public/img/`. Bedrifter uten bilde får en farget
 - Theatercaféen: Larry Lamsa, [CC BY 2.0](https://creativecommons.org/licenses/by/2.0/), via Wikimedia Commons
 - Statholdergaarden (og Statholderens Mat & Vinkjeller): Kjetil r, [CC BY-SA 2.5](https://creativecommons.org/licenses/by-sa/2.5/), via Wikimedia Commons
 - Herr Nilsen: Vidariv, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/), via Wikimedia Commons
-- Mekonomen og Snap Drive: bilder hentet fra bedriftenes nettsider, kun til demobruk
+- Hope Posthallen: Jan-Tore Egge, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/), via Wikimedia Commons
+- Bristol Spa (illustrasjonsbilde): Harrison Keely, [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), via Wikimedia Commons
+- Studio Johnny (illustrasjonsbilde): Daderot, CC0, via Wikimedia Commons
+- Bel Etage (illustrasjonsbilde): Wilfredor, CC0, via Wikimedia Commons
+- Pass- og ID-kontoret (illustrasjonsbilde): Government of Norway, Public domain, via Wikimedia Commons
+- Mekonomen, Snap Drive, Katla, Adam og Eva og KOK Badstue: bilder hentet fra bedriftenes nettsider, kun til demobruk
