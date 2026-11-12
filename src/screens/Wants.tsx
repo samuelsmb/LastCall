@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { alertLine } from '../components/AlertToasts'
 import type { WantGuess } from '../domain/assistant'
-import { CATEGORIES, CATEGORY_META, WANT_WINDOW_META } from '../domain/categories'
+import { CATEGORIES, CATEGORY_META, wantWindowHint } from '../domain/categories'
 import { businessOf, interpretWant, isLive, matchesWant, slotComparator, SORTS, type SortKey } from '../domain/selectors'
 import { addWant, markAlertSeen, removeWant, useAppState } from '../domain/store'
 import type { Category, WantWindow } from '../domain/types'
@@ -106,25 +106,29 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
     let cats = categories
     let win = window ?? '48h'
     let where = area
-    if (!cats.length) {
-      // Ingen kategori ennå: la språkmodellen lese teksten før vi lagrer.
+    let title = touched ? undefined : guess?.label
+    // Har ikke språkmodellen svart ennå, venter vi på den, så ønsket får riktig tid og en ryddig tittel.
+    if (hasModelKey && label.trim() && !touched && !title) {
       setSaving(true)
       try {
         const { interpretWantWithModel } = await import('../domain/assistant')
         const g = await interpretWantWithModel(label.trim())
         apply(g)
-        cats = g.categories
-        win = g.window ?? '48h'
-        where = g.area
+        if (g.categories.length) {
+          cats = g.categories
+          win = g.window ?? '48h'
+          where = g.area
+          title = g.label
+        }
       } catch (e) {
         console.error(e)
       } finally {
         setSaving(false)
       }
-      if (!cats.length) return
     }
+    if (!cats.length) return
     const fallback = cats.map((c) => CATEGORY_META[c].label).join(' eller ')
-    addWant(label.trim() || `${fallback} ${WANT_WINDOW_META[win].hint}`, cats, win, where ?? undefined)
+    addWant(title || label.trim() || `${fallback} ${wantWindowHint(win)}`, cats, win, where ?? undefined)
     setLabel('')
     setCategories([])
     setWindow('48h')
@@ -165,8 +169,10 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
                 <span className="animate-pulse text-faint">Tolker …</span>
               ) : guess.categories.length ? (
                 <>
-                  Gjenkjente {guess.categories.map((c) => CATEGORY_META[c].label).join(', ')}
-                  {guess.window && `, ${WANT_WINDOW_META[guess.window].hint}`}
+                  {guess.label && <strong className="font-semibold text-ink">«{guess.label}»</strong>}
+                  {guess.label ? ' · ' : 'Gjenkjente '}
+                  {guess.categories.map((c) => CATEGORY_META[c].label).join(', ')}
+                  {`, ${wantWindowHint(guess.window ?? '48h')}`}
                   {guess.area && `, nær ${guess.area}`}
                 </>
               ) : (
@@ -197,7 +203,7 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
                     <div className="min-w-0 flex-1">
                       <p className="font-medium">{w.label}</p>
                       <p className="text-sm text-muted">
-                        {followed ? `Følger ${followed.name}` : w.categories.map((c) => CATEGORY_META[c].label).join(', ')} · {WANT_WINDOW_META[w.window].hint}
+                        {followed ? `Følger ${followed.name}` : w.categories.map((c) => CATEGORY_META[c].label).join(', ')} · {wantWindowHint(w.window)}
                         {w.area && ` · nær ${w.area}`}
                       </p>
                     </div>

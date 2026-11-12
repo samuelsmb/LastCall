@@ -69,8 +69,8 @@ export function Assistant() {
       {open && (
         <div className="fixed inset-x-3 bottom-24 z-50 flex max-h-[min(560px,calc(100vh-8rem))] flex-col overflow-hidden rounded-2xl border border-hairline bg-canvas shadow-lifted sm:inset-x-auto sm:right-6 sm:w-[400px]">
           <div className="flex items-center justify-between gap-2 border-b border-hairline px-4 py-3">
-            <p className="font-semibold">
-              <span className="text-primary">✦</span> Assistent
+            <p className="flex items-center gap-2 font-semibold">
+              <img src={`${import.meta.env.BASE_URL}img/favicon.svg`} alt="" className="h-6 w-6" /> Assistent
             </p>
             <button className="cursor-pointer rounded-md px-1.5 text-lg leading-none text-faint hover:bg-black/5 hover:text-ink" onClick={() => setOpen(false)} aria-label="Lukk">
               ×
@@ -133,7 +133,7 @@ export function Assistant() {
         className="fixed bottom-6 right-6 z-50 flex cursor-pointer items-center gap-2 rounded-full bg-cta px-5 py-3.5 font-semibold text-black shadow-lifted transition hover:scale-105 hover:bg-cta-active"
         aria-label="Åpne assistenten"
       >
-        <span>✦</span> {open ? 'Lukk' : 'Assistent'}
+        <img src={`${import.meta.env.BASE_URL}img/favicon.svg`} alt="" className="h-6 w-6" /> {open ? 'Lukk' : 'Assistent'}
       </button>
     </>
   )
