@@ -113,6 +113,16 @@ const lastCalls: LastCallSeed[] = [
   ['bristol-spa', 'Ansiktsbehandling', 'Ansiktsbehandling i ro og fred, ledig i kveld.', 150, 60, 1200, 30],
   ['kok-langkaia', 'Felles badstuøkt for 2', 'To plasser på neste økt ved Langkaia.', 100, 90, 700, 25, 2],
   ['studio-johnny', 'Herreklipp', 'Klipp uten ventetid, ledig om en liten stund.', 45, 30, 650, 30],
+  ['teds-garage', 'Dekkskift, personbil', 'Sommerdekk på, vinterdekk av. Ferdig mens du tar en kaffe.', 55, 30, 900, 15],
+  ['wheel-of-fortune', 'Dekkskift og dekkhotell', 'Vi bytter hjulene og oppbevarer de du tar av.', 75, 45, 1400, 10],
+  ['teds-garage', 'Dekkskift, i kveld', 'Siste time før stengetid.', 210, 30, 850, 20],
+  ['bel-etage', 'Dameklipp og føn', 'En time hos frisøren, ledig etter en avbestilling.', 90, 60, 1100, 25],
+  ['hope-posthallen', 'Herreklipp og skjegg', 'Klipp og skjeggtrim, ferdig på 45 minutter.', 50, 45, 750, 20],
+  ['adam-og-eva', 'Farge og klipp', 'Fargebehandling og klipp med god tid.', 180, 120, 2400, 30],
+  ['bristol-spa', 'Massasje, 60 minutter', 'Avslappende helkroppsmassasje, ledig i ettermiddag.', 120, 60, 1500, 30],
+  ['bristol-spa', 'Spa for 2 med basseng', 'To plasser i spaavdelingen med basseng og sauna.', 1400, 150, 1800, 25, 2],
+  ['fjordbord', 'Bord for 2, i morgen', 'Bord for to hos Katla i morgen kveld.', 1500, 120, 2200, 15, 2],
+  ['latter', 'Standup for 2', 'To plasser på kveldens show.', 240, 120, 640, 30, 2],
   ['cellar-jazz', 'To plasser på første rad i kveld', 'Plasser på første rad til kveldens konsert på en liten jazzklubb i kjelleren.', 420, 120, 590, 40],
 ]
 
