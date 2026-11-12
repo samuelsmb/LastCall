@@ -9,7 +9,7 @@ export function Header({ side, route }: { side: 'customer' | 'business'; route: 
   return (
     <header className="sticky top-0 z-40 border-b border-hairline bg-canvas/90 backdrop-blur">
       <div className="mx-auto flex max-w-[1200px] items-baseline gap-4 px-4 py-3 sm:px-6">
-        <a href={side === 'business' ? '#/biz' : '#/'} onClick={() => window.scrollTo({ top: 0 })} className="shrink-0 rounded-md leading-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
+        <a href="#/" onClick={() => window.scrollTo({ top: 0 })} className="shrink-0 rounded-md leading-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
           {/* The wordmark baseline is y=198 in the SVG's y=27–259 viewBox. */}
           <img src={`${import.meta.env.BASE_URL}img/lastcall-logo.svg`} alt="LastCall" width={518} height={232} className="inline-block h-14 w-auto align-[-14.724px] sm:h-16 sm:align-[-16.828px]" />
         </a>
