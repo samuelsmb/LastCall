@@ -72,7 +72,7 @@ export function Marketplace() {
                 <span aria-hidden>🎁</span> Overrask meg <span aria-hidden>✨</span>
               </button>
               <Button variant="secondary" onClick={() => go('/wants')}>
-                Opprett et varsel
+                Opprett et ønske
               </Button>
             </div>
           </div>
@@ -115,7 +115,7 @@ export function Marketplace() {
           <div className="flex items-center gap-3">
             <Segmented value={window} onChange={setWindow} options={(['now', 'today', '48h'] as TimeWindow[]).map((w) => ({ value: w, label: WINDOW_META[w].label }))} />
             <span className="hidden text-[15px] text-muted sm:inline">
-              {list.length} Last Call
+              {list.length} {list.length === 1 ? 'Last Call' : 'Last Calls'}
             </span>
           </div>
           <label className="flex items-center gap-2 text-[15px] text-muted">
@@ -141,7 +141,7 @@ export function Marketplace() {
         <div className="flex flex-col items-center gap-3 rounded-2xl bg-canvas px-6 py-16 text-center">
           <span className="text-5xl">🔍</span>
           <h3 className="heading-2">Ingenting passer akkurat nå</h3>
-          <p className="max-w-md text-muted">Prøv et videre filter, eller opprett et varsel så gir vi beskjed så snart noe åpner seg.</p>
+          <p className="max-w-md text-muted">Prøv et videre filter, eller opprett et ønske så gir vi beskjed så snart noe åpner seg.</p>
           <div className="mt-3 flex flex-wrap justify-center gap-2">
             <Button
               variant="utility"
@@ -152,7 +152,7 @@ export function Marketplace() {
             >
               Fjern filtre
             </Button>
-            <Button onClick={() => go('/wants')}>Opprett et varsel</Button>
+            <Button onClick={() => go('/wants')}>Opprett et ønske</Button>
           </div>
         </div>
       )}

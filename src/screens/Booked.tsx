@@ -57,7 +57,7 @@ export function Booked({ id }: { id: string }) {
         <Button variant="secondary" onClick={() => go('/')}>
           Tilbake til markedsplassen
         </Button>
-        <Button onClick={() => go('/wants')}>Opprett et varsel</Button>
+        <Button onClick={() => go('/wants')}>Opprett et ønske</Button>
       </div>
     </div>
   )
