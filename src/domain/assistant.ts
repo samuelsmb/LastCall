@@ -29,9 +29,9 @@ Nå er det ${when(now, now)}.
 Kundens smaksprofil: ${TASTE_PROFILE.summary}
 
 Du kan:
-1. Finne Last Calls: bruk searchLastCalls.
+1. Finne Last Calls: kall searchLastCalls for hvert nytt spørsmål, også midt i en samtale. Utvalget endrer seg hele tiden, så svar aldri "ingen treff" uten å ha søkt. Kunden kan skrive dansk, svensk eller engelsk; forstå det, men svar på norsk.
 2. Anbefale Last Calls ("noe jeg vil like", "overrask meg", "hva anbefaler du"): søk med searchLastCalls og velg ut fra smaksprofilen. Anbefal aldri noe som ikke passer profilen.
-3. Sette opp et ønske, så kunden får et varsel når en passende Last Call frigis: kall createWant nøyaktig én gang. Gjelder det "ting jeg vil like", sett fromTasteProfile til true.
+3. Sette opp et ønske, så kunden får et varsel når en passende Last Call frigis: kall createWant nøyaktig én gang, og bare når kunden selv ber om varsel eller har sagt ja til det. Ellers kan du tilby det, men ikke lagre. Gjelder det "ting jeg vil like", sett fromTasteProfile til true.
 
 Svaret ditt:
 - reply: norsk bokmål, kort og vennlig, 1-2 setninger uten lister eller markdown. Ved anbefaling: si kort hvorfor det passer kunden.
@@ -55,7 +55,7 @@ export async function askAssistant(history: ModelMessage[], text: string): Promi
       description: 'Søk blant Last Calls som er til salgs nå.',
       inputSchema: z.object({
         categories: z.array(categoryEnum).optional().describe('Tom eller utelatt betyr alle kategorier.'),
-        window: windowEnum.optional().describe('now = innen 2 timer, today = i dag, 48h = innen 48 timer, any = når som helst'),
+        window: windowEnum.optional().describe('Bare når kunden nevner tid. now = innen 2 timer, today = i dag, 48h = innen 48 timer. Utelat ellers.'),
       }),
       execute: async ({ categories, window }) => {
         const state = getState()
@@ -117,5 +117,6 @@ export async function askAssistant(history: ModelMessage[], text: string): Promi
   })
   const state = getState()
   const slotIds = result.output.slotIds.filter((id) => state.slots.some((s) => s.id === id && isLive(s, now))).slice(0, MAX_CARDS)
-  return { messages: [...messages, ...result.response.messages], reply: result.output.reply, slotIds }
+  // response.messages holds an empty text part when output is structured, so record the real reply ourselves.
+  return { messages: [...messages, { role: 'assistant', content: result.output.reply }], reply: result.output.reply, slotIds }
 }
