@@ -105,8 +105,7 @@ export function dashboardStats(state: State, businessId: string) {
 const HINTS: [RegExp, Category][] = [
   [/tyre|tire|car|garage|oil|brake|wheel|dekk|\bbil|verksted|olje|bremse|hjul|punktering/i, 'car'],
   [/dinner|dining|food|lunch|restaurant|eat|table|tasting|menu|middag|\bmat\b|lunsj|spise|bord|smaksmeny|meny/i, 'food'],
-  [/hair|nail|spa|facial|beauty|manicure|haircut|glow|hår|frisør|klipp|negl|ansikt|skjønnhet/i, 'beauty'],
-  [/physio|back|dentist|teeth|massage|doctor|health|knee|fysio|tann|rygg|lege|helse|kne/i, 'health'],
+  [/hair|nail|spa|massage|massasje|facial|beauty|manicure|haircut|glow|hår|frisør|klipp|negl|ansikt|skjønnhet/i, 'beauty'],
   [/bored|fun|escape|sauna|badstu|jazz|comedy|experience|opplevelse|date|surprise|overrask|adventure|kjedet|moro/i, 'experiences'],
 ]
 
