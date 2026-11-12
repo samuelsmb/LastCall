@@ -3,6 +3,7 @@ import { CITY } from './brand'
 import { AlertToasts } from './components/AlertToasts'
 import { Assistant } from './components/Assistant'
 import { Header } from './components/Header'
+import { HomepageFooter } from './components/HomepageFooter'
 import { applyAutoRelease } from './domain/store'
 import { useRoute } from './lib'
 import { Booked } from './screens/Booked'
@@ -42,9 +43,13 @@ export default function App() {
       </main>
       {side === 'customer' && <AlertToasts />}
       {side === 'customer' && <Assistant />}
-      <footer className="border-t border-hairline bg-paper px-6 py-8 text-center text-sm text-ink-2">
-        <span className="font-semibold">LastCall</span> · Laget i {CITY}, snart i resten av Norge
-      </footer>
+      {path === '/' ? (
+        <HomepageFooter />
+      ) : (
+        <footer className="border-t border-hairline bg-paper px-6 py-8 text-center text-sm text-ink-2">
+          <span className="font-semibold">LastCall</span> · Laget i {CITY}, snart i resten av Norge
+        </footer>
+      )}
     </div>
   )
 }
