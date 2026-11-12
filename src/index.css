@@ -135,3 +135,77 @@ body {
 .no-scrollbar { scrollbar-width: none; }
 
 input[type="range"] { accent-color: var(--color-primary); }
+
+.marketplace-hero {
+  background: #ffffe0;
+}
+
+/* Five seconds at rest, then a one-second dissolve in each direction. */
+.hero-slide {
+  animation: hero-dissolve 12s linear infinite;
+}
+
+.hero-slide-restaurant {
+  animation-name: hero-dissolve-restaurant;
+}
+
+.hero-slide-mechanic {
+  opacity: 0;
+}
+
+@keyframes hero-dissolve {
+  0%, 41.6667% { opacity: 0; }
+  50%, 91.6667% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes hero-dissolve-restaurant {
+  0%, 41.6667% { opacity: 1; }
+  50%, 91.6667% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-slide {
+    animation: none;
+  }
+}
+
+.marketplace-hero-layout {
+  gap: 32px;
+  padding: 40px 24px 24px;
+}
+
+.marketplace-hero::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 52% -45% -35%;
+  border-radius: 50%;
+  background: #fff;
+}
+
+@media (min-width: 768px) {
+  .marketplace-hero-layout {
+    grid-template-columns: 46% 54%;
+    gap: 0;
+    min-height: 450px;
+    padding: 56px 40px;
+  }
+
+  .marketplace-hero::before {
+    inset: -25% -31% -35% 45%;
+  }
+
+  .marketplace-hero-art {
+    width: 110%;
+    max-width: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .marketplace-hero-layout {
+    min-height: 478px;
+    padding: 64px 68px;
+  }
+}
