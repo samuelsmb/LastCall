@@ -16,6 +16,7 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
   const [window, setWindow] = useState<WantWindow | null>(initial.window ?? '48h')
   const [area, setArea] = useState<string | null>(initial.area)
   const [touched, setTouched] = useState(false)
+  const [openWant, setOpenWant] = useState<string | null>(null)
 
   const guess = interpretWant(label)
   const onLabel = (text: string) => {
@@ -113,22 +114,58 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
           {state.wants.length > 0 && (
             <div className="overflow-hidden rounded-xl border border-hairline bg-canvas">
               {state.wants.map((w) => {
-                const matches = state.slots.filter((s) => isLive(s, now) && matchesWant(state, s, w, now)).length
+                const matching = state.slots.filter((s) => isLive(s, now) && matchesWant(state, s, w, now))
+                const matches = matching.length
+                const open = openWant === w.id && matches > 0
                 const followed = w.businessId ? state.businesses.find((b) => b.id === w.businessId) : undefined
                 return (
-                  <div key={w.id} className="flex items-center gap-3 border-b border-hairline px-4 py-3 last:border-b-0">
+                  <div key={w.id} className="border-b border-hairline last:border-b-0">
+                  <div className="flex items-center gap-3 px-4 py-3">
                     <span className="text-xl">{CATEGORY_META[w.categories[0]].icon}</span>
                     <div className="min-w-0 flex-1">
                       <p className="font-medium">{w.label}</p>
                       <p className="text-sm text-muted">
                         {followed ? `Følger ${followed.name}` : w.categories.map((c) => CATEGORY_META[c].label).join(', ')} · {WANT_WINDOW_META[w.window].hint}
                         {w.area && ` · nær ${w.area}`}
-                        {matches > 0 && <span className="text-primary"> · {matches} passer nå</span>}
                       </p>
                     </div>
+                    {matches > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setOpenWant(open ? null : w.id)}
+                        aria-expanded={open}
+                        className="inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-sm font-semibold text-white shadow-soft transition hover:bg-primary-active"
+                      >
+                        <span className="h-2 w-2 animate-twinkle rounded-full bg-white" />
+                        {matches} passer nå
+                        <span aria-hidden>{open ? '▴' : '▾'}</span>
+                      </button>
+                    )}
                     <Button size="sm" variant="ghost" onClick={() => removeWant(w.id)}>
                       Fjern
                     </Button>
+                  </div>
+                  {open && (
+                    <div className="border-t border-hairline bg-paper">
+                      {matching.map((s) => {
+                        const biz = businessOf(state, s)
+                        return (
+                          <button
+                            key={s.id}
+                            onClick={() => go(`/lc/${s.id}`)}
+                            className="flex w-full cursor-pointer items-center gap-3 border-b border-hairline px-4 py-2.5 text-left transition last:border-b-0 hover:bg-black/5"
+                          >
+                            <span className="text-lg">{CATEGORY_META[biz.category].icon}</span>
+                            <span className="min-w-0 flex-1">
+                              <span className="block font-medium">{alertLine(state, s, now)}</span>
+                              <span className="block text-sm text-muted">{biz.neighbourhood}</span>
+                            </span>
+                            <span className="text-primary">→</span>
+                          </button>
+                        )
+                      })}
+                    </div>
+                  )}
                   </div>
                 )
               })}
