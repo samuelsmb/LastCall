@@ -17,7 +17,7 @@ export function googleCalendarUrl(slot: Slot, biz: Business) {
   return `https://calendar.google.com/calendar/render?${q}`
 }
 
-export function downloadIcs(slot: Slot, biz: Business) {
+export function openInCalendarApp(slot: Slot, biz: Business) {
   const d = details(slot, biz)
   const ics = [
     'BEGIN:VCALENDAR',
@@ -34,10 +34,6 @@ export function downloadIcs(slot: Slot, biz: Business) {
     'END:VEVENT',
     'END:VCALENDAR',
   ].join('\r\n')
-  const url = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }))
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'lastcall.ics'
-  a.click()
-  URL.revokeObjectURL(url)
+  // Uten download-attributt åpner Safari/iOS kalenderappen direkte; andre nettlesere laster ned filen.
+  window.location.href = `data:text/calendar;charset=utf-8,${encodeURIComponent(ics)}`
 }

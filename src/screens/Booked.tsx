@@ -1,6 +1,6 @@
 import { CATEGORY_META } from '../domain/categories'
 import { businessOf, lastCallPrice, savings } from '../domain/selectors'
-import { downloadIcs, googleCalendarUrl } from '../domain/calendar'
+import { openInCalendarApp, googleCalendarUrl } from '../domain/calendar'
 import { useAppState } from '../domain/store'
 import { clock, dayLabel, go, kr, useNow, when } from '../lib'
 import type { ReactNode } from 'react'
@@ -56,8 +56,8 @@ export function Booked({ id }: { id: string }) {
           <a href={googleCalendarUrl(slot, biz)} target="_blank" rel="noreferrer" className="rounded-full border border-hairline bg-canvas px-4 py-2 font-medium shadow-soft transition hover:bg-black/5">
             Google Kalender
           </a>
-          <button type="button" onClick={() => downloadIcs(slot, biz)} className="cursor-pointer rounded-full border border-hairline bg-canvas px-4 py-2 font-medium shadow-soft transition hover:bg-black/5">
-            Apple / Outlook (.ics)
+          <button type="button" onClick={() => openInCalendarApp(slot, biz)} className="cursor-pointer rounded-full border border-hairline bg-canvas px-4 py-2 font-medium shadow-soft transition hover:bg-black/5">
+            Apple / Outlook
           </button>
         </div>
       </div>
