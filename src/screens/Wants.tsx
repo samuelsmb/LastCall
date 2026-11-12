@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { alertLine } from '../components/AlertToasts'
 import { CATEGORIES, CATEGORY_META, WANT_WINDOW_META } from '../domain/categories'
 import { businessOf, interpretWant, isLive, matchesWant } from '../domain/selectors'
@@ -16,9 +16,7 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
   const [window, setWindow] = useState<WantWindow | null>(initial.window ?? '48h')
   const [area, setArea] = useState<string | null>(initial.area)
   const [touched, setTouched] = useState(false)
-  const [openWant, setOpenWant] = useState<string | null>(null)
 
-  const guess = interpretWant(label)
 
   // Varsler: lagrede varsler, pluss live treff på ønsker som ennå ikke har et varsel.
   const alertSlotIds = new Set(state.alerts.map((a) => a.slotId))
@@ -31,6 +29,21 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
         return w ? [{ id: `match-${s.id}`, slotId: s.id, want: w, seen: false, alertId: null as string | null }] : []
       }),
   ]
+
+  // Nye varsler dukker opp ett og ett med litt forsinkelse, som om de ble funnet etter at ønsket ble lagret.
+  const [shown, setShown] = useState(() => new Set(items.map((i) => i.id)))
+  const scheduled = useRef(new Set<string>())
+  const itemKey = items.map((i) => i.id).join('|')
+  useEffect(() => {
+    const fresh = items.filter((i) => !shown.has(i.id) && !scheduled.current.has(i.id))
+    fresh.forEach((i, n) => {
+      scheduled.current.add(i.id)
+      setTimeout(() => setShown((s) => new Set(s).add(i.id)), 900 + n * 700)
+    })
+  }, [itemKey])
+  const visible = items.filter((i) => shown.has(i.id))
+  const pending = items.length - visible.length
+
   const onLabel = (text: string) => {
     setLabel(text)
     if (touched) return
@@ -74,20 +87,6 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
             placeholder="f.eks. dekkskift innen 48 timer nær Alna, eller restaurant i kveld"
             className="rounded border border-[#ddd] bg-canvas px-3 py-2.5 text-base outline-none placeholder:text-faint focus:ring-2 focus:ring-primary/30"
           />
-          {label && (
-            <p className="flex animate-fade items-center gap-2 text-[15px] text-ink-2">
-              <span className="rounded bg-purple/40 px-1.5 text-purple-deep">✦ AI</span>
-              {guess.categories.length ? (
-                <>
-                  Gjenkjente {guess.categories.map((c) => CATEGORY_META[c].label).join(', ')}
-                  {guess.window && `, ${WANT_WINDOW_META[guess.window].hint}`}
-                  {guess.area && `, nær ${guess.area}`}
-                </>
-              ) : (
-                <>Usikker ennå. Velg en kategori under, eller si hva du ønsker.</>
-              )}
-            </p>
-          )}
           <div className="flex flex-wrap gap-2">
             {CATEGORIES.map((c) => (
               <Chip key={c} active={categories.includes(c)} onClick={() => toggle(c)}>
@@ -110,7 +109,6 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
               {state.wants.map((w) => {
                 const matching = state.slots.filter((s) => isLive(s, now) && matchesWant(state, s, w, now))
                 const matches = matching.length
-                const open = openWant === w.id && matches > 0
                 const followed = w.businessId ? state.businesses.find((b) => b.id === w.businessId) : undefined
                 return (
                   <div key={w.id} className="border-b border-hairline last:border-b-0">
@@ -124,42 +122,15 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
                       </p>
                     </div>
                     {matches > 0 && (
-                      <button
-                        type="button"
-                        onClick={() => setOpenWant(open ? null : w.id)}
-                        aria-expanded={open}
-                        className="inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-sm font-semibold text-white shadow-soft transition hover:bg-primary-active"
-                      >
-                        <span className="h-2 w-2 animate-twinkle rounded-full bg-white" />
+                      <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary">
+                        <span className="h-2 w-2 animate-twinkle rounded-full bg-primary" />
                         {matches} passer nå
-                        <span aria-hidden>{open ? '▴' : '▾'}</span>
-                      </button>
+                      </span>
                     )}
                     <Button size="sm" variant="ghost" onClick={() => removeWant(w.id)}>
                       Fjern
                     </Button>
                   </div>
-                  {open && (
-                    <div className="border-t border-hairline bg-paper">
-                      {matching.map((s) => {
-                        const biz = businessOf(state, s)
-                        return (
-                          <button
-                            key={s.id}
-                            onClick={() => go(`/lc/${s.id}`)}
-                            className="flex w-full cursor-pointer items-center gap-3 border-b border-hairline px-4 py-2.5 text-left transition last:border-b-0 hover:bg-black/5"
-                          >
-                            <span className="text-lg">{CATEGORY_META[biz.category].icon}</span>
-                            <span className="min-w-0 flex-1">
-                              <span className="block font-medium">{alertLine(state, s, now)}</span>
-                              <span className="block text-sm text-muted">{biz.neighbourhood}</span>
-                            </span>
-                            <span className="text-primary">→</span>
-                          </button>
-                        )
-                      })}
-                    </div>
-                  )}
                   </div>
                 )
               })}
@@ -177,9 +148,9 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
             <p className="text-sm text-muted">Når en bedrift frigir en Last Call som passer et av ønskene dine, dukker den opp her.</p>
           </div>
         )}
-        {items.length > 0 && (
+        {visible.length > 0 && (
           <div className="overflow-hidden rounded-xl border border-hairline bg-canvas">
-            {items.map((a) => {
+            {visible.map((a) => {
               const slot = state.slots.find((s) => s.id === a.slotId)
               const want = a.want
               if (!slot) return null
@@ -192,7 +163,7 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
                     if (a.alertId) markAlertSeen(a.alertId)
                     go(`/lc/${slot.id}`)
                   }}
-                  className={`flex w-full cursor-pointer items-start gap-3 border-b border-hairline px-4 py-3 text-left transition last:border-b-0 hover:bg-paper ${live ? '' : 'opacity-50'}`}
+                  className={`flex w-full animate-rise cursor-pointer items-start gap-3 border-b border-hairline px-4 py-3 text-left transition last:border-b-0 hover:bg-paper ${live ? '' : 'opacity-50'}`}
                 >
                   <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full" style={{ background: a.seen ? 'transparent' : 'var(--color-primary)' }} />
                   <span className="text-xl">{CATEGORY_META[biz.category].icon}</span>
@@ -208,6 +179,12 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
               )
             })}
           </div>
+        )}
+        {pending > 0 && (
+          <p className="flex animate-fade items-center gap-2 text-sm text-muted">
+            <span className="h-2 w-2 animate-twinkle rounded-full bg-primary" />
+            Leter etter treff …
+          </p>
         )}
       </section>
     </div>
