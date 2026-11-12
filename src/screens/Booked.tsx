@@ -35,6 +35,7 @@ export function Booked({ id }: { id: string }) {
         <dl className="mt-5 grid grid-cols-2 gap-4 border-t border-hairline pt-5 text-[15px]">
           <Row label="Når" value={when(slot.start, now)} />
           <Row label="Hvor" value={`${biz.address}, ${biz.neighbourhood}`} />
+          {slot.regNumber && <Row label="Bil" value={slot.regNumber} />}
           <Row label="Du betaler" value={kr(lastCallPrice(slot))} />
           {savings(slot) > 0 ? <Row label="Du sparte" value={kr(savings(slot))} accent /> : <Row label="Bonus" value={slot.perk ?? 'Du hoppet over køen'} accent />}
         </dl>
