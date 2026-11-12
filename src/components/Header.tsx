@@ -18,7 +18,7 @@ export function Header({ side, route }: { side: 'customer' | 'business'; route: 
           <nav className="hidden items-baseline gap-1 sm:flex" aria-label="Hovedmeny">
             {side === 'customer' ? (
               <>
-                <a href="#/" className={link(route === '/')}>
+                <a href="#/" className={link(route === '/' || route.startsWith('/lc') || route.startsWith('/booked'))}>
                   Markedsplass
                 </a>
                 <a href="#/wants" className={link(route.startsWith('/wants'))}>

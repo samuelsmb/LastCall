@@ -47,12 +47,22 @@ export function marketplace(state: State, now: number, f: MarketplaceFilters): S
     if (f.window && !inWindow(s.start, f.window, now)) return false
     return true
   })
+  return list.sort(slotComparator(state, f.sort))
+}
+
+export const SORTS: { value: SortKey; label: string }[] = [
+  { value: 'soonest', label: 'Snarest' },
+  { value: 'discount', label: 'Størst rabatt' },
+  { value: 'nearest', label: 'Nærmest' },
+]
+
+export function slotComparator(state: State, sort: SortKey): (a: Slot, b: Slot) => number {
   const by: Record<SortKey, (a: Slot, b: Slot) => number> = {
     soonest: (a, b) => a.start - b.start,
     discount: (a, b) => (b.discountPct ?? 0) - (a.discountPct ?? 0) || a.start - b.start,
     nearest: (a, b) => businessOf(state, a).distanceKm - businessOf(state, b).distanceKm || a.start - b.start,
   }
-  return list.sort(by[f.sort])
+  return by[sort]
 }
 
 export function releaseTime(state: State, slot: Slot): number | null {

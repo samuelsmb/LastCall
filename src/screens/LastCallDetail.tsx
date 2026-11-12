@@ -114,7 +114,7 @@ export function LastCallDetail({ id }: { id: string }) {
                     Se flere
                   </Button>
                   <Button size="sm" onClick={() => go('/wants')}>
-                    Opprett et varsel
+                    Opprett et ønske
                   </Button>
                 </div>
               </div>

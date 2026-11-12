@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { alertLine } from '../components/AlertToasts'
 import { CATEGORIES, CATEGORY_META, WANT_WINDOW_META } from '../domain/categories'
-import { businessOf, interpretWant, isLive, matchesWant } from '../domain/selectors'
+import { businessOf, interpretWant, isLive, matchesWant, slotComparator, SORTS, type SortKey } from '../domain/selectors'
 import { addWant, markAlertSeen, removeWant, useAppState } from '../domain/store'
 import type { Category, WantWindow } from '../domain/types'
 import { go, useNow } from '../lib'
@@ -16,6 +16,7 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
   const [window, setWindow] = useState<WantWindow | null>(initial.window ?? '48h')
   const [area, setArea] = useState<string | null>(initial.area)
   const [touched, setTouched] = useState(false)
+  const [sort, setSort] = useState<SortKey>('soonest')
 
 
   // Varsler: lagrede varsler, pluss live treff på ønsker som ennå ikke har et varsel.
@@ -41,7 +42,15 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
       setTimeout(() => setShown((s) => new Set(s).add(i.id)), 900 + n * 700)
     })
   }, [itemKey])
-  const visible = items.filter((i) => shown.has(i.id))
+  const compare = slotComparator(state, sort)
+  const slotOf = (id: string) => state.slots.find((s) => s.id === id)
+  const visible = items
+    .filter((i) => shown.has(i.id))
+    .sort((a, b) => {
+      const sa = slotOf(a.slotId)
+      const sb = slotOf(b.slotId)
+      return sa && sb ? compare(sa, sb) : 0
+    })
   const pending = items.length - visible.length
 
   const onLabel = (text: string) => {
@@ -140,7 +149,21 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
       </div>
 
       <section className="flex flex-col gap-3">
-        <h2 className="heading-2">Varsler</h2>
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="heading-2">Varsler</h2>
+          {items.length > 1 && (
+            <label className="flex items-center gap-2 text-[15px] text-muted">
+              Sorter etter
+              <select value={sort} onChange={(e) => setSort(e.target.value as SortKey)} className="cursor-pointer rounded-lg border border-hairline bg-canvas px-2.5 py-1.5 font-medium text-ink outline-none">
+                {SORTS.map((s) => (
+                  <option key={s.value} value={s.value}>
+                    {s.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
+        </div>
         {items.length === 0 && (
           <div className="flex flex-col items-center gap-2 rounded-2xl bg-canvas px-6 py-12 text-center">
             <span className="text-4xl">📭</span>
