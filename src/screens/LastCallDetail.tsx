@@ -2,7 +2,7 @@ import { useState, type ReactNode } from 'react'
 import { businessOf, savings } from '../domain/selectors'
 import { bookSlot, toggleFollow, useAppState } from '../domain/store'
 import { clock, go, kr, useNow, when } from '../lib'
-import { Band, Button, CategoryBadge, Countdown, DiscountSticker, Price } from '../ui'
+import { Band, Button, CategoryBadge, Countdown, DiscountSticker, PinIcon, Price } from '../ui'
 
 export function LastCallDetail({ id }: { id: string }) {
   const state = useAppState()
@@ -52,7 +52,15 @@ export function LastCallDetail({ id }: { id: string }) {
             <dl className="mt-4 grid gap-px overflow-hidden rounded-xl border border-hairline bg-hairline sm:grid-cols-2">
               <Info label="Når" value={`${when(slot.start, now)} – ${clock(slot.start + slot.durationMin * 60_000)}`} />
               <Info label="Varighet" value={`${slot.durationMin} min${slot.guests ? ` · bord for ${slot.guests}` : ''}`} />
-              <Info label="Adresse" value={`${biz.address}, ${biz.neighbourhood}`} />
+              <Info
+                label="Adresse"
+                value={
+                  <span className="inline-flex items-center gap-1.5">
+                    <PinIcon className="h-4 w-4 text-primary" />
+                    {biz.address}, {biz.neighbourhood}
+                  </span>
+                }
+              />
               <Info label="Avstand" value={`${biz.distanceKm.toLocaleString('nb-NO')} km unna`} />
               {biz.website && (
                 <Info

@@ -5,7 +5,7 @@ import { businessOf, interpretWant, isLive, matchesWant, slotComparator, SORTS, 
 import { addWant, markAlertSeen, removeWant, useAppState } from '../domain/store'
 import type { Category, WantWindow } from '../domain/types'
 import { go, useNow } from '../lib'
-import { Button, Chip, Mascot } from '../ui'
+import { Button, Chip, Mascot, PinIcon } from '../ui'
 
 export function Wants({ initialText = '' }: { initialText?: string }) {
   const state = useAppState()
@@ -193,6 +193,7 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
                   <span className="min-w-0 flex-1">
                     <span className="block font-medium">{alertLine(state, slot, now)}</span>
                     <span className="block text-sm text-muted">
+                      <PinIcon className="mr-1 h-3.5 w-3.5 align-[-2px]" />
                       {biz.neighbourhood}
                       {live ? '' : ' · ikke lenger tilgjengelig'}
                     </span>
