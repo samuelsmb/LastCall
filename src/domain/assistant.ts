@@ -2,7 +2,7 @@ import { createOpenRouter } from '@openrouter/ai-sdk-provider'
 import { generateText, isStepCount, Output, tool, type ModelMessage } from 'ai'
 import { z } from 'zod'
 import { kr, when } from '../lib'
-import { CATEGORIES, CATEGORY_META, NEIGHBOURHOODS, WANT_WINDOW_META } from './categories'
+import { CATEGORIES, CATEGORY_META, NEIGHBOURHOODS, wantWindowHint } from './categories'
 import { businessOf, inWindow, isLive, lastCallPrice } from './selectors'
 import { addWant, getState, scheduleDemoRelease } from './store'
 import { TASTE_PROFILE } from './tasteProfile'
@@ -44,6 +44,8 @@ export interface WantGuess {
   categories: Category[]
   window: WantWindow | null
   area: string | null
+  /** Short Norwegian title for the Want, when the model wrote one. */
+  label?: string
 }
 
 /** Reads a free-text Want with the model: guesses Categories, a time window and an area. */
@@ -55,16 +57,19 @@ export async function interpretWantWithModel(text: string, signal?: AbortSignal)
     system: `Du tolker hva en kunde i Oslo ønsker å bli varslet om, for markedsplassen LastCall.
 Kategorier: ${categories}.
 Tidsvindu: now = innen 2 timer, today = i dag/i kveld, 48h = innen 48 timer/i morgen, any = når som helst. null hvis kunden ikke nevner tid.
+hours: når kunden nevner en konkret varighet ("12 timer", "3 dager", "neste uke"), gi den i timer (f.eks. 12, 72, 168) og la window være null. Ellers null.
 Bydeler: ${NEIGHBOURHOODS.join(', ')}. Velg bare en av disse, ellers null.
-Kunden kan skrive norsk, dansk, svensk eller engelsk. Velg alle kategorier som passer; tom liste hvis ingen passer.`,
+Kunden kan skrive norsk, dansk, svensk eller engelsk. Velg alle kategorier som passer; tom liste hvis ingen passer.
+label: en kort, ryddig tittel på norsk bokmål for ønsket, 2-5 ord, stor forbokstav, uten "varsle meg", "alarm" o.l. Rett skrivefeil. Ta med tid og bydel hvis kunden nevnte det. F.eks. "Middag innen 12 timer", "Dekkskift nær Alna", "Jazz i kveld".`,
     prompt: text,
     output: Output.object({
-      schema: z.object({ categories: z.array(categoryEnum), window: windowEnum.nullable(), area: z.string().nullable() }),
+      schema: z.object({ label: z.string(), categories: z.array(categoryEnum), window: windowEnum.nullable(), hours: z.number().positive().nullable(), area: z.string().nullable() }),
     }),
   })
   const { output } = result
   const area = NEIGHBOURHOODS.find((n) => n.toLowerCase() === output.area?.toLowerCase()) ?? null
-  return { categories: [...new Set(output.categories)], window: output.window, area }
+  const window: WantWindow | null = output.hours ? `${Math.round(output.hours)}h` : output.window
+  return { categories: [...new Set(output.categories)], window, area, label: output.label.trim() || undefined }
 }
 
 export interface AssistantTurn {
@@ -121,16 +126,17 @@ export async function askAssistant(history: ModelMessage[], text: string): Promi
         label: z.string().describe('Kort beskrivelse på norsk, f.eks. "Jazz i kveld"'),
         categories: z.array(categoryEnum).min(1).describe('Ved fromTasteProfile brukes profilens kategorier i stedet.'),
         window: windowEnum,
+        hours: z.number().positive().optional().describe('Bare når kunden nevner en konkret varighet, f.eks. 12 for "12 timer" eller 72 for "3 dager". Overstyrer window.'),
         area: z.string().optional().describe('Bydel i Oslo, hvis kunden nevnte en'),
         fromTasteProfile: z.boolean().describe('true bare når kunden vil varsles om "ting jeg vil like" uten å nevne noe bestemt. false for alt konkret, som comedy, dekkskift eller middag.'),
       }),
-      execute: async ({ label, categories, window, area, fromTasteProfile }) => {
+      execute: async ({ label, categories, window, hours, area, fromTasteProfile }) => {
         const cats = fromTasteProfile ? TASTE_PROFILE.categories : categories
-        const win = fromTasteProfile ? 'any' : window
+        const win: WantWindow = fromTasteProfile ? 'any' : hours ? `${Math.round(hours)}h` : window
         addWant(label, cats, win, area)
         // The model's label may miss the topic words ("Komedieforestillinger"), so match on what the Customer wrote too.
         scheduleDemoRelease(customerText, cats, fromTasteProfile)
-        return { saved: true, label, categories: cats, window: WANT_WINDOW_META[win].hint }
+        return { saved: true, label, categories: cats, window: wantWindowHint(win) }
       },
     }),
   }

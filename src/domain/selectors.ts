@@ -20,7 +20,7 @@ export function inWindow(start: number, window: WantWindow, now: number) {
   if (start <= now) return false
   if (window === 'any') return true
   if (window === 'now') return start - now <= 2 * 3_600_000
-  if (window === '48h') return start - now <= 48 * 3_600_000
+  if (window.endsWith('h')) return start - now <= parseFloat(window) * 3_600_000
   const endOfToday = new Date(now)
   endOfToday.setHours(23, 59, 59, 999)
   return start <= endOfToday.getTime()
