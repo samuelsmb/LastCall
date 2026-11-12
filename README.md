@@ -26,9 +26,9 @@ Start with `?reset` once, then use two tabs: **Customer** (left) and **Business*
 | # | Tab | URL | What to do |
 | --- | --- | --- | --- |
 | 0 | any | `http://localhost:5173/?reset#/` | Fresh data. |
-| 1 | Customer | `#/wants?q=dekkskift%20innen%2048%20timer%20n%C3%A6r%20Bjerke` | The fake AI has already read "dekkskift innen 48 timer nær Bjerke" and picked Dekkskift, Neste 48 t, Bjerke. Click **Lagre ønske**. |
-| 2 | Business | `#/biz/teds-garage` | Dekkproff Bjerke, Auto-release on at full price. Click **Simuler avbestilling** on **tomorrow 14:00, Tyre change**. It goes live at once as "Skip the queue". |
-| 3 | Customer | `#/lc/demo-teds-tyre` → `#/booked/demo-teds-tyre` | The Alert pops up: "Someone cancelled. Tyre change at Dekkproff Bjerke tomorrow 14:00, 15 min away. 550 kr." Open it, book. The ticket says "You skipped the queue". |
+| 1 | Customer | `#/wants?q=dekkskift%20innen%2048%20timer%20n%C3%A6r%20Alna` | The fake AI has already read "dekkskift innen 48 timer nær Alna" and picked Dekkskift, Neste 48 t, Alna. Click **Lagre ønske**. |
+| 2 | Business | `#/biz/teds-garage` | Mekonomen, Auto-release on at full price. Click **Simuler avbestilling** on **tomorrow 14:00, Tyre change**. It goes live at once as "Skip the queue". |
+| 3 | Customer | `#/lc/demo-teds-tyre` → `#/booked/demo-teds-tyre` | The Alert pops up: "Someone cancelled. Tyre change at Mekonomen tomorrow 14:00, 15 min away. 550 kr." Open it, book. The ticket says "You skipped the queue". |
 | 4 | Business | `#/biz/teds-garage` | "Empty slot filled. 550 kr saved." Revenue recovered 550 kr, fee 0 kr (free spots left 9/10), net 550 kr. |
 | 5 | Business | `#/biz/restaurant-lokka` | Theatercaféen, Auto-release 2 hours before at 20% off. **Simuler avbestilling** on **19:30, Table for 2** (2,000 kr pp). It is held until 17:30; click **Frigi nå** (20% preselected, fee preview shows 98 kr waived by the Intro offer). |
 | 5b | Customer | `#/lc/demo-lokka-table` | Book the table: 1,600 kr pp, 3,200 kr total. The Business dashboard shows 3,200 kr recovered, fee 0 kr, free spots left 8/10 (a table for 2 uses 2). |
@@ -62,4 +62,4 @@ Bilder av bedriftene ligger i `public/img/`. Bedrifter uten bilde får en farget
 - Statholdergaarden (og Statholderens Mat & Vinkjeller): Kjetil r, [CC BY-SA 2.5](https://creativecommons.org/licenses/by-sa/2.5/), via Wikimedia Commons
 - Maaemo: Ulflarsen, [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/), via Wikimedia Commons
 - Herr Nilsen: Vidariv, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/), via Wikimedia Commons
-- Dekkproff Bjerke: hentet fra dekkproff.no, kun til demobruk
+- Mekonomen og Snap Drive: bilder hentet fra bedriftenes nettsider, kun til demobruk
