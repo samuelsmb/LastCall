@@ -5,7 +5,7 @@ import { businessOf, interpretWant, isLive, matchesWant } from '../domain/select
 import { addWant, markAlertSeen, removeWant, useAppState } from '../domain/store'
 import type { Category, WantWindow } from '../domain/types'
 import { go, useNow } from '../lib'
-import { Button, Mascot } from '../ui'
+import { Button, Chip, Mascot } from '../ui'
 
 export function Wants({ initialText = '' }: { initialText?: string }) {
   const state = useAppState()
@@ -38,6 +38,11 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
     setCategories(g.categories)
     setArea(g.area)
     if (g.window) setWindow(g.window)
+  }
+
+  const toggle = (c: Category) => {
+    setTouched(true)
+    setCategories(categories.includes(c) ? categories.filter((x) => x !== c) : [...categories, c])
   }
 
   const canSave = categories.length > 0 && window
@@ -83,25 +88,14 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
               )}
             </p>
           )}
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <label className="flex items-center gap-2 text-[15px] text-muted">
-              Kategori
-              <select
-                value={categories.length === 1 ? categories[0] : ''}
-                onChange={(e) => {
-                  setTouched(true)
-                  setCategories(e.target.value ? [e.target.value as Category] : [])
-                }}
-                className="cursor-pointer rounded-lg border border-hairline bg-canvas px-2.5 py-2 font-medium text-ink outline-none focus:ring-2 focus:ring-primary/30"
-              >
-                <option value="">{categories.length > 1 ? 'Flere gjenkjent' : 'Velg kategori'}</option>
-                {CATEGORIES.map((c) => (
-                  <option key={c} value={c}>
-                    {CATEGORY_META[c].icon} {CATEGORY_META[c].label}
-                  </option>
-                ))}
-              </select>
-            </label>
+          <div className="flex flex-wrap gap-2">
+            {CATEGORIES.map((c) => (
+              <Chip key={c} active={categories.includes(c)} onClick={() => toggle(c)}>
+                <span>{CATEGORY_META[c].icon}</span> {CATEGORY_META[c].label}
+              </Chip>
+            ))}
+          </div>
+          <div className="flex justify-end">
             <Button onClick={save} disabled={!canSave}>
               Lagre ønske
             </Button>
