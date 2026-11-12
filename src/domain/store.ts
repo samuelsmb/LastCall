@@ -72,6 +72,11 @@ function releaseInto(s: State, slotId: string, discountPct: number, now: number)
   return { ...next, alerts: [...alerts, ...s.alerts] }
 }
 
+/** Demo only: start over with fresh seed data. */
+export function resetDemo() {
+  commit(createSeed(Date.now()))
+}
+
 export function cancelSlot(slotId: string) {
   const now = Date.now()
   const slot = state.slots.find((s) => s.id === slotId)
