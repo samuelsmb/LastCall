@@ -1,3 +1,4 @@
+import { ArrowRight, Check, Zap } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { CATEGORY_META } from '../domain/categories'
 import { calculateFee, FEE_CAP_PCT, FEE_PER_SPOT, INTRO_SPOTS } from '../domain/pricing'
@@ -53,7 +54,7 @@ export function BusinessHome({ businessId }: { businessId?: string }) {
   return (
     <div className="flex flex-col gap-8">
       <section className="flex flex-col gap-4 sm:flex-row sm:items-center">
-        <span className="grid h-16 w-16 shrink-0 place-items-center rounded-2xl border border-hairline bg-canvas text-4xl shadow-soft">{meta.icon}</span>
+        <span className="grid h-16 w-16 shrink-0 place-items-center rounded-2xl border border-hairline bg-canvas shadow-soft"><meta.icon className="h-8 w-8" aria-hidden /></span>
         <div className="flex-1">
           <h1 className="heading-1">{biz.name}</h1>
           <p className="mt-1 text-muted">
@@ -146,7 +147,7 @@ export function BusinessHome({ businessId }: { businessId?: string }) {
           <div className="flex flex-col gap-4 rounded-xl border border-hairline bg-canvas p-5 lg:sticky lg:top-24">
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-2">
-                <span className="grid h-8 w-8 place-items-center rounded-lg bg-purple/40 text-base">⚡</span>
+                <span className="grid h-8 w-8 place-items-center rounded-lg bg-purple/40"><Zap className="h-4 w-4" aria-hidden /></span>
                 <h2 className="title">Last Call-rabatt</h2>
               </div>
               <button
@@ -210,7 +211,7 @@ export function BusinessHome({ businessId }: { businessId?: string }) {
       {toast && (
         <Overlay>
           <div className="fixed inset-x-3 bottom-6 z-50 mx-auto flex max-w-md animate-rise items-center gap-3 rounded-xl border border-hairline bg-canvas px-4 py-3 shadow-lifted">
-            <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-green text-sm text-white">✓</span>
+            <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-green text-white"><Check className="h-4 w-4" aria-hidden /></span>
             <span className="flex flex-col gap-1.5 text-[15px]">
               {toast.msg}
               {toast.sms && <span className="rounded-lg bg-paper px-3 py-2 text-sm text-ink-2">💬 {toast.sms}</span>}
@@ -337,7 +338,7 @@ function ReleaseDialog({ slot, biz, rule, onClose, onRelease }: { slot: Slot; bi
           )}
         </div>
         <div className="flex items-baseline justify-between">
-          <span className="text-muted">{discount > 0 ? <><s>{kr(slot.fullPrice)}</s> → kundene betaler</> : 'Kundene betaler'}</span>
+          <span className="text-muted">{discount > 0 ? <><s>{kr(slot.fullPrice)}</s> <ArrowRight className="inline h-4 w-4 align-[-3px]" aria-hidden /> kundene betaler</> : 'Kundene betaler'}</span>
           <span className="heading-1">{kr(price)}</span>
         </div>
         <p className="text-[15px] text-ink-2">
