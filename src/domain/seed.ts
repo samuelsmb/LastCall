@@ -179,7 +179,8 @@ export function createSeed(now: number): State {
     businessId: 'cellar-jazz',
     title: 'Jazzkveld, to plasser ved scenen',
     description: 'Et nytt trio-prosjekt spiller sin første konsert. To plasser rett ved scenen ble ledige.',
-    start: at(now, 300),
+    // Later than the 6-hour state lifetime, so it is still upcoming whenever the demo releases it.
+    start: at(now, 420),
     durationMin: 120,
     fullPrice: 640,
     guests: 2,

@@ -31,7 +31,7 @@ Kundens smaksprofil: ${TASTE_PROFILE.summary}
 Du kan:
 1. Finne Last Calls: bruk searchLastCalls.
 2. Anbefale Last Calls ("noe jeg vil like", "overrask meg", "hva anbefaler du"): søk med searchLastCalls og velg ut fra smaksprofilen. Anbefal aldri noe som ikke passer profilen.
-3. Sette opp et varsel (et "ønske"): kall createWant nøyaktig én gang. Gjelder det "ting jeg vil like", sett fromTasteProfile til true.
+3. Sette opp et ønske, så kunden får et varsel når en passende Last Call frigis: kall createWant nøyaktig én gang. Gjelder det "ting jeg vil like", sett fromTasteProfile til true.
 
 Svaret ditt:
 - reply: norsk bokmål, kort og vennlig, 1-2 setninger uten lister eller markdown. Ved anbefaling: si kort hvorfor det passer kunden.
@@ -91,7 +91,7 @@ export async function askAssistant(history: ModelMessage[], text: string): Promi
       description: 'Lagre et ønske, så varsler LastCall kunden når en passende Last Call frigis.',
       inputSchema: z.object({
         label: z.string().describe('Kort beskrivelse på norsk, f.eks. "Jazz i kveld"'),
-        categories: z.array(categoryEnum).describe('Ignoreres når fromTasteProfile er true.'),
+        categories: z.array(categoryEnum).min(1).describe('Ved fromTasteProfile brukes profilens kategorier i stedet.'),
         window: windowEnum,
         area: z.string().optional().describe('Bydel i Oslo, hvis kunden nevnte en'),
         fromTasteProfile: z.boolean().describe('true når kunden vil varsles om ting hun liker'),
@@ -116,6 +116,6 @@ export async function askAssistant(history: ModelMessage[], text: string): Promi
     stopWhen: isStepCount(6),
   })
   const state = getState()
-  const slotIds = result.output.slotIds.filter((id) => state.slots.some((s) => s.id === id)).slice(0, MAX_CARDS)
+  const slotIds = result.output.slotIds.filter((id) => state.slots.some((s) => s.id === id && isLive(s, now))).slice(0, MAX_CARDS)
   return { messages: [...messages, ...result.response.messages], reply: result.output.reply, slotIds }
 }

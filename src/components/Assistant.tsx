@@ -2,6 +2,7 @@ import type { ModelMessage } from 'ai'
 import { useEffect, useRef, useState } from 'react'
 import { useAppState } from '../domain/store'
 import { useNow } from '../lib'
+import { Button } from '../ui'
 import { LastCallCard } from './LastCallCard'
 
 const hasAssistantKey = Boolean(import.meta.env.VITE_OPENROUTER_KEY)
@@ -110,11 +111,11 @@ export function Assistant({ route }: { route: string }) {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Spør om hva som helst …"
-              className="min-w-0 flex-1 rounded-lg border border-hairline px-3 py-2 outline-none focus:border-primary"
+              className="min-w-0 flex-1 rounded border border-[#ddd] bg-canvas px-3 py-2 text-base outline-none placeholder:text-faint focus:ring-2 focus:ring-primary/30"
             />
-            <button type="submit" disabled={busy || !input.trim()} className="cursor-pointer rounded-lg bg-primary px-3.5 font-semibold text-white disabled:opacity-40">
+            <Button type="submit" size="sm" disabled={busy || !input.trim()}>
               Send
-            </button>
+            </Button>
           </form>
         </div>
       )}
