@@ -118,6 +118,8 @@ export async function askAssistant(history: ModelMessage[], text: string): Promi
     activeTools: ASKS_FOR_ALERT.test(text) ? undefined : ['searchLastCalls', 'getTasteProfile'],
     output: Output.object({ schema: z.object({ reply: z.string(), slotIds: z.array(z.string()) }) }),
     stopWhen: isStepCount(6),
+    // gpt-4o-mini often answers "nothing found" without searching, so its first step must call a tool.
+    prepareStep: ({ stepNumber }) => (stepNumber === 0 ? { toolChoice: 'required' } : {}),
   })
   const state = getState()
   const slotIds = result.output.slotIds.filter((id) => state.slots.some((s) => s.id === id && isLive(s, now))).slice(0, MAX_CARDS)
