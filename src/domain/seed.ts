@@ -103,6 +103,16 @@ const lastCalls: LastCallSeed[] = [
   ['adam-og-eva', 'Klipp', 'Klipp hos en erfaren frisør, ledig etter en avbestilling i dag.', 75, 45, 800, 25],
   ['studio-johnny', 'Klipp og styling', 'Klipp og styling i morgen tidlig, frigitt etter en avbestilling.', 1290, 60, 1100, 20],
   ['bel-etage', 'Farge og føn', 'Fargebehandling og føn, ledig i morgen ettermiddag.', 1500, 120, 2400, 30],
+  ['wheel-of-fortune', 'Dekkskift', 'Fire hjul byttet og lufttrykk sjekket. Kom innom om en liten stund.', 25, 30, 900, 15],
+  [HERO_BUSINESS_ID, 'Dekkskift', 'Sommer- eller vinterdekk byttet, ledig etter en avbestilling.', 40, 30, 900, 20],
+  [HERO_BUSINESS_ID, 'Dekkskift og hjulbalansering', 'Hjulene byttes og balanseres, ferdig på under en time.', 95, 45, 1200, 25],
+  ['wheel-of-fortune', 'Hjulstilling', 'Hjulstilling og kontroll av dekkslitasje, ledig i ettermiddag.', 130, 60, 1400, 20],
+  [HERO_BUSINESS_ID, 'Dekkskift, i morgen tidlig', 'Første time i morgen, før jobb.', 1230, 30, 900, 10],
+  ['fjordbord', 'Bord for 2', 'To plasser ved baren, ledig om litt.', 90, 90, 1500, 20, 2],
+  ['hanshaugen-hearth', 'Middag for 2', 'Et bord for to ble ledig for kort tid siden.', 110, 120, 1500, 25, 2],
+  ['bristol-spa', 'Ansiktsbehandling', 'Ansiktsbehandling i ro og fred, ledig i kveld.', 150, 60, 1200, 30],
+  ['kok-langkaia', 'Felles badstuøkt for 2', 'To plasser på neste økt ved Langkaia.', 100, 90, 700, 25, 2],
+  ['studio-johnny', 'Herreklipp', 'Klipp uten ventetid, ledig om en liten stund.', 45, 30, 650, 30],
   ['cellar-jazz', 'To plasser på første rad i kveld', 'Plasser på første rad til kveldens konsert på en liten jazzklubb i kjelleren.', 420, 120, 590, 40],
 ]
 
