@@ -40,7 +40,7 @@ export function Marketplace() {
             <div className="mt-8 lg:mt-12">
               <button
                 type="button"
-                className="inline-flex min-h-11 min-w-[239px] cursor-pointer items-center justify-center rounded-full bg-[#f9e321] px-8 py-2 text-xl font-semibold text-black transition-[background-color,box-shadow,transform] duration-200 hover:bg-[#efd20b] hover:shadow-[0_4px_12px_rgba(0,0,0,0.10)] motion-safe:hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0d0b33] active:translate-y-0 active:bg-[#e2c500] active:shadow-none motion-reduce:transition-none"
+                className="inline-flex min-h-11 min-w-[239px] cursor-pointer items-center justify-center rounded-full bg-cta px-8 py-2 text-xl font-semibold text-black transition-[background-color,box-shadow,transform] duration-200 hover:bg-cta-active hover:shadow-[0_4px_12px_rgba(0,0,0,0.10)] motion-safe:hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0d0b33] active:translate-y-0 active:bg-[#e2c500] active:shadow-none motion-reduce:transition-none"
                 onClick={() => {
                   const heading = document.getElementById('ledig-na')
                   heading?.scrollIntoView({ block: 'start' })

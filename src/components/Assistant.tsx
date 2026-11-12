@@ -130,7 +130,7 @@ export function Assistant() {
 
       <button
         onClick={() => setOpen((o) => !o)}
-        className="fixed bottom-6 right-6 z-50 flex cursor-pointer items-center gap-2 rounded-full bg-primary px-5 py-3.5 font-semibold text-white shadow-lifted transition hover:scale-105"
+        className="fixed bottom-6 right-6 z-50 flex cursor-pointer items-center gap-2 rounded-full bg-cta px-5 py-3.5 font-semibold text-black shadow-lifted transition hover:scale-105 hover:bg-cta-active"
         aria-label="Åpne assistenten"
       >
         <img src={`${import.meta.env.BASE_URL}img/favicon.svg`} alt="" className="h-6 w-6" /> {open ? 'Lukk' : 'Assistent'}

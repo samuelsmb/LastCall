@@ -9,7 +9,7 @@ import { countdown, kr, useNow } from './lib'
 type Variant = 'primary' | 'secondary' | 'utility' | 'ghost' | 'danger'
 
 const VARIANTS: Record<Variant, string> = {
-  primary: 'rounded-full bg-primary text-white hover:bg-primary-active',
+  primary: 'rounded-full bg-cta text-black hover:bg-cta-active',
   secondary: 'rounded-full bg-canvas text-ink shadow-soft hover:bg-paper',
   utility: 'rounded-lg border border-hairline bg-canvas text-ink hover:bg-paper',
   ghost: 'rounded-lg text-ink-2 hover:bg-black/5',
