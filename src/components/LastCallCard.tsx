@@ -1,7 +1,7 @@
 import { businessOf } from '../domain/selectors'
 import type { Slot, State } from '../domain/types'
 import { when } from '../lib'
-import { Band, CategoryBadge, Countdown, DiscountSticker, Price } from '../ui'
+import { Band, CategoryBadge, Countdown, DiscountSticker, PinIcon, Price } from '../ui'
 
 const JUST_RELEASED = 5 * 60_000
 
@@ -18,11 +18,16 @@ export function LastCallCard({ state, slot, now }: { state: State; slot: Slot; n
       <div className="flex flex-1 flex-col gap-1.5 px-5 pb-5 pt-10">
         <div className="flex items-center justify-between gap-2">
           <CategoryBadge category={biz.category} />
-          <span className="text-sm text-faint">{biz.distanceKm.toLocaleString('nb-NO')} km</span>
+          <span className="flex items-center gap-1 text-sm text-faint">
+            <PinIcon className="h-3.5 w-3.5" />
+            {biz.distanceKm.toLocaleString('nb-NO')} km
+          </span>
         </div>
         <h3 className="heading-3 mt-1.5">{slot.title}</h3>
-        <p className="text-[15px] text-muted">
-          {biz.name} · {biz.neighbourhood}
+        <p className="text-[15px] text-muted">{biz.name}</p>
+        <p className="flex items-center gap-1.5 text-[15px] text-muted">
+          <PinIcon />
+          {biz.neighbourhood}
         </p>
         <p className="text-[15px] text-muted">{when(slot.start, now)}</p>
         <div className="mt-auto flex flex-wrap items-end justify-between gap-2 border-t border-hairline pt-3">
