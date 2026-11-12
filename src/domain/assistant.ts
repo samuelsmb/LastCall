@@ -11,7 +11,7 @@ import type { Category, WantWindow } from './types'
 export const ASSISTANT_MODEL = 'openai/gpt-4o-mini'
 const MAX_CARDS = 3
 /** Norwegian, Danish and English ways of asking for an Alert, or saying yes to one. */
-const ASKS_FOR_ALERT = /varsl|varsel|ønske|si fra|gi beskjed|giv besked|besked|notify|alert|let me know|^\s*(ja|jo|gjerne|yes|ok|okay|sure)\b/i
+const ASKS_FOR_ALERT = /varsl|varsel|ønske|alarm|si fra|gi beskjed|giv besked|besked|notify|alert|let me know|^\s*(ja|jo|gjerne|yes|ok|okay|sure)\b/i
 
 const openrouter = createOpenRouter({
   apiKey: import.meta.env.VITE_OPENROUTER_KEY,
@@ -36,7 +36,7 @@ Du kan:
 Svaret ditt:
 - reply: norsk bokmål, kort og vennlig, 1-2 setninger uten lister eller markdown. Ved anbefaling: si kort hvorfor det passer kunden.
 - slotIds: id-ene til Last Calls du nevner (maks ${MAX_CARDS}), i prioritert rekkefølge. Kortene viser pris og tid, så ikke gjenta det i teksten.
-Finn aldri på Last Calls. Ber kunden om noe bestemt (f.eks. comedy) som ikke finnes i søket, si det tydelig først og spør om du skal varsle når det dukker opp. Et alternativ kan du nevne etterpå.
+Finn aldri på Last Calls. Ber kunden om noe bestemt (f.eks. comedy) som ikke finnes i søket, si det tydelig først og spør om du skal varsle når det dukker opp. Et alternativ kan du nevne etterpå. Si aldri at du ikke kan sette opp varsler; du kan alltid tilby det.
 Kategorier: ${categories}.`
 }
 
@@ -49,6 +49,7 @@ export interface AssistantTurn {
 /** Runs one Customer message through the model, with tools over the store. */
 export async function askAssistant(history: ModelMessage[], text: string): Promise<AssistantTurn> {
   const now = Date.now()
+  const customerText = [...history.filter((m) => m.role === 'user').map((m) => (typeof m.content === 'string' ? m.content : '')), text].join(' ')
 
   const tools = {
     searchLastCalls: tool({
@@ -100,7 +101,8 @@ export async function askAssistant(history: ModelMessage[], text: string): Promi
         const cats = fromTasteProfile ? TASTE_PROFILE.categories : categories
         const win = fromTasteProfile ? 'any' : window
         addWant(label, cats, win, area)
-        if (fromTasteProfile) scheduleDemoRelease(label, cats, true)
+        // The model's label may miss the topic words ("Komedieforestillinger"), so match on what the Customer wrote too.
+        scheduleDemoRelease(customerText, cats, fromTasteProfile)
         return { saved: true, label, categories: cats, window: WANT_WINDOW_META[win].hint }
       },
     }),

@@ -13,7 +13,7 @@ export const DEMO_TABLE_SLOT = 'demo-lokka-table'
  * one of the topic words (or a Taste-profile Want, for `tasteProfile`). Then it is released.
  */
 export const DEMO_STOCK: { slotId: string; topics: string[]; tasteProfile?: boolean; discountPct: number }[] = [
-  { slotId: 'demo-comedy-latter', topics: ['comedy', 'standup', 'stand-up', 'humor', 'komikk', 'komiker', 'latter'], discountPct: 30 },
+  { slotId: 'demo-comedy-latter', topics: ['comedy', 'standup', 'stand-up', 'humor', 'komedi', 'komikk', 'komiker', 'latter', 'morsom'], discountPct: 30 },
   { slotId: 'demo-jazz-concert', topics: ['jazz'], tasteProfile: true, discountPct: 30 },
 ]
 
