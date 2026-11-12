@@ -8,6 +8,15 @@ export const RESTAURANT_ID = 'restaurant-lokka'
 export const DEMO_TYRE_SLOT = 'demo-teds-tyre'
 export const DEMO_TABLE_SLOT = 'demo-lokka-table'
 
+/**
+ * Hidden demo Last Calls: cancelled and invisible until a Customer saves a Want that matches
+ * one of the topic words (or a Taste-profile Want, for `tasteProfile`). Then it is released.
+ */
+export const DEMO_STOCK: { slotId: string; topics: string[]; tasteProfile?: boolean; discountPct: number }[] = [
+  { slotId: 'demo-comedy-latter', topics: ['comedy', 'standup', 'stand-up', 'humor', 'komedi', 'komikk', 'komiker', 'latter', 'morsom'], discountPct: 30 },
+  { slotId: 'demo-jazz-concert', topics: ['jazz'], tasteProfile: true, discountPct: 30 },
+]
+
 const MIN = 60_000
 
 /** Start times are relative to app load and snapped to 5 minutes so they always look upcoming. */
@@ -45,6 +54,7 @@ const businesses: Omit<Business, 'introSpotsLeft'>[] = [
   { id: 'bel-etage', name: 'Bel Etage', category: 'beauty', neighbourhood: 'Sentrum', address: 'Tollbugata 27', distanceKm: 0.8, tagline: 'Eksklusiv frisørsalong', image: 'img/frisor2.jpg' },
   { id: 'kok-langkaia', name: 'KOK Badstue', category: 'beauty', neighbourhood: 'Bjørvika', address: 'Langkaia', distanceKm: 1.3, tagline: 'Badstue og sjøbad ved fjorden', image: 'https://koknorge.no/wp-content/uploads/2023/12/Fellesskap.jpg' },
   { id: 'cellar-jazz', name: 'Herr Nilsen', category: 'experiences', neighbourhood: 'Sentrum', address: 'C.J. Hambros plass 5', distanceKm: 0.4, tagline: 'Live jazz hver kveld', image: 'img/herr-nilsen.jpg' },
+  { id: 'latter', name: 'Latter', category: 'experiences', neighbourhood: 'Aker Brygge', address: 'Stranden 3', distanceKm: 1.2, tagline: 'Oslos største standupscene' },
 ]
 
 type LastCallSeed = [businessId: string, title: string, description: string, minutesFromNow: number, durationMin: number, fullPrice: number, discountPct: number, guests?: number, perk?: string]
@@ -163,6 +173,32 @@ export function createSeed(now: number): State {
   }
 
   slots.push(...calendarSlots(HERO_BUSINESS_ID, tedsCalendar(now), now), ...calendarSlots(RESTAURANT_ID, lokkaCalendar(now), now))
+  slots.push(
+    {
+      id: 'demo-jazz-concert',
+      businessId: 'cellar-jazz',
+      title: 'Jazzkveld, to plasser ved scenen',
+      description: 'Et nytt trio-prosjekt spiller sin første konsert. To plasser rett ved scenen ble ledige.',
+      start: at(now, 240),
+      durationMin: 120,
+      fullPrice: 640,
+      guests: 2,
+      status: 'cancelled',
+      customerName: 'Jonas A.',
+    },
+    {
+      id: 'demo-comedy-latter',
+      businessId: 'latter',
+      title: 'Standup-kveld, to plasser',
+      description: 'Kveldens standup med fire komikere. To plasser ved scenekanten ble ledige etter en avbestilling.',
+      start: at(now, 240),
+      durationMin: 120,
+      fullPrice: 780,
+      guests: 2,
+      status: 'cancelled',
+      customerName: 'Silje M.',
+    },
+  )
 
   return {
     version: 1,

@@ -15,6 +15,12 @@ npm run dev
 
 Open the URL Vite prints (usually http://localhost:5173). There is no backend: everything is fake and lives in your browser's localStorage.
 
+The Assistant (the ✦ bubble on Customer screens) calls OpenRouter straight from the browser. Put `VITE_OPENROUTER_KEY=sk-or-...` in a `.env` file (gitignored). The Pages build reads it from the `OPENROUTER_KEY` repo secret. The key ends up in the public bundle, so use a key with a low credit limit. Without a key, the rest of the app works and the Assistant says it isn't set up.
+
+**Assistant demo:** open the bubble and type "Jeg har lyst til å gå på en comedyklubb i kveld". There is none, so the Assistant offers to alert you. Say "ja", and 5 seconds later a hidden standup Last Call at Latter is released and the Alert pops up. "Varsle meg om ting jeg vil like" does the same with a hidden jazz Last Call. Saving "standup i kveld" in the Wants form works too.
+
+**⚡ Rask (Fast mode):** the switch in the chat header answers with one call to Jev, TypeSafe's decision model, through OpenRouter's `api/alpha/decisions` with the same key, in about 0.3 s instead of 3–7 s. Jev doesn't write text: it picks the intent (find, recommend, alert), Category, time window and the best Last Calls, and the reply comes from a template (`src/domain/fastAssistant.ts`). When it's unsure, or the message is something else ("Hvorfor er Maaemo så dyrt?"), the LLM takes over ("Tenker grundigere …"). After "Fant ikke…", a "ja" saves the offered Want with no model call. The hidden Last Calls live in `DEMO_STOCK` in `src/domain/seed.ts`. Saving another matching Want releases one again with a fresh Alert, so the demo can be repeated without `?reset`.
+
 - Open two tabs side by side (one Customer, one Business): they sync live.
 - Add `?reset` before the hash to start from a fresh catalogue, e.g. `http://localhost:5173/?reset#/`. Data also reseeds itself after 6 hours.
 - `npm run build` typechecks and builds a static site into `dist/`.
@@ -51,6 +57,7 @@ Notes: if it's later than about 18:45, the Theatercaféen table is seeded for to
 - `src/brand.ts`: the city.
 - `src/domain/pricing.ts`: `calculateFee` and the Intro offer rules.
 - `src/domain/store.ts`, `selectors.ts`, `seed.ts`: state, business rules and the Oslo catalogue.
+- `src/domain/assistant.ts`, `tasteProfile.ts`, `src/components/Assistant.tsx`: the Assistant (model, prompt, tools, chat UI) and the demo Customer's Taste profile.
 - Look and feel follows the Notion design language in `docs/DESIGN.md`.
 - Planning docs: `GLOSSARY.md`, `docs/issues/lastcall-demo-spec.md`, `docs/wayfinder/map.md`.
 

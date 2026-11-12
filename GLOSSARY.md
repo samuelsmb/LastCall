@@ -24,6 +24,14 @@ _Avoid_: Wish, request, subscription
 A notice to a Customer that a newly released Last Call matches one of their Wants.
 _Avoid_: Notification, push
 
+**Taste profile**:
+What LastCall knows about a Customer's interests in the background, e.g. "likes new music experiences". Used to recommend Last Calls; the Customer does not write it by hand.
+_Avoid_: Preferences, persona, user profile
+
+**Assistant**:
+A chat helper available on every Customer page that finds Last Calls, recommends ones that fit their Taste profile, and sets up Wants for them. Shown as "Assistent" in the UI.
+_Avoid_: Agent, bot, chatbot, AI
+
 **Category**:
 The kind of service or experience a Last Call belongs to, e.g. tyre change, restaurant, spa.
 _Avoid_: Type, vertical

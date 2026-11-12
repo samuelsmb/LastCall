@@ -104,7 +104,7 @@ const HINTS: [RegExp, Category][] = [
   [/tyre|tire|car|garage|oil|brake|wheel|dekk|\bbil|verksted|olje|bremse|hjul|punktering/i, 'car'],
   [/dinner|dining|food|lunch|restaurant|eat|table|tasting|menu|middag|\bmat\b|lunsj|spise|bord|smaksmeny|meny/i, 'food'],
   [/hair|nail|spa|massage|massasje|facial|beauty|manicure|haircut|glow|hår|frisør|klipp|negl|ansikt|skjønnhet/i, 'beauty'],
-  [/bored|fun|escape|sauna|badstu|jazz|comedy|experience|opplevelse|date|surprise|overrask|adventure|kjedet|moro/i, 'experiences'],
+  [/bored|fun|escape|sauna|badstu|jazz|comedy|stand-?up|humor|komikk|komiker|experience|opplevelse|date|surprise|overrask|adventure|kjedet|moro/i, 'experiences'],
 ]
 
 /** Fake "AI": reads a free-text Want and guesses Categories, a time window and an area. */

@@ -1,11 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
 import { alertLine } from '../components/AlertToasts'
+import type { WantGuess } from '../domain/assistant'
 import { CATEGORIES, CATEGORY_META, WANT_WINDOW_META } from '../domain/categories'
 import { businessOf, interpretWant, isLive, matchesWant, slotComparator, SORTS, type SortKey } from '../domain/selectors'
 import { addWant, markAlertSeen, removeWant, useAppState } from '../domain/store'
 import type { Category, WantWindow } from '../domain/types'
 import { go, useNow } from '../lib'
 import { Button, Chip, Mascot, PinIcon } from '../ui'
+
+const hasModelKey = Boolean(import.meta.env.VITE_OPENROUTER_KEY)
 
 export function Wants({ initialText = '' }: { initialText?: string }) {
   const state = useAppState()
@@ -17,7 +20,38 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
   const [area, setArea] = useState<string | null>(initial.area)
   const [touched, setTouched] = useState(false)
   const [sort, setSort] = useState<SortKey>('soonest')
+  const [guess, setGuess] = useState<WantGuess | null>(initialText ? initial : null)
+  const [thinking, setThinking] = useState(false)
 
+  const apply = (g: WantGuess) => {
+    setGuess(g)
+    setCategories(g.categories)
+    setArea(g.area)
+    setWindow(g.window ?? '48h')
+  }
+
+  // Leser teksten med språkmodellen når kunden tar en pause; nøkkelordtolkningen gjelder til svaret kommer.
+  useEffect(() => {
+    const text = label.trim()
+    if (!text || touched || !hasModelKey) return setThinking(false)
+    const ctrl = new AbortController()
+    setThinking(true)
+    const timer = setTimeout(async () => {
+      try {
+        const { interpretWantWithModel } = await import('../domain/assistant')
+        const g = await interpretWantWithModel(text, ctrl.signal)
+        if (!ctrl.signal.aborted) apply(g)
+      } catch (e) {
+        if (!ctrl.signal.aborted) console.error(e)
+      } finally {
+        if (!ctrl.signal.aborted) setThinking(false)
+      }
+    }, 600)
+    return () => {
+      clearTimeout(timer)
+      ctrl.abort()
+    }
+  }, [label, touched])
 
   // Varsler: lagrede varsler, pluss live treff på ønsker som ennå ikke har et varsel.
   const alertSlotIds = new Set(state.alerts.map((a) => a.slotId))
@@ -56,10 +90,8 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
   const onLabel = (text: string) => {
     setLabel(text)
     if (touched) return
-    const g = interpretWant(text)
-    setCategories(g.categories)
-    setArea(g.area)
-    if (g.window) setWindow(g.window)
+    if (!text.trim()) return apply({ categories: [], window: null, area: null })
+    apply(interpretWant(text))
   }
 
   const toggle = (c: Category) => {
@@ -67,16 +99,38 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
     setCategories(categories.includes(c) ? categories.filter((x) => x !== c) : [...categories, c])
   }
 
-  const canSave = categories.length > 0 && window
-  const save = () => {
+  const [saving, setSaving] = useState(false)
+  const canSave = !saving && (categories.length > 0 || (hasModelKey && label.trim().length > 0))
+  const save = async () => {
     if (!canSave) return
-    const fallback = categories.map((c) => CATEGORY_META[c].label).join(' eller ')
-    addWant(label.trim() || `${fallback} ${WANT_WINDOW_META[window].hint}`, categories, window, area ?? undefined)
+    let cats = categories
+    let win = window ?? '48h'
+    let where = area
+    if (!cats.length) {
+      // Ingen kategori ennå: la språkmodellen lese teksten før vi lagrer.
+      setSaving(true)
+      try {
+        const { interpretWantWithModel } = await import('../domain/assistant')
+        const g = await interpretWantWithModel(label.trim())
+        apply(g)
+        cats = g.categories
+        win = g.window ?? '48h'
+        where = g.area
+      } catch (e) {
+        console.error(e)
+      } finally {
+        setSaving(false)
+      }
+      if (!cats.length) return
+    }
+    const fallback = cats.map((c) => CATEGORY_META[c].label).join(' eller ')
+    addWant(label.trim() || `${fallback} ${WANT_WINDOW_META[win].hint}`, cats, win, where ?? undefined)
     setLabel('')
     setCategories([])
     setWindow('48h')
     setArea(null)
     setTouched(false)
+    setGuess(null)
   }
 
   return (
@@ -96,6 +150,22 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
             placeholder="f.eks. dekkskift innen 48 timer nær Alna, eller restaurant i kveld"
             className="rounded border border-[#ddd] bg-canvas px-3 py-2.5 text-base outline-none placeholder:text-faint focus:ring-2 focus:ring-primary/30"
           />
+          {label.trim() && !touched && guess && (
+            <p className="flex animate-fade items-center gap-2 text-[15px] text-ink-2">
+              <span className="rounded bg-purple/40 px-1.5 text-purple-deep">✦ AI</span>
+              {thinking ? (
+                <span className="animate-pulse text-faint">Tolker …</span>
+              ) : guess.categories.length ? (
+                <>
+                  Gjenkjente {guess.categories.map((c) => CATEGORY_META[c].label).join(', ')}
+                  {guess.window && `, ${WANT_WINDOW_META[guess.window].hint}`}
+                  {guess.area && `, nær ${guess.area}`}
+                </>
+              ) : (
+                <>Usikker ennå. Velg en kategori under.</>
+              )}
+            </p>
+          )}
           <div className="flex flex-wrap gap-2">
             {CATEGORIES.map((c) => (
               <Chip key={c} active={categories.includes(c)} onClick={() => toggle(c)}>
@@ -105,7 +175,7 @@ export function Wants({ initialText = '' }: { initialText?: string }) {
           </div>
           <div className="flex justify-end">
             <Button onClick={save} disabled={!canSave}>
-              Lagre ønske
+              {saving ? 'Tolker …' : 'Lagre ønske'}
             </Button>
           </div>
         </section>

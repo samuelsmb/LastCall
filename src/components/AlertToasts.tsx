@@ -25,7 +25,7 @@ export function AlertToasts() {
   if (!toasts.length) return null
 
   return (
-    <div className="fixed inset-x-3 top-20 z-50 flex flex-col gap-3 sm:inset-x-auto sm:bottom-6 sm:right-6 sm:top-auto sm:w-[380px]">
+    <div className="fixed inset-x-3 top-20 z-[60] flex flex-col gap-3 sm:inset-x-auto sm:bottom-24 sm:right-6 sm:top-auto sm:w-[380px]">
       {toasts.map((a) => {
         const slot = state.slots.find((s) => s.id === a.slotId)
         const want = state.wants.find((w) => w.id === a.wantId)
