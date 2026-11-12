@@ -103,7 +103,6 @@ const lastCalls: LastCallSeed[] = [
   ['bel-etage', 'Farge og føn', 'Fargebehandling og føn, ledig i morgen ettermiddag.', 1500, 120, 2400, 30],
   ['wheel-of-fortune', 'Dekkskift', 'Fire hjul byttet og lufttrykk sjekket. Kom innom om en liten stund.', 25, 30, 900, 15],
   ['stabekk-bilsenter', 'Dekkskift', 'Sommer- eller vinterdekk byttet, ledig etter en avbestilling.', 40, 30, 900, 20],
-  ['wheel-of-fortune', 'Hjulstilling', 'Hjulstilling og kontroll av dekkslitasje, ledig i ettermiddag.', 130, 60, 1400, 20],
   ['fjordbord', 'Bord for 2', 'To plasser ved baren, ledig senere i kveld.', 480, 90, 1500, 20, 2],
   ['hanshaugen-hearth', 'Middag for 2', 'Et bord for to ble ledig for kort tid siden.', 110, 120, 1500, 25, 2],
   ['bristol-spa', 'Ansiktsbehandling', 'Ansiktsbehandling i ro og fred, ledig i kveld.', 150, 60, 1200, 30],
@@ -117,9 +116,6 @@ const lastCalls: LastCallSeed[] = [
   ['fjordbord', 'Bord for 2, i morgen', 'Bord for to hos Katla i morgen kveld.', 1860, 120, 2200, 15, 2],
   ['latter', 'Standup for 2', 'To plasser på kveldens show.', 240, 120, 640, 30, 2],
   ['stabekk-bilsenter', 'Dekkskift og balansering', 'Hjulene byttes og balanseres mens du venter.', 120, 45, 1200, 20],
-  ['stabekk-bilsenter', 'Oljeskift og service', 'Oljeskift, filter og enkel sjekk av bilen.', 100, 60, 1500, 20],
-  ['stabekk-bilsenter', 'EU-kontroll', 'Time til EU-kontroll, ledig etter en avbestilling.', 190, 45, 950, 25],
-  ['stabekk-bilsenter', 'Bremsesjekk', 'Kontroll av bremseklosser og skiver.', 260, 45, 700, 20],
   ['cellar-jazz', 'To plasser på første rad i kveld', 'Plasser på første rad til kveldens konsert på en liten jazzklubb i kjelleren.', 420, 120, 590, 40],
 ]
 
@@ -129,7 +125,7 @@ function tedsCalendar(now: number): CalendarSeed[] {
   return [
     { title: 'Dekkskift', description: 'Fire hjul byttet og lufttrykk sjekket.', start: at(now, 45, 15), durationMin: 30, fullPrice: 900, status: 'booked', customerName: 'Ingrid H.' },
     { title: 'Dekkskift og balansering', description: 'Fire hjul byttet og balansert mens du venter.', start: at(now, 90, 15), durationMin: 45, fullPrice: 1100, status: 'booked', customerName: 'Lars B.' },
-    { title: 'Full service', description: 'Olje, filtre, bremser, væsker og full kontroll.', start: at(now, 165, 15), durationMin: 120, fullPrice: 3900, status: 'released', customerName: 'Anders B.', discountPct: 0 },
+    { title: 'Full service', description: 'Olje, filtre, bremser, væsker og full kontroll.', start: at(now, 165, 15), durationMin: 120, fullPrice: 3900, status: 'booked', customerName: 'Anders B.' },
     { title: 'Punktering', description: 'Rask reparasjon av punktering.', start: at(now, 240, 15), durationMin: 30, fullPrice: 650, status: 'booked', customerName: 'Sigrid L.' },
     { title: 'Dekkskift', description: 'Fire hjul byttet og lufttrykk sjekket.', start: at(now, 360, 15), durationMin: 30, fullPrice: 900, status: 'booked', customerName: 'Magnus E.' },
     { id: DEMO_TYRE_SLOT, title: 'Dekkskift', description: 'Fire hjul byttet og lufttrykk sjekket, ferdig på en halvtime.', start: onDay(now, 1, 14), durationMin: 30, fullPrice: 900, status: 'booked', customerName: 'Mette K.' },

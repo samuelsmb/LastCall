@@ -4,7 +4,7 @@ import { createSeed, DEMO_STOCK, generateCalendar, uid } from './seed'
 import { businessOf, DEFAULT_RULE, matchesWant, releaseTime, ruleDiscount } from './selectors'
 import type { AutoReleaseRule, Category, ReleaseMode, State, WantWindow } from './types'
 
-const KEY = 'lastcall-demo-v32-nb'
+const KEY = 'lastcall-demo-v33-nb'
 const MAX_AGE = 6 * 3_600_000
 
 function load(): State {
