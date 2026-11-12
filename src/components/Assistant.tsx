@@ -1,5 +1,7 @@
 import type { ModelMessage } from 'ai'
 import { useEffect, useRef, useState } from 'react'
+import type { AssistantTurn } from '../domain/assistant'
+import type { OfferedWant } from '../domain/fastAssistant'
 import { useAppState } from '../domain/store'
 import { useNow } from '../lib'
 import { Button } from '../ui'
@@ -24,7 +26,9 @@ export function Assistant({ route }: { route: string }) {
   const [chat, setChat] = useState<ChatMessage[]>([])
   const [history, setHistory] = useState<ModelMessage[]>([])
   const [input, setInput] = useState('')
-  const [busy, setBusy] = useState(false)
+  const [busy, setBusy] = useState<string | null>(null)
+  const [fast, setFast] = useState(false)
+  const [offered, setOffered] = useState<OfferedWant | null>(null)
   const scroller = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -40,17 +44,27 @@ export function Assistant({ route }: { route: string }) {
       setChat((c) => [...c, { role: 'assistant', text: 'Assistenten er ikke satt opp her ennå (mangler API-nøkkel).' }])
       return
     }
-    setBusy(true)
+    setBusy('Tenker …')
     try {
-      const { askAssistant } = await import('../domain/assistant')
-      const turn = await askAssistant(history, trimmed)
+      let turn: AssistantTurn | null = null
+      if (fast) {
+        const { askFast } = await import('../domain/fastAssistant')
+        const fastTurn = await askFast(history, trimmed, offered).catch((e) => (console.error(e), null))
+        setOffered(fastTurn?.offered ?? null)
+        turn = fastTurn
+        if (!turn) setBusy('Tenker grundigere …')
+      }
+      if (!turn) {
+        const { askAssistant } = await import('../domain/assistant')
+        turn = await askAssistant(history, trimmed)
+      }
       setHistory(turn.messages)
       setChat((c) => [...c, { role: 'assistant', text: turn.reply, slotIds: turn.slotIds }])
     } catch (e) {
       console.error(e)
       setChat((c) => [...c, { role: 'assistant', text: 'Beklager, noe gikk galt. Prøv igjen om litt.' }])
     } finally {
-      setBusy(false)
+      setBusy(null)
     }
   }
 
@@ -60,13 +74,27 @@ export function Assistant({ route }: { route: string }) {
     <>
       {open && (
         <div className="fixed inset-x-3 bottom-24 z-50 flex max-h-[min(560px,calc(100vh-8rem))] flex-col overflow-hidden rounded-2xl border border-hairline bg-canvas shadow-lifted sm:inset-x-auto sm:right-6 sm:w-[400px]">
-          <div className="flex items-center justify-between border-b border-hairline px-4 py-3">
+          <div className="flex items-center justify-between gap-2 border-b border-hairline px-4 py-3">
             <p className="font-semibold">
               <span className="text-primary">✦</span> Assistent
             </p>
-            <button className="cursor-pointer rounded-md px-1.5 text-lg leading-none text-faint hover:bg-black/5 hover:text-ink" onClick={() => setOpen(false)} aria-label="Lukk">
-              ×
-            </button>
+            <div className="flex items-center gap-1">
+              <button
+                role="switch"
+                aria-checked={fast}
+                onClick={() => setFast((f) => !f)}
+                title="Raskere svar med mindre kontekst"
+                className={`flex cursor-pointer items-center gap-1.5 rounded-full border px-2.5 py-1 text-sm font-medium transition ${fast ? 'border-primary bg-primary/10 text-primary' : 'border-hairline text-ink-2 hover:bg-black/5'}`}
+              >
+                ⚡ Rask
+                <span className={`relative h-4 w-7 rounded-full transition ${fast ? 'bg-primary' : 'bg-black/15'}`}>
+                  <span className={`absolute top-0.5 h-3 w-3 rounded-full bg-white transition-all ${fast ? 'left-3.5' : 'left-0.5'}`} />
+                </span>
+              </button>
+              <button className="cursor-pointer rounded-md px-1.5 text-lg leading-none text-faint hover:bg-black/5 hover:text-ink" onClick={() => setOpen(false)} aria-label="Lukk">
+                ×
+              </button>
+            </div>
           </div>
 
           <div ref={scroller} className="flex flex-1 flex-col gap-3 overflow-y-auto p-4">
@@ -97,7 +125,7 @@ export function Assistant({ route }: { route: string }) {
                 </div>
               ),
             )}
-            {busy && <p className="animate-pulse text-faint">Tenker …</p>}
+            {busy && <p className="animate-pulse text-faint">{busy}</p>}
           </div>
 
           <form
@@ -113,7 +141,7 @@ export function Assistant({ route }: { route: string }) {
               placeholder="Spør om hva som helst …"
               className="min-w-0 flex-1 rounded border border-[#ddd] bg-canvas px-3 py-2 text-base outline-none placeholder:text-faint focus:ring-2 focus:ring-primary/30"
             />
-            <Button type="submit" size="sm" disabled={busy || !input.trim()}>
+            <Button type="submit" size="sm" disabled={!!busy || !input.trim()}>
               Send
             </Button>
           </form>
