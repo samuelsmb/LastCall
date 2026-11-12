@@ -1,4 +1,4 @@
-import { Car, Flower2, Ticket, UtensilsCrossed, type LucideIcon } from 'lucide-react'
+import { Car, Sparkles, Ticket, UtensilsCrossed, type LucideIcon } from 'lucide-react'
 import type { Category, TimeWindow, WantWindow } from './types'
 
 export const CATEGORIES: Category[] = ['food', 'car', 'beauty', 'experiences']
@@ -7,7 +7,7 @@ export const CATEGORIES: Category[] = ['food', 'car', 'beauty', 'experiences']
 export const CATEGORY_META: Record<Category, { label: string; icon: LucideIcon; band: string; tint: string; text: string; dot: string }> = {
   food: { label: 'Restaurant', icon: UtensilsCrossed, band: 'bg-orange', tint: 'bg-orange/10', text: 'text-orange-deep', dot: 'bg-orange' },
   car: { label: 'Verksted', icon: Car, band: 'bg-sky', tint: 'bg-sky/15', text: 'text-[#1d5d94]', dot: 'bg-sky' },
-  beauty: { label: 'Skjønnhet', icon: Flower2, band: 'bg-pink', tint: 'bg-pink/10', text: 'text-[#9b1f6e]', dot: 'bg-pink' },
+  beauty: { label: 'Skjønnhet', icon: Sparkles, band: 'bg-pink', tint: 'bg-pink/10', text: 'text-[#9b1f6e]', dot: 'bg-pink' },
   experiences: { label: 'Opplevelse', icon: Ticket, band: 'bg-green', tint: 'bg-green/10', text: 'text-[#13772a]', dot: 'bg-green' },
 }
 
