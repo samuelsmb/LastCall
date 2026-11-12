@@ -1,21 +1,15 @@
 import { useMemo, useState } from 'react'
 import { LastCallCard } from '../components/LastCallCard'
 import { CATEGORIES, CATEGORY_META, WINDOW_META } from '../domain/categories'
-import { businessOf, marketplace, type SortKey } from '../domain/selectors'
+import { businessOf, isLive, marketplace, matchesWant, SORTS, type SortKey } from '../domain/selectors'
 import { CITY } from '../brand'
 import { useAppState } from '../domain/store'
 import type { Category, TimeWindow } from '../domain/types'
 import { go, useNow } from '../lib'
 import { Button, Chip, Mascot, Segmented } from '../ui'
 
-const SORTS: { value: SortKey; label: string }[] = [
-  { value: 'soonest', label: 'Snarest' },
-  { value: 'discount', label: 'Størst rabatt' },
-  { value: 'nearest', label: 'Nærmest' },
-]
-
-// «Overrask meg» foreslår ikke dekkskift, helse eller offentlige timer.
-const SURPRISE_EXCLUDED: Category[] = ['car', 'health', 'official']
+// «Overrask meg» foreslår ikke verkstedtimer.
+const SURPRISE_EXCLUDED: Category[] = ['car']
 
 const STARS = [
   ['8%', '20%', 'bg-purple', 'h-2 w-2'],
@@ -36,6 +30,11 @@ export function Marketplace() {
   const [sort, setSort] = useState<SortKey>('soonest')
 
   const list = useMemo(() => marketplace(state, now, { categories, window, sort }), [state, now, categories, window, sort])
+
+  const wantMatches = useMemo(
+    () => state.slots.filter((s) => isLive(s, now) && state.wants.some((w) => matchesWant(state, s, w, now))),
+    [state, now],
+  )
 
   const toggle = (c: Category) => setCategories(categories.includes(c) ? categories.filter((x) => x !== c) : [...categories, c])
 
@@ -59,9 +58,15 @@ export function Marketplace() {
               Fullbooka bord og verksteder i {CITY}, ledige i det øyeblikket noen avbestiller. Hopp over køen, noen ganger til lavere pris. Rimelig i siste liten.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Button onClick={surprise}>Overrask meg</Button>
+              <button
+                type="button"
+                onClick={surprise}
+                className="surprise-btn inline-flex items-center gap-2 rounded-full px-6 py-3 text-[17px] font-bold text-purple-deep"
+              >
+                <span aria-hidden>🎁</span> Overrask meg <span aria-hidden>✨</span>
+              </button>
               <Button variant="secondary" onClick={() => go('/wants')}>
-                Opprett et varsel
+                Opprett et ønske
               </Button>
             </div>
           </div>
@@ -70,6 +75,23 @@ export function Marketplace() {
           </div>
         </div>
       </section>
+
+      {wantMatches.length > 0 && (
+        <button
+          type="button"
+          onClick={() => go('/wants')}
+          className="-mt-4 flex w-full cursor-pointer items-center gap-3 rounded-2xl border border-pink/40 bg-pink/10 px-5 py-4 text-left transition hover:bg-pink/20"
+        >
+          <span className="animate-twinkle text-2xl">🔔</span>
+          <span className="min-w-0 flex-1">
+            <span className="block font-semibold">
+              {wantMatches.length} {wantMatches.length === 1 ? 'Last Call passer' : 'Last Calls passer'} ønskene dine nå
+            </span>
+            <span className="block text-sm text-ink-2">Noe du har ønsket deg har blitt ledig. Se hva som passer.</span>
+          </span>
+          <span className="font-semibold text-primary">Se treff →</span>
+        </button>
+      )}
 
       <section className="flex flex-col gap-4">
         <h2 className="heading-1">Ledig nå</h2>
@@ -87,7 +109,7 @@ export function Marketplace() {
           <div className="flex items-center gap-3">
             <Segmented value={window} onChange={setWindow} options={(['now', 'today', '48h'] as TimeWindow[]).map((w) => ({ value: w, label: WINDOW_META[w].label }))} />
             <span className="hidden text-[15px] text-muted sm:inline">
-              {list.length} Last Call
+              {list.length} {list.length === 1 ? 'Last Call' : 'Last Calls'}
             </span>
           </div>
           <label className="flex items-center gap-2 text-[15px] text-muted">
@@ -113,7 +135,7 @@ export function Marketplace() {
         <div className="flex flex-col items-center gap-3 rounded-2xl bg-canvas px-6 py-16 text-center">
           <span className="text-5xl">🔍</span>
           <h3 className="heading-2">Ingenting passer akkurat nå</h3>
-          <p className="max-w-md text-muted">Prøv et videre filter, eller opprett et varsel så gir vi beskjed så snart noe åpner seg.</p>
+          <p className="max-w-md text-muted">Prøv et videre filter, eller opprett et ønske så gir vi beskjed så snart noe åpner seg.</p>
           <div className="mt-3 flex flex-wrap justify-center gap-2">
             <Button
               variant="utility"
@@ -124,7 +146,7 @@ export function Marketplace() {
             >
               Fjern filtre
             </Button>
-            <Button onClick={() => go('/wants')}>Opprett et varsel</Button>
+            <Button onClick={() => go('/wants')}>Opprett et ønske</Button>
           </div>
         </div>
       )}

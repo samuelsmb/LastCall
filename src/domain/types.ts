@@ -1,4 +1,4 @@
-export type Category = 'food' | 'beauty' | 'car' | 'health' | 'official' | 'experiences'
+export type Category = 'food' | 'beauty' | 'car' | 'experiences'
 
 export type TimeWindow = 'now' | 'today' | '48h'
 
@@ -40,14 +40,14 @@ export interface Slot {
   releasedAt?: number
   soldAt?: number
   buyerName?: string
+  /** Car Last Calls only: the Customer's registration number. */
+  regNumber?: string
   perk?: string
   /** Restaurant tables only: number of guests. fullPrice is the total for the table. */
   guests?: number
   /** Set when sold: LastCall's fee and how many intro spots it used. */
   fee?: number
   introSpotsUsed?: number
-  /** Canceller bonus (% of the sold price) promised when the slot was cancelled; paid to the Canceller only if it sells. */
-  cancellerBonusPct?: number
 }
 
 export type ReleaseMode = 'full' | 'discount'
@@ -59,7 +59,6 @@ export interface AutoReleaseRule {
   leadMinutes: number
   discountPct: number
   /** Percent of the sold price the Canceller gets back if their cancelled slot sells on LastCall. 0 turns it off. */
-  cancellerBonusPct: number
 }
 
 export interface Want {

@@ -4,7 +4,7 @@ import { createSeed, DEMO_STOCK, generateCalendar, uid } from './seed'
 import { businessOf, DEFAULT_RULE, matchesWant, releaseTime, ruleDiscount } from './selectors'
 import type { AutoReleaseRule, Category, ReleaseMode, State, WantWindow } from './types'
 
-const KEY = 'lastcall-demo-v14-nb'
+const KEY = 'lastcall-demo-v23-nb'
 const MAX_AGE = 6 * 3_600_000
 
 function load(): State {
@@ -77,16 +77,13 @@ export function cancelSlot(slotId: string) {
   const slot = state.slots.find((s) => s.id === slotId)
   if (!slot || slot.status !== 'booked') return
   const rule = state.rules[slot.businessId]
-  // The Canceller bonus is promised now, at the rule's current percent, and paid only if the slot sells.
-  const cancellerBonusPct = rule?.cancellerBonusPct ?? 0
-  const promised = { ...state, slots: state.slots.map((s) => (s.id === slotId ? { ...s, cancellerBonusPct } : s)) }
-  const at = releaseTime(promised, slot)
+  const at = releaseTime(state, slot)
   if (rule?.enabled && at !== null && now >= at) {
-    commit(releaseInto(promised, slotId, ruleDiscount(rule), now))
+    commit(releaseInto(state, slotId, ruleDiscount(rule), now))
     return
   }
   const status = rule?.enabled ? 'held' : 'cancelled'
-  commit({ ...promised, slots: promised.slots.map((s) => (s.id === slotId ? { ...s, status } : s)) })
+  commit({ ...state, slots: state.slots.map((s) => (s.id === slotId ? { ...s, status } : s)) })
 }
 
 export function releaseSlot(slotId: string, discountPct: number) {
@@ -102,7 +99,7 @@ export function withdrawSlot(slotId: string) {
   })
 }
 
-export function bookSlot(slotId: string, buyerName: string): boolean {
+export function bookSlot(slotId: string, buyerName: string, regNumber?: string): boolean {
   const slot = state.slots.find((s) => s.id === slotId)
   if (!slot || slot.status !== 'released' || slot.start <= Date.now()) return false
   const biz = state.businesses.find((b) => b.id === slot.businessId)!
@@ -110,7 +107,7 @@ export function bookSlot(slotId: string, buyerName: string): boolean {
   commit({
     ...state,
     businesses: state.businesses.map((b) => (b.id === biz.id ? { ...b, introSpotsLeft: Math.max(0, b.introSpotsLeft - introSpotsUsed) } : b)),
-    slots: state.slots.map((s) => (s.id === slotId ? { ...s, status: 'sold', buyerName, soldAt: Date.now(), fee, introSpotsUsed } : s)),
+    slots: state.slots.map((s) => (s.id === slotId ? { ...s, status: 'sold', buyerName, regNumber, soldAt: Date.now(), fee, introSpotsUsed } : s)),
   })
   return true
 }

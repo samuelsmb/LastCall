@@ -8,11 +8,11 @@ import { Button } from '../ui'
 
 const RECENT = 15 * 60_000
 
-/** "Dekkskift hos Dekkproff Bjerke i morgen 14:00, 15 min unna. 550 kr." */
+/** "Dekkskift hos Mekonomen i morgen 14:00, 15 min unna. 900 kr." */
 export function alertLine(state: State, slot: Slot, now: number) {
   const biz = businessOf(state, slot)
   const day = when(slot.start, now).replace(/^(I dag|I morgen)/, (d) => d.toLowerCase())
-  return `${slot.title} hos ${biz.name} ${day}, ${walkMinutes(biz)} min unna. ${kr(lastCallPrice(slot))}.`
+  return `${slot.title} hos ${biz.name} ${day}, ${walkMinutes(biz)} min unna. ${biz.category === 'car' ? 'Fra ' : ''}${kr(lastCallPrice(slot))}.`
 }
 
 /** Pops up Alerts for the Customer, including ones created in another tab. */
