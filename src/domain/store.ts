@@ -4,7 +4,7 @@ import { createSeed, DEMO_STOCK, generateCalendar, uid } from './seed'
 import { businessOf, DEFAULT_RULE, matchesWant, releaseTime, ruleDiscount } from './selectors'
 import type { AutoReleaseRule, Category, ReleaseMode, State, WantWindow } from './types'
 
-const KEY = 'lastcall-demo-v34-nb'
+const KEY = 'lastcall-demo-v36-nb'
 const MAX_AGE = 6 * 3_600_000
 
 function load(): State {
@@ -70,6 +70,11 @@ function releaseInto(s: State, slotId: string, discountPct: number, now: number)
     .filter((w) => matchesWant(next, released, w, now))
     .map((w) => ({ id: uid('alert'), wantId: w.id, slotId, createdAt: now, seen: false }))
   return { ...next, alerts: [...alerts, ...s.alerts] }
+}
+
+/** Demo only: start over with fresh seed data. */
+export function resetDemo() {
+  commit(createSeed(Date.now()))
 }
 
 export function cancelSlot(slotId: string) {
