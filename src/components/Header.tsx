@@ -9,7 +9,7 @@ export function Header({ side, route }: { side: 'customer' | 'business'; route: 
   return (
     <header className="sticky top-0 z-40 border-b border-hairline bg-canvas/90 backdrop-blur">
       <div className="mx-auto flex max-w-[1200px] items-center gap-4 px-4 py-3 sm:px-6">
-        <a href={side === 'business' ? '#/biz' : '#/'} className="flex items-center gap-2">
+        <a href="#/" onClick={() => window.scrollTo({ top: 0 })} className="flex items-center gap-2">
           <span className="grid h-8 w-8 place-items-center rounded-lg border border-hairline bg-canvas text-lg shadow-soft">🔔</span>
           <span className="text-lg font-bold tracking-[-0.4px]">LastCall</span>
         </a>
