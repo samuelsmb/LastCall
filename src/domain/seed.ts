@@ -124,6 +124,13 @@ const lastCalls: LastCallSeed[] = [
   ['bristol-spa', 'Spa for 2 med basseng', 'To plasser i spaavdelingen med basseng og sauna.', 1400, 150, 1800, 25, 2],
   ['fjordbord', 'Bord for 2, i morgen', 'Bord for to hos Katla i morgen kveld.', 1860, 120, 2200, 15, 2],
   ['latter', 'Standup for 2', 'To plasser på kveldens show.', 240, 120, 640, 30, 2],
+  ['stabekk-bilsenter', 'Dekkskift og balansering', 'Hjulene byttes og balanseres mens du venter.', 120, 45, 1200, 20],
+  ['stabekk-bilsenter', 'Dekkskift, SUV og varebil', 'Større hjul, samme raske service.', 165, 45, 1400, 15],
+  ['stabekk-bilsenter', 'Dekkskift, i morgen tidlig', 'Første time i morgen, før jobb.', 1230, 30, 900, 10],
+  ['stabekk-bilsenter', 'Dekkskift og hjulstilling', 'Nye dekk på og hjulstilling i samme besøk.', 1320, 90, 1900, 15],
+  ['stabekk-bilsenter', 'Oljeskift og service', 'Oljeskift, filter og enkel sjekk av bilen.', 100, 60, 1500, 20],
+  ['stabekk-bilsenter', 'EU-kontroll', 'Time til EU-kontroll, ledig etter en avbestilling.', 190, 45, 950, 25],
+  ['stabekk-bilsenter', 'Bremsesjekk', 'Kontroll av bremseklosser og skiver.', 260, 45, 700, 20],
   ['cellar-jazz', 'To plasser på første rad i kveld', 'Plasser på første rad til kveldens konsert på en liten jazzklubb i kjelleren.', 420, 120, 590, 40],
 ]
 
